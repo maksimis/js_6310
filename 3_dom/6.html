@@ -1,0 +1,12 @@
+<ul id="list">
+    <li>Первый элемент</li>
+    <li class="selected">Второй элемент</li>
+    <li>Третий элемент</li>
+</ul>
+
+<script>
+    const selectedItem = document.querySelector('.selected');
+    console.log(selectedItem.parentElement); // <ul id="list">
+    console.log(selectedItem.previousElementSibling); // <li>Первый элемент</li>
+    console.log(selectedItem.nextElementSibling); // <li>Третий элемент</li>
+</script>
