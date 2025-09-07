@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Заголовок страницы</title>
+    <meta charset="UTF-8">
+</head>
+
+<body>
+    <form id="registrationForm">
+        <input type="text" name="username">
+        <input type="text" name="email">
+        <button type="submit">Зарегистрироваться</button>
+    </form>
+    <script>
+        document.getElementById('registrationForm').addEventListener('submit', function (event) {
+            event.preventDefault(); // Отменяем стандартную отправку
+            const formData = new FormData(this); // Собираем данные формы
+            const data = Object.fromEntries(formData.entries());
+            if (!validateForm(data)) {// Валидация
+                alert('Пожалуйста, заполните все поля корректно');
+                return;
+            }
+            console.log('Данные для отправки:', data);// Отправка данных (например, fetch API)
+            // fetch('/api/register', { method: 'POST', body: JSON.stringify(data) })
+        });
+        function validateForm(data) {
+            return data.username && data.email.includes('@');
+        }
+    </script>
+
+</body>
+
+</html>
