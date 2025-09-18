@@ -1,12 +1,12 @@
-const element = document.querySelector('#myElement');
+const pageWrapper = document.querySelector('#page_wrapper');
 
 // Прямое изменение стилей
-element.style.color = 'red';
-element.style.backgroundColor = '#eee';
-element.style.fontSize = '20px';
+pageWrapper.style.backgroundColor = 'black';
+pageWrapper.style.color = '#9b41d4';
+pageWrapper.style.fontSize = '20px';
 
 // Через добавление класса (предпочтительнее)
 element.classList.add('highlighted');
 
-// В CSS будет определен стиль
-// .highlighted { color: red; background-color: #eee; font-size: 20px; }
+// В CSS должен быть стиль
+// .highlighted { color: magenta; background-color: #000; font-size: 20px; }
