@@ -1,0 +1,32 @@
+{
+  "name": "init_es6",
+  "version": "1.0.0",
+  "description": "Мой первый Node.js проект",
+  "main": "./src/index.js",
+  "type": "module",
+  "license": "AGPL-version-3.0",
+  "private": false,
+  "engines": {
+    "node": ">= 14.0.0",
+    "npm": ">= 6.0.0"
+  },
+  "homepage": "",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "bugs": "",
+  "keywords": [],
+  "contributors": [],
+  "scripts": {
+    "start": "node ./src/index.js",
+    "dev": "nodemon ./src/index.js",
+    "test": "jest --passWithNoTests"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "jest": "^30.2.0"
+  }
+}
