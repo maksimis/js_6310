@@ -22,7 +22,9 @@
     "start": "node ./src/index.js",
     "dev": "nodemon ./src/index.js",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --passWithNoTests",
-    "test:watch": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --passWithNoTests --watch"
+    "test:watch": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --passWithNoTests --watch",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "dotenv": "^17.2.3",

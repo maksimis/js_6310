@@ -21,4 +21,5 @@ bot.on('message', (msg) => {
         bot.sendMessage(chatId, `Вы сказали: "${text}"`);
     }
 });
+
 console.log('Бот запущен...');
