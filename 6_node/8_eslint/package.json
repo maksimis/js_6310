@@ -23,6 +23,7 @@
     "dev": "nodemon ./src/index.js",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --passWithNoTests",
     "test:watch": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --passWithNoTests --watch",
+    "test:coverage": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --passWithNoTests --coverage",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
