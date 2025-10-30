@@ -1,7 +1,8 @@
+import type { JSX } from 'react'
 import './App.css'
 import './App.css'
 
-function App() {
+function App(): JSX.Element {
   return (
     <div className="app">
       <header className="app-header">
