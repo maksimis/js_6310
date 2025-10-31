@@ -6,10 +6,10 @@ import { Button } from './components/Button/Button'
 import { Card } from './components/Card/Card'
 
 function App(): JSX.Element {
-  const [count, setSount] = useState(0)
+  const [count, setСount] = useState(0)
 
   const handleButtonClick = () => {
-    setSount(prev => prev + 1)
+    setСount(prev => prev + 1)
   }
 
   return (

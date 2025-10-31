@@ -7,7 +7,8 @@ export interface CardProps {
   className?: string;
 }
 
-export const Card: React.FC<CardProps> = ({ title, children, className = '' }) => {
+export const Card: React.FC<CardProps> = 
+({ title, children, className = '' }) => {
   return (
     <div className={`card ${className}`}>
       {title && <h3 className="card__title">{title}</h3>}
