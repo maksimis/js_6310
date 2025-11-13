@@ -1,5 +1,7 @@
 import { useParams, useNavigate, useLocation } from 'react-router'
 
+import { Button } from '../components/Button/Button'
+
 interface UserProfileParams {
   userId: string
   [key: string]: string | undefined
@@ -24,8 +26,8 @@ const UserProfile: React.FC = () => {
     <div>
       <h1>Профиль пользователя {userId}</h1>
       <p>Текущий путь: {location.pathname}</p>
-      <button onClick={handleGoBack}>Назад</button>
-      <button onClick={handleEdit}>Редактировать</button>
+      <Button onClick={handleGoBack}>Назад</Button>
+      <Button onClick={handleEdit}>Редактировать</Button>
     </div>
   )
 }

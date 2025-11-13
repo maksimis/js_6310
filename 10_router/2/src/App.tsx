@@ -1,16 +1,21 @@
 import { Outlet, Link } from 'react-router'
 
+import { Button } from './components/Button/Button'
+import { Card } from './components/Card/Card'
+
 function App() {
   return (
     <div className="app">
       <nav>
-        <Link to="/">Главная</Link>
-        <Link to="/about">О нас</Link>
-        <Link to="/login">Login</Link>
+        <Button type='button'><Link to="/">Главная</Link></Button>
+        <Button type='button'><Link to="/about">О нас</Link></Button>
+        <Button type='button'><Link to="/login">Login</Link></Button>
       </nav>
       
       <main>
-        <Outlet /> {/* Здесь рендерятся дочерние маршруты */}
+        <Card>
+          <Outlet /> {/* Здесь рендерятся дочерние маршруты */}
+        </Card>
       </main>
     </div>
   )

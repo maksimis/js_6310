@@ -1,9 +1,11 @@
 import React from 'react'
 
+import { Card } from '../components/Card/Card'
+
 export const NotFound: React.FC = () => {
   return (
-    <div>
+    <Card>
       NOT FOUND
-    </div>
+    </Card>
   )
 }
