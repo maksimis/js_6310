@@ -1,4 +1,4 @@
-import { memo, useState } from "react"
+import { memo, useCallback, useMemo, useState } from "react"
 
 import { Button } from "../components/Button/Button"
 
@@ -31,17 +31,21 @@ const ChildWithMemo = memo(({ counter }: ChildProps) => <Child counter={counter}
 function Child({ counter }: ChildProps) {
   console.log('Child rendered!') // Вызывается каждый раз
 
-  const factorial = (num: number): number => {
-    if (num <= 1) {
-      return 1
-    } else if (num == 2) {
-      return 2
+  const factorial = useCallback((num: bigint): bigint => {
+    if (num <= 1n) {
+      return 1n
+    } else if (num == 2n) {
+      return 2n
     } else {
-      return factorial(num - 1) * factorial(num - 2)
+      return factorial(num - 1n) * factorial(num - 2n)
     }
-  }  
+  }, [])  
 
-  const fact =  factorial(counter)
+  const fact = useMemo(() => {
+    console.log("fact counted")
+
+    return factorial(BigInt(counter))
+  }, [counter, factorial])
 
   return <div>Factorial {fact}</div>
 }
