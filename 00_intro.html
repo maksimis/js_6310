@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Вводное занятие — Курс «JavaScript» · Группа 6310</title>
+<style>
+  :root {
+    --accent: #058DC7;
+    --accent-dark: #0472a0;
+    --accent-soft: #e3f2fb;
+    --dark: #20242b;
+    --gray: #5b6470;
+    --bg: #f2f5f8;
+    --card: #ffffff;
+    --green: #1e8e3e;
+    --red: #c0392b;
+    --amber: #b7791f;
+    --code-bg: #17181c;
+    --code-fg: #e6e6e6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: radial-gradient(1200px 700px at 80% -10%, #dbeef9 0%, var(--bg) 55%);
+    color: var(--dark);
+    overflow: hidden;
+  }
+
+  /* ---------- slide deck ---------- */
+  .deck { height: 100%; position: relative; }
+  .slide {
+    position: absolute; inset: 0;
+    display: none;
+    padding: 4vh 4vw;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .slide.active { display: flex; }
+
+  .frame {
+    width: 100%; max-width: 1180px;
+    max-height: 92vh;
+    overflow: auto;
+    background: var(--card);
+    border-radius: 22px;
+    box-shadow: 0 24px 60px rgba(20, 40, 70, .14), 0 3px 10px rgba(20, 40, 70, .08);
+    padding: clamp(24px, 4.4vh, 54px) clamp(24px, 4.4vw, 60px);
+    position: relative;
+  }
+  .frame::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 6px; background: linear-gradient(180deg, var(--accent), #5ec3ef);
+    border-radius: 0 8px 8px 0;
+  }
+
+  .eyebrow {
+    display: inline-block;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--accent);
+    background: var(--accent-soft);
+    padding: 5px 12px; border-radius: 999px;
+    margin-bottom: 14px;
+  }
+  h1 { font-size: clamp(30px, 4.6vh, 46px); line-height: 1.15; margin-bottom: 6px; }
+  h2 { font-size: clamp(26px, 3.8vh, 36px); line-height: 1.2; margin-bottom: 18px; color: var(--accent-dark); }
+  h3 { font-size: 20px; margin: 20px 0 8px; color: var(--dark); }
+  p, li { font-size: clamp(15px, 2.3vh, 20px); line-height: 1.55; }
+  ul, ol { list-style: none; }
+  li { position: relative; padding-left: 26px; margin: 7px 0; }
+  li::before {
+    content: "▸"; position: absolute; left: 0; top: 0;
+    color: var(--accent); font-weight: 700;
+  }
+  .muted { color: var(--gray); }
+  .lead { font-size: clamp(16px, 2.6vh, 22px); margin-top: 6px; }
+  strong { color: var(--accent-dark); }
+
+  .two-col { display: grid; grid-template-columns: 1fr minmax(240px, 340px); gap: 28px; align-items: center; }
+  .two-col.flip { grid-template-columns: minmax(240px, 340px) 1fr; }
+  .img-card img { width: 100%; height: auto; border-radius: 14px; box-shadow: 0 10px 26px rgba(0,0,0,.16); display: block; }
+
+  /* table */
+  table { border-collapse: collapse; width: 100%; margin: 6px 0; font-size: clamp(15px, 2.2vh, 19px); }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid #e4e9ef; }
+  th { background: var(--accent); color: #fff; font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #f6f9fc; }
+  th:first-child { border-radius: 10px 0 0 0; }
+  th:last-child { border-radius: 0 10px 0 0; }
+  .good { color: var(--green); font-weight: 700; }
+  .bad { color: var(--red); font-weight: 700; }
+
+  /* checklist */
+  .check li::before { content: "✅"; }
+  .wrong li::before { content: "❌"; }
+  .ok li::before { content: "✔"; color: var(--green); }
+
+  /* code block */
+  pre {
+    background: var(--code-bg); color: var(--code-fg);
+    border-radius: 14px; padding: 20px 24px;
+    font: 14px/1.6 "Consolas", "Cascadia Code", monospace;
+    overflow-x: auto; margin: 10px 0;
+  }
+  .code-title { font: 12px "Consolas", monospace; color: #9aa7b5; margin: 14px 0 0; }
+
+  /* steps */
+  .steps { counter-reset: step; list-style: none; }
+  .steps li {
+    counter-increment: step; padding-left: 0; margin: 12px 0;
+    display: grid; grid-template-columns: 38px 1fr; gap: 14px; align-items: baseline;
+  }
+  .steps li::before {
+    content: counter(step);
+    position: static; width: 38px; height: 38px; line-height: 38px;
+    text-align: center; border-radius: 50%;
+    background: var(--accent); color: #fff; font-weight: 700; font-size: 17px;
+  }
+  .steps b { color: var(--accent-dark); }
+
+  /* cycle diagram */
+  .cycle-wrap { display: flex; flex-direction: column; align-items: center; }
+  .cycle svg { width: min(76vh, 820px); height: auto; display: block; }
+  .cycle-node rect.card { fill: #fff; stroke: var(--accent); stroke-width: 2; rx: 18; }
+  .cycle-node .node-title { fill: var(--accent-dark); font-weight: 700; }
+  .cycle-node .node-strike { fill: var(--gray); }
+  .cycle-node .node-line { fill: var(--red); font-weight: 700; }
+  .cycle .cycle-arrow { fill: none; stroke: var(--accent); stroke-width: 4; stroke-linecap: round; }
+  .cycle .cycle-arrowhead { fill: var(--accent); }
+
+  /* title slide */
+  .title-frame {
+    text-align: center; background:
+      linear-gradient(150deg, rgba(5,141,199,.10), rgba(255,255,255,0) 60%),
+      var(--card);
+  }
+  .title-frame::before { width: 100%; height: 6px; border-radius: 0 0 8px 8px; top: auto; bottom: 0; }
+  .title-frame h1 { font-size: clamp(38px, 6.4vh, 58px); color: var(--accent-dark); }
+  .title-frame .sub { font-size: clamp(18px, 2.8vh, 24px); color: var(--gray); margin-top: 10px; }
+  .title-frame .teacher { font-size: clamp(16px, 2.4vh, 20px); margin-top: 22px; font-weight: 600; }
+  .badge-row { margin-top: 20px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .badge {
+    border: 1px solid var(--accent); color: var(--accent); border-radius: 999px;
+    padding: 7px 16px; font-weight: 600; font-size: 15px; background: #fff;
+  }
+
+  /* nav */
+  .controls { position: fixed; right: 18px; bottom: 14px; z-index: 50; display: flex; gap: 8px; }
+  .ctrl-btn {
+    width: 40px; height: 40px; border-radius: 10px; border: none; cursor: pointer;
+    background: #ffffffdd; color: var(--accent-dark); font-size: 18px; font-weight: 700;
+    box-shadow: 0 6px 16px rgba(0,0,0,.18); backdrop-filter: blur(4px);
+  }
+  .ctrl-btn:hover { background: var(--accent); color: #fff; }
+  .counter { position: fixed; left: 18px; bottom: 14px; z-index: 50;
+    font: 600 13px/38px "Segoe UI", Arial; color: var(--gray);
+    background: #ffffffcc; padding: 0 14px; border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,.12); backdrop-filter: blur(4px);
+  }
+  .progress {
+    position: fixed; left: 0; top: 0; height: 5px; background: var(--accent);
+    z-index: 60; width: 0%; transition: width .25s ease; border-radius: 0 0 4px 0;
+  }
+  .dots { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    z-index: 50; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: 60vw; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; border: none; cursor: pointer;
+    background: #b6c6d6; transition: background .2s, transform .2s; }
+  .dot.active { background: var(--accent); transform: scale(1.35); }
+
+  .foot-note { margin-top: 16px; font-size: 12px; color: var(--gray); }
+
+  @media (max-width: 760px) {
+    .two-col, .two-col.flip { grid-template-columns: 1fr; }
+    .frame { padding: 22px; max-height: 86vh; }
+  }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="deck" id="deck">
+
+  <!-- 0 · Титул -->
+  <section class="slide"><div class="frame title-frame">
+    <h1 id="t-title">Вводное занятие</h1>
+    <div class="badge-row"><span class="badge">Курс «JavaScript»</span><span class="badge">Группа 6310</span><span class="badge">2026</span></div>
+    <div class="teacher">{FIO_prepod}</div>
+  </div></section>
+
+  <!-- 1 · О преподавателе -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Знакомство</span>
+    <div class="two-col">
+      <div>
+        <h1>{FIO_prepod}</h1>
+        <p class="lead">Fullstack-разработчик, 9+ лет: <strong>.NET, React, Angular</strong></p>
+        <ul style="margin-top:14px">
+          <li>Группа и канал связи — Телеграм, WhatsApp, KakaoTalk</li>
+          <li>Курс по <strong>JavaScript</strong>, 1-й семестр 2026</li>
+        </ul>
+      </div>
+      <div class="img-card">
+        <img src="00_intro/photo_2026-09-04_20-26-23.jpg" alt="Путь в разработчики: JS и vibe coding">
+      </div>
+    </div>
+  </div></section>
+
+  <!-- 2 · Структура курса -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Структура курса</span>
+    <h1>JavaScript · группа 6310 · 1-й семестр 2026</h1>
+    <table>
+      <tr><th>Компонент</th><th>Кол-во</th><th>Ак. ч.</th><th>Формат</th></tr>
+      <tr><td>Лекции</td><td>8</td><td>2</td><td>теория + демо-код</td></tr>
+      <tr><td>Лабораторные</td><td>8</td><td>4</td><td>индивидуальные</td></tr>
+      <tr><td>Курсовая работа</td><td>1</td><td>—</td><td>индивидуальный проект</td></tr>
+    </table>
+    <div class="two-col" style="margin-top:22px">
+      <div>
+        <h3>Где публикуются материалы</h3>
+        <ul>
+          <li>Лекции и демо-код — <strong>https://github.com/maksimis/js_6310</strong></li>
+          <li>Лабораторные — <strong>https://github.com/maksimis/js_6310_labs_2026</strong></li>
+          <li>Текущий курс: JS + индивидуальные курсовые (React)</li>
+        </ul>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- 3 · Формат лабораторных работ -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Как устроена сдача</span>
+    <h1>Формат лабораторных работ</h1>
+    <ul>
+      <li>Репозиторий <strong>js_6310_labs_2026</strong> → <strong>форк</strong> для каждого студента</li>
+      <li>Ветка: <code>student-{номер}-lab{N}</code> · решение: <code>solutions/student-{номер}/solution.js</code></li>
+      <li><strong>Ревьюер</strong> — одногруппник: <code>(номер + номер лабы) % кол-во студентов</code></li>
+      <li>Название PR: <code>Lab{N} solution by student{N}</code></li>
+      <li>Сдача: <strong>ветка → PR → правки → защита</strong></li>
+      <li>На защите — объяснить <strong>каждую строку</strong> своего кода</li>
+      <li>Сроки сдачи соблюдаются, но без перенапряжения 😌</li>
+    </ul>
+  </div></section>
+
+  <!-- 4 · Демо-команды -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Практика</span>
+    <h1>Как клонировать и делать лабу</h1>
+    <p class="code-title"># терминал</p>
+    <pre>git clone &lt;url форка&gt; js_6310_labs_2026
+cd js_6310_labs_2026/lab1-js-core
+git checkout -b student-{номер}-lab1
+mkdir solutions/student-{номер}
+cp tasks/lab1-tasks.js solutions/student-{номер}/solution.js
+# выполняем задания...
+node solutions/student-{номер}/solution.js
+git add .
+git commit -m "Lab 1 solution by student {номер}"
+git push origin student-{номер}-lab1</pre>
+  </div></section>
+
+  <!-- 5 · Что нужно для работы -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Подготовка дома</span>
+    <h1>Что нужно для работы</h1>
+    <ul class="ok">
+      <li><strong>GitHub-аккаунт</strong></li>
+      <li><strong>Node.js</strong> (актуальная LTS) — проверка: <code>node -v</code>, <code>npm -v</code></li>
+      <li><strong>Git</strong> — проверка: <code>git --version</code></li>
+      <li><strong>VS Code</strong> + расширения ESLint, Prettier, Git</li>
+    </ul>
+  </div></section>
+
+  <!-- 6 · ИИ в обучении -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">AI-наставник</span>
+    <h1>ИИ — наставник, а не сервис</h1>
+    <div class="two-col" style="align-items:start">
+      <div>
+        <p class="lead">Готовый код от ИИ = <strong>минимальный балл</strong> и провал на защите.</p>
+        <ul>
+          <li>Защита проверяет понимание каждой строки</li>
+          <li>Ревьюер оценивает качество кода</li>
+        </ul>
+      </div>
+      <div class="img-card">
+        <img src="00_intro/image.png" alt="Твит Johnny Ruokokoski: митинг-ноутс, джира-тикет, PR и агент-ревью">
+      </div>
+    </div>
+  </div></section>
+
+  <!-- 7 · Цикл неполноценной сдачи -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Куда не надо уходить</span>
+    <h1>Не «фабрика кода»: замкнутый круг</h1>
+    <div class="cycle-wrap">
+      <svg class="cycle" viewBox="0 0 800 520" role="img" aria-label="Цикл: задания генерирует агент вместо преподавателя, решения — агент вместо студента, проверка — агент">
+        <defs>
+          <marker id="arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="12" markerHeight="12" orient="auto-start-reverse">
+            <path d="M0 0 L12 6 L0 12 z" fill="#058DC7"/>
+          </marker>
+        </defs>
+        <!-- тонкая декоративная окружность -->
+        <circle cx="400" cy="260" r="185" fill="none" stroke="#cfe8f7" stroke-width="3" stroke-dasharray="8 10"/>
+        <!-- дуги-стрелки (задания → решения → проверка → задания) -->
+        <path d="M 428 137 Q 557 170 521 297" class="cycle-arrow" marker-end="url(#arrow)"/>
+        <path d="M 493 346 Q 400 441 307 346" class="cycle-arrow" marker-end="url(#arrow)"/>
+        <path d="M 279 297 Q 243 170 372 137" class="cycle-arrow" marker-end="url(#arrow)"/>
+        <!-- узел 1: Задания -->
+        <g class="cycle-node" transform="translate(400,88)">
+          <rect class="card" x="-115" y="-35" width="230" height="70"/>
+          <text class="node-title" x="0" y="-8" text-anchor="middle" font-size="22">Задания</text>
+          <text class="node-strike" x="-4" y="24" text-anchor="middle" font-size="17">преподаватель</text>
+          <text class="node-line" x="88" y="24" text-anchor="middle" font-size="17">→ агент</text>
+        </g>
+        <!-- узел 2: Решения -->
+        <g class="cycle-node" transform="translate(549,346)">
+          <rect class="card" x="-115" y="-35" width="230" height="70"/>
+          <text class="node-title" x="0" y="-8" text-anchor="middle" font-size="22">Решения</text>
+          <text class="node-strike" x="-22" y="24" text-anchor="middle" font-size="17">студент</text>
+          <text class="node-line" x="58" y="24" text-anchor="middle" font-size="17">→ агент</text>
+        </g>
+        <!-- узел 3: Проверка -->
+        <g class="cycle-node" transform="translate(251,346)">
+          <rect class="card" x="-115" y="-35" width="230" height="70"/>
+          <text class="node-title" x="0" y="-8" text-anchor="middle" font-size="22">Проверка</text>
+          <text class="node-line" x="0" y="24" text-anchor="middle" font-size="17">агент</text>
+        </g>
+      </svg>
+    </div>
+    <p class="lead" style="text-align:center; margin-top:4px">ИИ должен оставаться <strong>наставником</strong>, а не исполнителем за преподавателя и студента.</p>
+  </div></section>
+
+  <!-- 8 · Правила: разрешено -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Правила ИИ</span>
+    <h1>Разрешено ✅</h1>
+    <ul class="check">
+      <li>Объяснять концепции, синтаксис, поведение методов — MDN, лекции <code>js_6310/2025/</code></li>
+      <li>Разбирать по шагам, <strong>как подойти</strong> к заданию (без реализации)</li>
+      <li>Проверять и комментировать <strong>написанный студентом</strong> код: ошибки, краевые случаи</li>
+      <li>Задавать наводящие вопросы, предлагать стратегии тестирования</li>
+      <li>Читать чужой код и объяснять, что он делает</li>
+    </ul>
+  </div></section>
+
+  <!-- 9 · Правила: запрещено -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Правила ИИ</span>
+    <h1>Запрещено ❌</h1>
+    <ul class="wrong">
+      <li>Писать код за студента (полностью или фрагментами), даже «для примера»</li>
+      <li>Давать готовое решение <code>solution.js</code> или отдельных заданий</li>
+      <li>Вставлять в решение конкретные реализации</li>
+      <li>Отвечать кодом на вопрос «как сделать N»</li>
+      <li>Исправлять код студента напрямую</li>
+    </ul>
+  </div></section>
+
+  <!-- 10 · Обучающий алгоритм -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Алгоритм</span>
+    <h1>Обучающий алгоритм · 6 шагов</h1>
+    <p class="muted">Обязателен при любом запросе «реши / помоги / проверь».</p>
+    <ol class="steps">
+      <li><div><b>Понять задание</b> — условие своими словами, входные/выходные данные</div></li>
+      <li><div><b>Выбрать инструменты</b> — какой синтаксис/методы и почему</div></li>
+      <li><div><b>Самостоятельная попытка</b> — писать код самому, до попытки агент не подсказывает</div></li>
+      <li><div><b>Разбор ошибок</b> — наводящие вопросы: «что вернёт функция?», «что при пустом массиве?»</div></li>
+      <li><div><b>Проверка понимания</b> — объяснить, почему работает, и что изменится на других данных</div></li>
+      <li><div><b>Ревью</b> — по чек-листу, затем передать одногруппнику</div></li>
+    </ol>
+  </div></section>
+
+  <!-- 11 · Хорошо vs плохо -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Хорошо vs плохо</span>
+    <h1>Как именно спрашивать ИИ</h1>
+    <div class="two-col" style="grid-template-columns: 1fr 240px; align-items:start">
+      <table>
+        <tr><th>❌ Плохо (запрещено)</th><th>✅ Хорошо (разрешено)</th></tr>
+        <tr><td class="bad">«Напиши функцию, которая...»</td><td class="good">«Как лучше структурировать данные для этой задачи?»</td></tr>
+        <tr><td class="bad">«Сделай фильтр для списка задач»</td><td class="good">«Вот мой фильтр — работает, но не фильтрует по году. Что не так?»</td></tr>
+        <tr><td class="bad">«Исправь ошибку в коде»</td><td class="good">«Ошибка X. Вот что я пробовал. Как подойти к решению?»</td></tr>
+      </table>
+      <div class="img-card">
+        <img src="00_intro/photo_2026-09-04_20-26-12.jpg" alt="Мем: просить «реши за меня» и получать унижение">
+      </div>
+    </div>
+    <p class="foot-note">Правила зафиксированы: README.md репозитория лаб + AGENTS.md / CLAUDE.md.</p>
+  </div></section>
+
+  <!-- 12 · Курсовая: формат -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Курсовая работа</span>
+    <h1>Формат курсовой</h1>
+    <ul>
+      <li>Индивидуальная тема, общая структура — сдача как у лабораторных</li>
+      <li>Стек: <strong>React + TypeScript</strong> (+ Node.js по мере изучения)</li>
+      <li>2 части: репозиторий с кодом + пояснительная записка (на кафедру)</li>
+      <li>В течение семестра согласовывается план поэтапной сдачи</li>
+      <li>Отсутствие работы в течение семестра → <strong>низкая оценка</strong></li>
+      <li>Работа должна быть <strong>работой по программированию</strong>: лендинг или отсутствие логики предметной области — низкая оценка</li>
+      <li>Защита — в конце семестра</li>
+    </ul>
+  </div></section>
+
+  <!-- 13 · Темы курсовых -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Курсовая работа</span>
+    <h1>Порядок назначения тем</h1>
+    <ul>
+      <li>Темы назначаются в начале семестра, каждая — за одним студентом</li>
+      <li>Тему можно <strong>выбрать из списка</strong>, можно <strong>согласовать свою</strong></li>
+    </ul>
+    <div style="margin-top:22px">
+      <h3>Направления тем</h3>
+      <ul>
+        <li>Инструменты и приложения</li>
+        <li>Образование и тренажёры</li>
+        <li>Игры</li>
+        <li>Данные и визуализация</li>
+        <li>Платформы и сервисы</li>
+        <li>AI — чаты, агенты, harness (Node.js)</li>
+      </ul>
+    </div>
+  </div></section>
+
+  <!-- 14 · По итогам курса -->
+  <section class="slide"><div class="frame title-frame">
+    <span class="eyebrow" style="margin-bottom:18px">По итогам курса</span>
+    <h1>Вы получите</h1>
+    <p class="lead" style="margin-top:16px">Знания <strong>JS, TS, React, Node.js</strong> и немного вёрстки</p>
+    <div class="badge-row">
+      <span class="badge">Оформленный GitHub с проектами</span>
+    </div>
+    <ul style="text-align:left; margin:18px auto 0; max-width:520px">
+      <li>2–3 проекта из лабораторных работ</li>
+      <li>Курсовая работа</li>
+    </ul>
+  </div></section>
+
+</div>
+
+<div class="counter" id="counter"></div>
+<div class="controls">
+  <button class="ctrl-btn" id="prev" title="Назад">‹</button>
+  <button class="ctrl-btn" id="next" title="Вперёд">›</button>
+</div>
+<div class="dots" id="dots"></div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll(".slide"));
+  let cur = 0;
+  const counter = document.getElementById("counter");
+  const progress = document.getElementById("progress");
+  const dotsWrap = document.getElementById("dots");
+  const dots = slides.map((_, i) => {
+    const b = document.createElement("button");
+    b.className = "dot"; b.title = "Слайд " + (i + 1);
+    b.addEventListener("click", () => go(i));
+    dotsWrap.appendChild(b);
+    return b;
+  });
+  function go(i) {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, k) => s.classList.toggle("active", k === cur));
+    dots.forEach((d, k) => d.classList.toggle("active", k === cur));
+    counter.textContent = (cur + 1) + " / " + slides.length;
+    progress.style.width = ((cur + 1) / slides.length * 100) + "%";
+    const fr = slides[cur].querySelector && slides[cur].querySelector(".frame");
+    if (fr) fr.scrollTop = 0;
+  }
+  const next = () => go(cur + 1);
+  const prev = () => go(cur - 1);
+  document.getElementById("next").addEventListener("click", next);
+  document.getElementById("prev").addEventListener("click", prev);
+  document.addEventListener("keydown", e => {
+    if (["ArrowRight", "ArrowDown", "PageDown", " ", "Enter"].includes(e.key)) { e.preventDefault(); next(); }
+    if (["ArrowLeft", "ArrowUp", "PageUp"].includes(e.key)) { e.preventDefault(); prev(); }
+    if (e.key === "Home") go(0);
+    if (e.key === "End") go(slides.length - 1);
+  });
+
+  /* клик ЛКМ по пустому месту листает вперёд */
+  document.addEventListener("click", e => {
+    if (e.button !== 0) return;
+    const tag = (e.target.tagName || "").toLowerCase();
+    if (["button", "a"].includes(tag)) return;          // кнопки/ссылки — мимо
+    if (e.target.closest(".controls, .dots, .counter")) return;
+    if (e.target.closest(".frame")) {
+      // клик по контенту: не листаем, если удерживали/выделяли текст
+      if (window.getSelection && window.getSelection().toString()) return;
+    }
+    next();
+  });
+
+  /* скролл листает слайды */
+  let wheelLock = false;
+  document.addEventListener("wheel", e => {
+    const dy = e.deltaY;
+    const dx = e.deltaX;
+    const absD = Math.abs(dy) > Math.abs(dx) ? dy : dx;
+    if (absD === 0) return;
+
+    // если у текущего слайда рамка переполнена — скроллим её, слайды не листаем
+    const frame = slides[cur].querySelector && slides[cur].querySelector(".frame");
+    if (frame && frame.scrollHeight > frame.clientHeight + 2) {
+      const atBottom = frame.scrollTop + frame.clientHeight >= frame.scrollHeight - 2;
+      const atTop = frame.scrollTop <= 2;
+      const down = absD > 0;
+      if ((down && !atBottom) || (!down && !atTop)) {
+        frame.scrollTop += absD;
+        return;
+      }
+    }
+
+    if (wheelLock) return;
+    e.preventDefault();
+    wheelLock = true;
+    absD > 0 ? next() : prev();
+    setTimeout(() => { wheelLock = false; }, 700);
+  }, { passive: false });
+
+  go(0);
+</script>
+</body>
+</html>
