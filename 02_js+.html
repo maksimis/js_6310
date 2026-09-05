@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Лекция 2 — Функции и объекты · Группа 6310</title>
+<style>
+  :root {
+    --accent: #058DC7;
+    --accent-dark: #0472a0;
+    --accent-soft: #e3f2fb;
+    --dark: #20242b;
+    --gray: #5b6470;
+    --bg: #f2f5f8;
+    --card: #ffffff;
+    --green: #1e8e3e;
+    --red: #c0392b;
+    --amber: #b7791f;
+    --code-bg: #f6f8fa;
+    --code-fg: #20242b;
+    --code-border: #dce3ea;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: radial-gradient(1200px 700px at 80% -10%, #dbeef9 0%, var(--bg) 55%);
+    color: var(--dark);
+    overflow: hidden;
+  }
+
+  /* ---------- slide deck ---------- */
+  .deck { height: 100%; position: relative; }
+  .slide {
+    position: absolute; inset: 0;
+    display: none;
+    padding: 4vh 4vw;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .slide.active { display: flex; }
+
+  .frame {
+    width: 100%; max-width: 1180px;
+    max-height: 92vh;
+    overflow: auto;
+    background: var(--card);
+    border-radius: 22px;
+    box-shadow: 0 24px 60px rgba(20, 40, 70, .14), 0 3px 10px rgba(20, 40, 70, .08);
+    padding: clamp(24px, 4.4vh, 54px) clamp(24px, 4.4vw, 60px);
+    position: relative;
+  }
+  .frame::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 6px; background: linear-gradient(180deg, var(--accent), #5ec3ef);
+    border-radius: 0 8px 8px 0;
+  }
+
+  .eyebrow {
+    display: inline-block;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--accent);
+    background: var(--accent-soft);
+    padding: 5px 12px; border-radius: 999px;
+    margin-bottom: 14px;
+  }
+  h1 { font-size: clamp(30px, 4.6vh, 46px); line-height: 1.15; margin-bottom: 6px; }
+  h2 { font-size: clamp(26px, 3.8vh, 36px); line-height: 1.2; margin-bottom: 18px; color: var(--accent-dark); }
+  h3 { font-size: 20px; margin: 20px 0 8px; color: var(--dark); }
+  p, li { font-size: clamp(15px, 2.3vh, 20px); line-height: 1.55; }
+  ul, ol { list-style: none; }
+  li { position: relative; padding-left: 26px; margin: 7px 0; }
+  li::before {
+    content: "▸"; position: absolute; left: 0; top: 0;
+    color: var(--accent); font-weight: 700;
+  }
+  .muted { color: var(--gray); }
+  .lead { font-size: clamp(16px, 2.6vh, 22px); margin-top: 6px; }
+  strong { color: var(--accent-dark); }
+
+  .two-col { display: grid; grid-template-columns: 1fr minmax(240px, 340px); gap: 28px; align-items: center; }
+  .two-col.flip { grid-template-columns: minmax(240px, 340px) 1fr; }
+  .img-card img { width: 100%; height: auto; border-radius: 14px; box-shadow: 0 10px 26px rgba(0,0,0,.16); display: block; }
+
+  /* table */
+  table { border-collapse: collapse; width: 100%; margin: 6px 0; font-size: clamp(15px, 2.2vh, 19px); }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid #e4e9ef; }
+  th { background: var(--accent); color: #fff; font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #f6f9fc; }
+  th:first-child { border-radius: 10px 0 0 0; }
+  th:last-child { border-radius: 0 10px 0 0; }
+  .good { color: var(--green); font-weight: 700; }
+  .bad { color: var(--red); font-weight: 700; }
+
+  /* checklist */
+  .check li::before { content: "✅"; }
+  .wrong li::before { content: "❌"; }
+  .ok li::before { content: "✔"; color: var(--green); }
+
+  /* code block */
+  pre {
+    background: var(--code-bg); color: var(--code-fg);
+    border: 1px solid var(--code-border);
+    border-radius: 14px; padding: 20px 24px;
+    font: 14px/1.6 "Consolas", "Cascadia Code", monospace;
+    overflow-x: auto; margin: 10px 0;
+  }
+  .code-title { font: 12px "Consolas", monospace; color: var(--gray); margin: 14px 0 0; }
+
+  /* steps */
+  .steps { counter-reset: step; list-style: none; }
+  .steps li {
+    counter-increment: step; padding-left: 0; margin: 12px 0;
+    display: grid; grid-template-columns: 38px 1fr; gap: 14px; align-items: baseline;
+  }
+  .steps li::before {
+    content: counter(step);
+    position: static; width: 38px; height: 38px; line-height: 38px;
+    text-align: center; border-radius: 50%;
+    background: var(--accent); color: #fff; font-weight: 700; font-size: 17px;
+  }
+  .steps b { color: var(--accent-dark); }
+
+  /* cycle diagram */
+  .cycle-wrap { display: flex; flex-direction: column; align-items: center; }
+  .cycle svg { width: min(76vh, 820px); height: auto; display: block; }
+  .cycle-node rect.card { fill: #fff; stroke: var(--accent); stroke-width: 2; rx: 18; }
+  .cycle-node .node-title { fill: var(--accent-dark); font-weight: 700; }
+  .cycle-node .node-strike { fill: var(--gray); }
+  .cycle-node .node-line { fill: var(--red); font-weight: 700; }
+  .cycle .cycle-arrow { fill: none; stroke: var(--accent); stroke-width: 4; stroke-linecap: round; }
+  .cycle .cycle-arrowhead { fill: var(--accent); }
+
+  /* title slide */
+  .title-frame {
+    text-align: center; background:
+      linear-gradient(150deg, rgba(5,141,199,.10), rgba(255,255,255,0) 60%),
+      var(--card);
+  }
+  .title-frame::before { width: 100%; height: 6px; border-radius: 0 0 8px 8px; top: auto; bottom: 0; }
+  .title-frame h1 { font-size: clamp(38px, 6.4vh, 58px); color: var(--accent-dark); }
+  .title-frame .sub { font-size: clamp(18px, 2.8vh, 24px); color: var(--gray); margin-top: 10px; }
+  .title-frame .teacher { font-size: clamp(16px, 2.4vh, 20px); margin-top: 22px; font-weight: 600; }
+  .badge-row { margin-top: 20px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .badge {
+    border: 1px solid var(--accent); color: var(--accent); border-radius: 999px;
+    padding: 7px 16px; font-weight: 600; font-size: 15px; background: #fff;
+  }
+
+  /* nav */
+  .controls { position: fixed; right: 18px; bottom: 14px; z-index: 50; display: flex; gap: 8px; }
+  .ctrl-btn {
+    width: 40px; height: 40px; border-radius: 10px; border: none; cursor: pointer;
+    background: #ffffffdd; color: var(--accent-dark); font-size: 18px; font-weight: 700;
+    box-shadow: 0 6px 16px rgba(0,0,0,.18); backdrop-filter: blur(4px);
+  }
+  .ctrl-btn:hover { background: var(--accent); color: #fff; }
+  .counter { position: fixed; left: 18px; bottom: 14px; z-index: 50;
+    font: 600 13px/38px "Segoe UI", Arial; color: var(--gray);
+    background: #ffffffcc; padding: 0 14px; border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,.12); backdrop-filter: blur(4px);
+  }
+  .progress {
+    position: fixed; left: 0; top: 0; height: 5px; background: var(--accent);
+    z-index: 60; width: 0%; transition: width .25s ease; border-radius: 0 0 4px 0;
+  }
+  .dots { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    z-index: 50; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: 60vw; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; border: none; cursor: pointer;
+    background: #b6c6d6; transition: background .2s, transform .2s; }
+  .dot.active { background: var(--accent); transform: scale(1.35); }
+
+  .foot-note { margin-top: 16px; font-size: 12px; color: var(--gray); }
+
+  @media (max-width: 760px) {
+    .two-col, .two-col.flip { grid-template-columns: 1fr; }
+    .frame { padding: 22px; max-height: 86vh; }
+  }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="deck" id="deck">
+  <!-- 0 · Титул -->
+  <section class="slide"><div class="frame title-frame">
+    <h1 id="t-title">Тема 2 · Функции и объекты в JavaScript</h1>
+    <div class="badge-row"><span class="badge">Курс «JavaScript»</span><span class="badge">Группа 6310</span><span class="badge">2026</span></div>
+    <div class="teacher">{FIO_prepod}</div>  </div></section>
+
+  <!-- 1 · Function Declaration -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Функции</span>
+    <h1>Function Declaration</h1>
+    <p class="code-title">1.js</p>
+    <pre>// объявление функции: function + имя + параметры + тело
+function greetUser(name, timeOfDay) {
+    console.log(`Добрый ${timeOfDay}, ${name}!`);
+}
+
+// функция — это «переиспользуемый блок»: вызываем много раз
+greetUser("Анна", "вечер");   // Добрый вечер, Анна!
+greetUser("Борис", "день");   // Добрый день, Борис!</pre>
+  </div></section>
+
+  <!-- 2 · return -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Функции</span>
+    <h1>return</h1>
+    <p class="code-title">2.js</p>
+    <pre>function sum(a, b) {
+    const result = a + b;
+    return result;                 // возвращаем результат
+    console.log("Этот код не выполнится"); // недостижимый код
+}
+
+let total = sum(5, 3); // результат записывается в total
+console.log(total);    // 8
+
+// без return функция возвращает undefined</pre>
+  </div></section>
+
+  <!-- 3 · Function Expression -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Функции</span>
+    <h1>Function Expression и стрелочные</h1>
+    <p class="code-title">3.js</p>
+    <pre>// Function Expression — функция присваивается переменной
+const sayHello = function(name) {
+    return `Hello, ${name}`;
+};
+
+// стрелочная функция (полный вариант)
+const sayHelloAgain = (name) =&gt; {
+    return `Hello again, ${name}`;
+};
+
+// стрелочная функция (сокращённый вариант)
+const double = n =&gt; n * 2; // return подразумевается</pre>
+    <p class="foot-note">Стрелочные функции — основной стиль курса.</p>  </div></section>
+
+  <!-- 4 · Области видимости -->
+  <section class="slide"><div class="frame">
+    <div class="two-col" style="align-items:start">
+      <div>
+<h1>Области видимости</h1>
+    <p class="code-title">4.js</p>
+    <pre>let globalVar = "Я глобальная";
+
+function myFunction() {
+    let localVar = "Я локальная";
+    console.log(globalVar); // OK — изнутри видны внешние
+    console.log(localVar);  // OK
+}
+
+console.log(globalVar);   // OK
+// console.log(localVar); // ОШИБКА! снаружи не видна</pre>
+
+      </div>
+      <div class="img-card">
+        <img src="02_js+/slide5_0.png" alt="Мем про замену/область видимости">
+      </div>
+    </div>
+  </div></section>
+
+  <!-- 5 · Замыкания -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Функции</span>
+    <h1>Замыкания</h1>
+    <p class="code-title">5.js</p>
+    <pre>function createCounter() {
+    let count = 0; // эта переменная — «приватная»
+    return function() {
+        count++;       // функция «запоминает» окружение создания
+        return count;
+    };
+}
+
+const counter = createCounter();
+counter(); // 1
+counter(); // 2 — прямой доступ к count извне недоступен</pre>
+    <p class="foot-note">Замыкание = функция + её лексическое окружение.</p>  </div></section>
+
+  <!-- 6 · Каррирование -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Функции</span>
+    <h1>Каррирование</h1>
+    <p class="code-title">6.js</p>
+    <pre>function curriedMultiply(a) {
+    return function(b) {
+        return function(c) {
+            return a * b * c;
+        };
+    };
+}
+
+curriedMultiply(2)(3)(4); // 24
+
+// специализированная функция через замыкание
+const multiplyByTwo = curriedMultiply(2);
+multiplyByTwo(3)(4); // 24</pre>
+  </div></section>
+
+  <!-- 7 · Объекты -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Объекты</span>
+    <h1>Объект-литерал</h1>
+    <p class="code-title">7.js</p>
+    <pre>const user = {
+    name: "Иван",   // свойство
+    age: 25,
+    isStudent: true,
+    sayHi: function() {  // метод (свойство-функция)
+        console.log(`Привет, меня зовут ${this.name}`);
+    }
+};
+
+user.sayHi(); // Привет, меня зовут Иван</pre>
+  </div></section>
+
+  <!-- 8 · Свойства объектов -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Объекты</span>
+    <h1>Работа со свойствами</h1>
+    <p class="code-title">8.js</p>
+    <pre>const book = {
+    title: "JavaScript для чайников",
+    author: "Джон Доу"
+};
+
+book.title       // через точку
+book['author']   // через скобки
+let key = 'title';
+book[key]        // ключ в переменной
+
+book.title = "Современный JavaScript"; // изменить
+book.pages = 345;                      // добавить
+delete book.author;                    // удалить</pre>
+  </div></section>
+
+  <!-- 9 · Классы -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">ООП</span>
+    <h1>Классы — «чертёж» объектов</h1>
+    <p class="code-title">9.js</p>
+    <pre>class User {
+    constructor(name, age, isAdmin = false) {
+        this.name = name;
+        this.age = age;
+        this.isAdmin = isAdmin;
+    }
+    greet() {
+        console.log(`Привет, меня зовут ${this.name}`);
+    }
+}
+
+const user3 = new User("Анна", 25);        // isAdmin по умолчанию
+const user4 = new User("Борис", 30, true);
+user3.greet();   // Привет, меня зовут Анна
+console.log(user3 instanceof User);        // true</pre>
+    <p class="foot-note">Классы — синтаксический сахар над прототипами.</p>  </div></section>
+
+  <!-- 10 · Геттеры/сеттеры/статика -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">ООП</span>
+    <h1>Геттеры, сеттеры, статика</h1>
+    <p class="code-title">10.js</p>
+    <pre>class User {
+    constructor(firstName, lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+    get fullName() {              // вызывается как свойство
+        return `${this.firstName} ${this.lastName}`;
+    }
+    set fullName(newValue) {      // при присваивании
+        [this.firstName, this.lastName] = newValue.split(' ');
+    }
+    static createGuest() {        // вызов через имя класса
+        return new User("Гость", "Анонимный");
+    }
+}
+
+user.fullName        // "Иван Петров"  (геттер, без скобок!)
+user.fullName = "Алексей Сидоров"; // сеттер
+User.createGuest();                // статический метод</pre>
+  </div></section>
+
+  <!-- 11 · Наследование -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">ООП</span>
+    <h1>Наследование</h1>
+    <p class="code-title">11.js</p>
+    <pre>class Animal {
+    constructor(name) {
+        this.name = name;
+        this.speed = 0;
+    }
+    run(speed) {
+        this.speed = speed;
+        console.log(`${this.name} бежит со скоростью ${this.speed}.`);
+    }
+}
+
+class Cat extends Animal {   // extends — наследует от Animal
+    constructor(name, owner) {
+        super(name);         // super() — конструктор родителя
+        this.owner = owner;
+    }
+    meow() { console.log(`${this.name} говорит Мяу!`); }
+    run(speed) {             // переопределение метода
+        super.run(speed * 2);
+        console.log("И делает это изящно!");
+    }
+}
+
+const myCat = new Cat("Барсик", "Мария");
+myCat.meow();   // Барсик говорит Мяу!
+myCat.run(5);   // Барсик бежит со скоростью 10. И делает это изящно!</pre>
+  </div></section>
+
+  <!-- 12 · Массивы -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Массивы</span>
+    <h1>Массивы — основа</h1>
+    <p class="code-title">12.js</p>
+    <pre>const fruits = ['Яблоко', 'Апельсин', 'Слива']; // создание
+fruits[0]      // 'Яблоко'  (индекс с 0)
+fruits.length  // 3
+
+fruits[2] = 'Груша';  // изменить элемент
+fruits[3] = 'Лимон';  // добавить элемент
+
+// в массиве могут быть элементы разных типов
+const mixed = [1, 'Hello', true, {name: 'Bob'}, null];</pre>
+  </div></section>
+
+  <!-- 13 · Конец/начало -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Массивы</span>
+    <h1>push / pop / shift / unshift</h1>
+    <p class="code-title">13.js</p>
+    <pre>const companies = ['Apple', 'Google'];
+
+companies.push('Amazon', 'Microsoft');
+// ['Apple', 'Google', 'Amazon', 'Microsoft']
+
+let last = companies.pop();   // убрали 'Microsoft'
+let first = companies.shift();// убрали 'Apple'
+
+companies.unshift('Tesla');
+// ['Tesla', 'Google', 'Amazon']</pre>
+  </div></section>
+
+  <!-- 14 · Циклы -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Массивы</span>
+    <h1>for и for…of</h1>
+    <p class="code-title">14.js</p>
+    <pre>const fruits = ['apple', 'banana', 'orange'];
+
+// классический for — когда нужен индекс
+for (let i = 0; i &lt; fruits.length; i++) {
+    console.log(`${i}: ${fruits[i]}`);
+}
+
+// for...of — когда нужен только элемент
+for (let fruit of fruits) {
+    console.log(fruit);
+}</pre>
+  </div></section>
+
+  <!-- 15 · forEach и map -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Методы массивов</span>
+    <h1>forEach и map</h1>
+    <p class="code-title">15-16.js</p>
+    <pre>// forEach — итерация, ничего не возвращает
+fruits.forEach((fruit, index) =&gt; {
+    console.log(`${index + 1}. ${fruit}`);
+});
+
+// map — ВОЗВРАЩАЕТ новый массив той же длины, не мутирует
+const doubled = numbers.map(n =&gt; n * 2);
+// [2, 4, 6, 8, 10]
+
+// map для массива объектов
+const userObjects = users.map((name, index) =&gt; ({ id: index + 1, name }));
+// [{id: 1, name: 'Alice'}, {id: 2, name: 'Bob'}, ...]</pre>
+  </div></section>
+
+  <!-- 16 · filter -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Методы массивов</span>
+    <h1>filter</h1>
+    <p class="code-title">17.js</p>
+    <pre>// фильтрация чётных чисел
+const evenNumbers = numbers.filter(n =&gt; n % 2 === 0);
+// [2, 4, 6, 8, 10]
+
+// фильтрация по длине строки
+const words = ['apple', 'banana', 'kiwi', 'orange', 'pear'];
+const longWords = words.filter(word =&gt; word.length &gt; 4);
+// ['apple', 'banana', 'orange']</pre>
+  </div></section>
+
+  <!-- 17 · reduce -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Методы массивов</span>
+    <h1>reduce — аккумуляция</h1>
+    <p class="code-title">18.js</p>
+    <pre>// сумма
+const sum = numbers.reduce((acc, n) =&gt; acc + n, 0); // 15
+
+// подсчёт количества — аккумулятор-объект
+const count = fruits.reduce((acc, fruit) =&gt; {
+    acc[fruit] = (acc[fruit] || 0) + 1;
+    return acc;
+}, {});
+// {apple: 3, banana: 2, orange: 1}
+
+// максимум
+const max = numbers.reduce((acc, n) =&gt; Math.max(acc, n), -Infinity); // 5</pre>
+  </div></section>
+
+  <!-- 18 · Цепочки -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Методы массивов</span>
+    <h1>Цепочки методов</h1>
+    <p class="code-title">19.js</p>
+    <pre>const expensive = products
+    .filter(p =&gt; p.category === 'electronics')
+    .filter(p =&gt; p.price &gt; 600)
+    .map(p =&gt; ({ name: p.name.toUpperCase(), price: p.price * 1.2 }))
+    .sort((a, b) =&gt; b.price - a.price); // по убыванию цены
+
+// каждый шаг возвращает массив → можно продолжать цепочку</pre>
+  </div></section>
+
+  <!-- 19 · find/some/every/sort -->
+  <section class="slide"><div class="frame">
+    <div class="two-col" style="align-items:start">
+      <div>
+<h1>find / some / every / sort</h1>
+    <p class="code-title">20.js</p>
+    <pre>numbers.find(n =&gt; n % 2 === 0);   // 2 — первый чётный
+numbers.some(n =&gt; n &lt; 0);         // false — есть ли хоть один
+numbers.every(n =&gt; n &gt; 0);        // true — все положительные
+
+const sorted = [...unsorted].sort((a, b) =&gt; a - b);
+// sort МУТИРУЕТ исходный массив → копируем через [...arr]</pre>
+
+      </div>
+      <div class="img-card">
+        <img src="02_js+/slide27_0.png" alt="Мем: скопировал код из урока — и он не работает">
+      </div>
+    </div>
+  </div></section>
+
+</div>
+
+<div class="counter" id="counter"></div>
+<div class="controls">
+  <button class="ctrl-btn" id="prev" title="Назад">‹</button>
+  <button class="ctrl-btn" id="next" title="Вперёд">›</button>
+</div>
+<div class="dots" id="dots"></div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll(".slide"));
+  let cur = 0;
+  const counter = document.getElementById("counter");
+  const progress = document.getElementById("progress");
+  const dotsWrap = document.getElementById("dots");
+  const dots = slides.map((_, i) => {
+    const b = document.createElement("button");
+    b.className = "dot"; b.title = "Слайд " + (i + 1);
+    b.addEventListener("click", () => go(i));
+    dotsWrap.appendChild(b);
+    return b;
+  });
+  function go(i) {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, k) => s.classList.toggle("active", k === cur));
+    dots.forEach((d, k) => d.classList.toggle("active", k === cur));
+    counter.textContent = (cur + 1) + " / " + slides.length;
+    progress.style.width = ((cur + 1) / slides.length * 100) + "%";
+    const fr = slides[cur].querySelector && slides[cur].querySelector(".frame");
+    if (fr) fr.scrollTop = 0;
+  }
+  const next = () => go(cur + 1);
+  const prev = () => go(cur - 1);
+  document.getElementById("next").addEventListener("click", next);
+  document.getElementById("prev").addEventListener("click", prev);
+  document.addEventListener("keydown", e => {
+    if (["ArrowRight", "ArrowDown", "PageDown", " ", "Enter"].includes(e.key)) { e.preventDefault(); next(); }
+    if (["ArrowLeft", "ArrowUp", "PageUp"].includes(e.key)) { e.preventDefault(); prev(); }
+    if (e.key === "Home") go(0);
+    if (e.key === "End") go(slides.length - 1);
+  });
+
+  /* клик ЛКМ по пустому месту листает вперёд */
+  document.addEventListener("click", e => {
+    if (e.button !== 0) return;
+    const tag = (e.target.tagName || "").toLowerCase();
+    if (["button", "a"].includes(tag)) return;          // кнопки/ссылки — мимо
+    if (e.target.closest(".controls, .dots, .counter")) return;
+    if (e.target.closest(".frame")) {
+      // клик по контенту: не листаем, если удерживали/выделяли текст
+      if (window.getSelection && window.getSelection().toString()) return;
+    }
+    next();
+  });
+
+  /* скролл листает слайды */
+  let wheelLock = false;
+  document.addEventListener("wheel", e => {
+    const dy = e.deltaY;
+    const dx = e.deltaX;
+    const absD = Math.abs(dy) > Math.abs(dx) ? dy : dx;
+    if (absD === 0) return;
+
+    // если у текущего слайда рамка переполнена — скроллим её, слайды не листаем
+    const frame = slides[cur].querySelector && slides[cur].querySelector(".frame");
+    if (frame && frame.scrollHeight > frame.clientHeight + 2) {
+      const atBottom = frame.scrollTop + frame.clientHeight >= frame.scrollHeight - 2;
+      const atTop = frame.scrollTop <= 2;
+      const down = absD > 0;
+      if ((down && !atBottom) || (!down && !atTop)) {
+        frame.scrollTop += absD;
+        return;
+      }
+    }
+
+    if (wheelLock) return;
+    e.preventDefault();
+    wheelLock = true;
+    absD > 0 ? next() : prev();
+    setTimeout(() => { wheelLock = false; }, 700);
+  }, { passive: false });
+
+  go(0);
+</script>
+</body>
+</html>

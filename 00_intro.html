@@ -16,8 +16,9 @@
     --green: #1e8e3e;
     --red: #c0392b;
     --amber: #b7791f;
-    --code-bg: #17181c;
-    --code-fg: #e6e6e6;
+    --code-bg: #f6f8fa;
+    --code-fg: #20242b;
+    --code-border: #dce3ea;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
@@ -101,11 +102,12 @@
   /* code block */
   pre {
     background: var(--code-bg); color: var(--code-fg);
+    border: 1px solid var(--code-border);
     border-radius: 14px; padding: 20px 24px;
     font: 14px/1.6 "Consolas", "Cascadia Code", monospace;
     overflow-x: auto; margin: 10px 0;
   }
-  .code-title { font: 12px "Consolas", monospace; color: #9aa7b5; margin: 14px 0 0; }
+  .code-title { font: 12px "Consolas", monospace; color: var(--gray); margin: 14px 0 0; }
 
   /* steps */
   .steps { counter-reset: step; list-style: none; }
