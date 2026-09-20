@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Тема 11 · Basic UI · Группа 6310</title>
+<style>
+  :root {
+    --accent: #058DC7;
+    --accent-dark: #0472a0;
+    --accent-soft: #e3f2fb;
+    --dark: #20242b;
+    --gray: #5b6470;
+    --bg: #f2f5f8;
+    --card: #ffffff;
+    --green: #1e8e3e;
+    --red: #c0392b;
+    --amber: #b7791f;
+    --code-bg: #f6f8fa;
+    --code-fg: #20242b;
+    --code-border: #dce3ea;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: radial-gradient(1200px 700px at 80% -10%, #dbeef9 0%, var(--bg) 55%);
+    color: var(--dark);
+    overflow: hidden;
+  }
+
+  /* ---------- slide deck ---------- */
+  .deck { height: 100%; position: relative; }
+  .slide {
+    position: absolute; inset: 0;
+    display: none;
+    padding: 4vh 4vw;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .slide.active { display: flex; }
+
+  .frame {
+    width: 100%; max-width: 1180px;
+    max-height: 92vh;
+    overflow: auto;
+    background: var(--card);
+    border-radius: 22px;
+    box-shadow: 0 24px 60px rgba(20, 40, 70, .14), 0 3px 10px rgba(20, 40, 70, .08);
+    padding: clamp(24px, 4.4vh, 54px) clamp(24px, 4.4vw, 60px);
+    position: relative;
+  }
+  .frame::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 6px; background: linear-gradient(180deg, var(--accent), #5ec3ef);
+    border-radius: 0 8px 8px 0;
+  }
+
+  .eyebrow {
+    display: inline-block;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--accent);
+    background: var(--accent-soft);
+    padding: 5px 12px; border-radius: 999px;
+    margin-bottom: 14px;
+  }
+  h1 { font-size: clamp(30px, 4.6vh, 46px); line-height: 1.15; margin-bottom: 6px; }
+  h2 { font-size: clamp(26px, 3.8vh, 36px); line-height: 1.2; margin-bottom: 18px; color: var(--accent-dark); }
+  h3 { font-size: 20px; margin: 20px 0 8px; color: var(--dark); }
+  p, li { font-size: clamp(15px, 2.3vh, 20px); line-height: 1.55; }
+  ul, ol { list-style: none; }
+  li { position: relative; padding-left: 26px; margin: 7px 0; }
+  li::before {
+    content: "▸"; position: absolute; left: 0; top: 0;
+    color: var(--accent); font-weight: 700;
+  }
+  .muted { color: var(--gray); }
+  .lead { font-size: clamp(16px, 2.6vh, 22px); margin-top: 6px; }
+  strong { color: var(--accent-dark); }
+
+  .two-col { display: grid; grid-template-columns: 1fr minmax(240px, 340px); gap: 28px; align-items: center; }
+  .two-col.flip { grid-template-columns: minmax(240px, 340px) 1fr; }
+  .img-card img { width: 100%; height: auto; border-radius: 14px; box-shadow: 0 10px 26px rgba(0,0,0,.16); display: block; }
+
+  /* table */
+  table { border-collapse: collapse; width: 100%; margin: 6px 0; font-size: clamp(15px, 2.2vh, 19px); }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid #e4e9ef; }
+  th { background: var(--accent); color: #fff; font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #f6f9fc; }
+  th:first-child { border-radius: 10px 0 0 0; }
+  th:last-child { border-radius: 0 10px 0 0; }
+  .good { color: var(--green); font-weight: 700; }
+  .bad { color: var(--red); font-weight: 700; }
+
+  /* checklist */
+  .check li::before { content: "✅"; }
+  .wrong li::before { content: "❌"; }
+  .ok li::before { content: "✔"; color: var(--green); }
+
+  /* code block */
+  pre {
+    background: var(--code-bg); color: var(--code-fg);
+    border: 1px solid var(--code-border);
+    border-radius: 14px; padding: 20px 24px;
+    font: 14px/1.6 "Consolas", "Cascadia Code", monospace;
+    overflow-x: auto; margin: 10px 0;
+  }
+  .code-title { font: 12px "Consolas", monospace; color: var(--gray); margin: 14px 0 0; }
+
+  /* steps */
+  .steps { counter-reset: step; list-style: none; }
+  .steps li {
+    counter-increment: step; padding-left: 0; margin: 12px 0;
+    display: grid; grid-template-columns: 38px 1fr; gap: 14px; align-items: baseline;
+  }
+  .steps li::before {
+    content: counter(step);
+    position: static; width: 38px; height: 38px; line-height: 38px;
+    text-align: center; border-radius: 50%;
+    background: var(--accent); color: #fff; font-weight: 700; font-size: 17px;
+  }
+  .steps b { color: var(--accent-dark); }
+
+  /* cycle diagram */
+  .cycle-wrap { display: flex; flex-direction: column; align-items: center; }
+  .cycle svg { width: min(76vh, 820px); height: auto; display: block; }
+  .cycle-node rect.card { fill: #fff; stroke: var(--accent); stroke-width: 2; rx: 18; }
+  .cycle-node .node-title { fill: var(--accent-dark); font-weight: 700; }
+  .cycle-node .node-strike { fill: var(--gray); }
+  .cycle-node .node-line { fill: var(--red); font-weight: 700; }
+  .cycle .cycle-arrow { fill: none; stroke: var(--accent); stroke-width: 4; stroke-linecap: round; }
+  .cycle .cycle-arrowhead { fill: var(--accent); }
+
+  /* title slide */
+  .title-frame {
+    text-align: center; background:
+      linear-gradient(150deg, rgba(5,141,199,.10), rgba(255,255,255,0) 60%),
+      var(--card);
+  }
+  .title-frame::before { width: 100%; height: 6px; border-radius: 0 0 8px 8px; top: auto; bottom: 0; }
+  .title-frame h1 { font-size: clamp(38px, 6.4vh, 58px); color: var(--accent-dark); }
+  .title-frame .sub { font-size: clamp(18px, 2.8vh, 24px); color: var(--gray); margin-top: 10px; }
+  .title-frame .teacher { font-size: clamp(16px, 2.4vh, 20px); margin-top: 22px; font-weight: 600; }
+  .badge-row { margin-top: 20px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .badge {
+    border: 1px solid var(--accent); color: var(--accent); border-radius: 999px;
+    padding: 7px 16px; font-weight: 600; font-size: 15px; background: #fff;
+  }
+
+  /* nav */
+  .controls { position: fixed; right: 18px; bottom: 14px; z-index: 50; display: flex; gap: 8px; }
+  .ctrl-btn {
+    width: 40px; height: 40px; border-radius: 10px; border: none; cursor: pointer;
+    background: #ffffffdd; color: var(--accent-dark); font-size: 18px; font-weight: 700;
+    box-shadow: 0 6px 16px rgba(0,0,0,.18); backdrop-filter: blur(4px);
+  }
+  .ctrl-btn:hover { background: var(--accent); color: #fff; }
+  .counter { position: fixed; left: 18px; bottom: 14px; z-index: 50;
+    font: 600 13px/38px "Segoe UI", Arial; color: var(--gray);
+    background: #ffffffcc; padding: 0 14px; border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,.12); backdrop-filter: blur(4px);
+  }
+  .progress {
+    position: fixed; left: 0; top: 0; height: 5px; background: var(--accent);
+    z-index: 60; width: 0%; transition: width .25s ease; border-radius: 0 0 4px 0;
+  }
+  .dots { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    z-index: 50; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: 60vw; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; border: none; cursor: pointer;
+    background: #b6c6d6; transition: background .2s, transform .2s; }
+  .dot.active { background: var(--accent); transform: scale(1.35); }
+
+  .foot-note { margin-top: 16px; font-size: 12px; color: var(--gray); }
+
+  @media (max-width: 760px) {
+    .two-col, .two-col.flip { grid-template-columns: 1fr; }
+    .frame { padding: 22px; max-height: 86vh; }
+  }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="deck" id="deck">
+    <section class="slide"><div class="frame title-frame">
+    <h1 id="t-title">Тема 11 · Basic UI — лекция-квиз</h1>
+    <div class="badge-row"><span class="badge">Курс «JavaScript»</span><span class="badge">Группа 6310</span><span class="badge">2026</span></div>
+    <div class="teacher">{FIO_prepod}</div>  </div></section>
+  <!-- 1 · Правила -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Квиз</span>
+    <h1>Что это за компонент?</h1>
+    <ul style="margin-top:14px">
+      <li>Повторяем всё, что прошли с темы 8 по тему 10</li>
+      <li>На каждом слайде — виджет, определите <strong>компонент/паттерн</strong></li>
+      <li>Ответ — на следующем слайде</li>
+    </ul>
+    <div class="img-card" style="margin-top:22px">
+      <img src="11_ui/slide1_0.gif" alt="Квиз: UI-компонент (введение)">
+    </div>
+  </div></section>
+  <!-- question {num} -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Вопрос · Что это за компонент?</span>
+    <h1>Полe ввода с меткой «Мате…»</h1>
+    <div class="img-card" style="margin-top:18px">
+      <img src="11_ui/slide2_0.png" alt="Квиз-мок {num}">
+    </div>
+  </div></section>
+  <!-- answer {num} -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Ответ</span>
+    <h1>Input + label (обязательное поле с валидацией Required)</h1>
+    <ul style="margin-top:18px" class="check">
+      <li>Этот паттерн вы встречали в темах 8–10</li>
+      <li>В курсовых такие компоненты строятся из Button + Card + форм</li>
+    </ul>
+  </div></section>
+  <!-- question {num} -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Вопрос · Что это за компонент?</span>
+    <h1>Секция Billing details: Company, Tax ID</h1>
+    <div class="img-card" style="margin-top:18px">
+      <img src="11_ui/slide3_0.png" alt="Квиз-мок {num}">
+    </div>
+  </div></section>
+  <!-- answer {num} -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Ответ</span>
+    <h1>Форма (поля сгруппированы в section)</h1>
+    <ul style="margin-top:18px" class="check">
+      <li>Этот паттерн вы встречали в темах 8–10</li>
+      <li>В курсовых такие компоненты строятся из Button + Card + форм</li>
+    </ul>
+  </div></section>
+  <!-- question {num} -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Вопрос · Что это за компонент?</span>
+    <h1>Список фруктов с подпунктами</h1>
+    <div class="img-card" style="margin-top:18px">
+      <img src="11_ui/slide4_0.png" alt="Квиз-мок {num}">
+    </div>
+  </div></section>
+  <!-- answer {num} -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Ответ</span>
+    <h1>Select / Combobox (вложенные options)</h1>
+    <ul style="margin-top:18px" class="check">
+      <li>Этот паттерн вы встречали в темах 8–10</li>
+      <li>В курсовых такие компоненты строятся из Button + Card + форм</li>
+    </ul>
+  </div></section>
+  <!-- question {num} -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Вопрос · Что это за компонент?</span>
+    <h1>Выбор одного из трёх яблок</h1>
+    <div class="img-card" style="margin-top:18px">
+      <img src="11_ui/slide5_0.png" alt="Квиз-мок {num}">
+    </div>
+  </div></section>
+  <!-- answer {num} -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Ответ</span>
+    <h1>Radio group (одиночный выбор)</h1>
+    <ul style="margin-top:18px" class="check">
+      <li>Этот паттерн вы встречали в темах 8–10</li>
+      <li>В курсовых такие компоненты строятся из Button + Card + форм</li>
+    </ul>
+  </div></section>
+  <!-- question {num} -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Вопрос · Что это за компонент?</span>
+    <h1>Меню выбора шрифта (Serif, theme.css)</h1>
+    <div class="img-card" style="margin-top:18px">
+      <img src="11_ui/slide6_0.gif" alt="Квиз-мок {num}">
+    </div>
+  </div></section>
+  <!-- answer {num} -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Ответ</span>
+    <h1>Dropdown / Menu</h1>
+    <ul style="margin-top:18px" class="check">
+      <li>Этот паттерн вы встречали в темах 8–10</li>
+      <li>В курсовых такие компоненты строятся из Button + Card + форм</li>
+    </ul>
+  </div></section>
+  <!-- question {num} -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Вопрос · Что это за компонент?</span>
+    <h1>Select «Choose a fruit»</h1>
+    <div class="img-card" style="margin-top:18px">
+      <img src="11_ui/slide7_0.gif" alt="Квиз-мок {num}">
+    </div>
+  </div></section>
+  <!-- answer {num} -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Ответ</span>
+    <h1>Select (выпадающий список)</h1>
+    <ul style="margin-top:18px" class="check">
+      <li>Этот паттерн вы встречали в темах 8–10</li>
+      <li>В курсовых такие компоненты строятся из Button + Card + форм</li>
+    </ul>
+  </div></section>
+  <!-- question {num} -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Вопрос · Что это за компонент?</span>
+    <h1>Поле поиска тегов @base-ui…</h1>
+    <div class="img-card" style="margin-top:18px">
+      <img src="11_ui/slide8_0.gif" alt="Квиз-мок {num}">
+    </div>
+  </div></section>
+  <!-- answer {num} -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Ответ</span>
+    <h1>Autocomplete (поиск с подсказками)</h1>
+    <ul style="margin-top:18px" class="check">
+      <li>Этот паттерн вы встречали в темах 8–10</li>
+      <li>В курсовых такие компоненты строятся из Button + Card + форм</li>
+    </ul>
+  </div></section>
+  <!-- question {num} -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Вопрос · Что это за компонент?</span>
+    <h1>Числовое поле Amount</h1>
+    <div class="img-card" style="margin-top:18px">
+      <img src="11_ui/slide9_0.gif" alt="Квиз-мок {num}">
+    </div>
+  </div></section>
+  <!-- answer {num} -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Ответ</span>
+    <h1>Number input (с шагом +/−)</h1>
+    <ul style="margin-top:18px" class="check">
+      <li>Этот паттерн вы встречали в темах 8–10</li>
+      <li>В курсовых такие компоненты строятся из Button + Card + форм</li>
+    </ul>
+  </div></section>
+  <!-- question {num} -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Вопрос · Что это за компонент?</span>
+    <h1>Форма сервера: name, region, storage</h1>
+    <div class="img-card" style="margin-top:18px">
+      <img src="11_ui/slide10_0.png" alt="Квиз-мок {num}">
+    </div>
+  </div></section>
+  <!-- answer {num} -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Ответ</span>
+    <h1>Форма + настройки (двухколоночный макет)</h1>
+    <ul style="margin-top:18px" class="check">
+      <li>Этот паттерн вы встречали в темах 8–10</li>
+      <li>В курсовых такие компоненты строятся из Button + Card + форм</li>
+    </ul>
+  </div></section>
+  <!-- question {num} -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Вопрос · Что это за компонент?</span>
+    <h1>FAQ: раскрывающиеся блоки</h1>
+    <div class="img-card" style="margin-top:18px">
+      <img src="11_ui/slide11_0.gif" alt="Квиз-мок {num}">
+    </div>
+  </div></section>
+  <!-- answer {num} -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Ответ</span>
+    <h1>Accordion (аккордеон)</h1>
+    <ul style="margin-top:18px" class="check">
+      <li>Этот паттерн вы встречали в темах 8–10</li>
+      <li>В курсовых такие компоненты строятся из Button + Card + форм</li>
+    </ul>
+  </div></section>
+  <!-- question {num} -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Вопрос · Что это за компонент?</span>
+    <h1>"You are all caught up"</h1>
+    <div class="img-card" style="margin-top:18px">
+      <img src="11_ui/slide13_0.gif" alt="Квиз-мок {num}">
+    </div>
+  </div></section>
+  <!-- answer {num} -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Ответ</span>
+    <h1>Уведомление / Toast</h1>
+    <ul style="margin-top:18px" class="check">
+      <li>Этот паттерн вы встречали в темах 8–10</li>
+      <li>В курсовых такие компоненты строятся из Button + Card + форм</li>
+    </ul>
+  </div></section>
+  <!-- question {num} -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Вопрос · Что это за компонент?</span>
+    <h1>Дропдаун с навигацией по клавиатуре (Song)</h1>
+    <div class="img-card" style="margin-top:18px">
+      <img src="11_ui/slide17_0.gif" alt="Квиз-мок {num}">
+    </div>
+  </div></section>
+  <!-- answer {num} -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Ответ</span>
+    <h1>Dropdown + keyboard navigation</h1>
+    <ul style="margin-top:18px" class="check">
+      <li>Этот паттерн вы встречали в темах 8–10</li>
+      <li>В курсовых такие компоненты строятся из Button + Card + форм</li>
+    </ul>
+  </div></section>
+  <!-- question {num} -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Вопрос · Что это за компонент?</span>
+    <h1>Панель выравнивания текста</h1>
+    <div class="img-card" style="margin-top:18px">
+      <img src="11_ui/slide20_0.png" alt="Квиз-мок {num}">
+    </div>
+  </div></section>
+  <!-- answer {num} -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Ответ</span>
+    <h1>Toolbar / Popover (кнопки форматирования)</h1>
+    <ul style="margin-top:18px" class="check">
+      <li>Этот паттерн вы встречали в темах 8–10</li>
+      <li>В курсовых такие компоненты строятся из Button + Card + форм</li>
+    </ul>
+  </div></section>
+  <!-- итог -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Итоги квиза</span>
+    <h1>Base UI — headless-библиотека</h1>
+    <ul style="margin-top:14px">
+      <li>Все показанные виджеты — из библиотеки <strong>Base UI</strong></li>
+      <li>base-ui.com/react/overview/quick-start</li>
+      <li><strong>Headless</strong> = стили берёте на себя, поведение — готовое</li>
+      <li>Это точка входа в курсовые: компоненты вы уже умеете распознавать</li>
+    </ul>
+  </div></section>
+
+</div>
+
+<div class="counter" id="counter"></div>
+<div class="controls">
+  <button class="ctrl-btn" id="prev" title="Назад">‹</button>
+  <button class="ctrl-btn" id="next" title="Вперёд">›</button>
+</div>
+<div class="dots" id="dots"></div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll(".slide"));
+  let cur = 0;
+  const counter = document.getElementById("counter");
+  const progress = document.getElementById("progress");
+  const dotsWrap = document.getElementById("dots");
+  const dots = slides.map((_, i) => {
+    const b = document.createElement("button");
+    b.className = "dot"; b.title = "Слайд " + (i + 1);
+    b.addEventListener("click", () => go(i));
+    dotsWrap.appendChild(b);
+    return b;
+  });
+  function go(i) {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, k) => s.classList.toggle("active", k === cur));
+    dots.forEach((d, k) => d.classList.toggle("active", k === cur));
+    counter.textContent = (cur + 1) + " / " + slides.length;
+    progress.style.width = ((cur + 1) / slides.length * 100) + "%";
+    const fr = slides[cur].querySelector && slides[cur].querySelector(".frame");
+    if (fr) fr.scrollTop = 0;
+  }
+  const next = () => go(cur + 1);
+  const prev = () => go(cur - 1);
+  document.getElementById("next").addEventListener("click", next);
+  document.getElementById("prev").addEventListener("click", prev);
+  document.addEventListener("keydown", e => {
+    if (["ArrowRight", "ArrowDown", "PageDown", " ", "Enter"].includes(e.key)) { e.preventDefault(); next(); }
+    if (["ArrowLeft", "ArrowUp", "PageUp"].includes(e.key)) { e.preventDefault(); prev(); }
+    if (e.key === "Home") go(0);
+    if (e.key === "End") go(slides.length - 1);
+  });
+
+  /* клик ЛКМ по пустому месту листает вперёд */
+  document.addEventListener("click", e => {
+    if (e.button !== 0) return;
+    const tag = (e.target.tagName || "").toLowerCase();
+    if (["button", "a"].includes(tag)) return;          // кнопки/ссылки — мимо
+    if (e.target.closest(".controls, .dots, .counter")) return;
+    if (e.target.closest(".frame")) {
+      // клик по контенту: не листаем, если удерживали/выделяли текст
+      if (window.getSelection && window.getSelection().toString()) return;
+    }
+    next();
+  });
+
+  /* скролл листает слайды */
+  let wheelLock = false;
+  document.addEventListener("wheel", e => {
+    const dy = e.deltaY;
+    const dx = e.deltaX;
+    const absD = Math.abs(dy) > Math.abs(dx) ? dy : dx;
+    if (absD === 0) return;
+
+    // если у текущего слайда рамка переполнена — скроллим её, слайды не листаем
+    const frame = slides[cur].querySelector && slides[cur].querySelector(".frame");
+    if (frame && frame.scrollHeight > frame.clientHeight + 2) {
+      const atBottom = frame.scrollTop + frame.clientHeight >= frame.scrollHeight - 2;
+      const atTop = frame.scrollTop <= 2;
+      const down = absD > 0;
+      if ((down && !atBottom) || (!down && !atTop)) {
+        frame.scrollTop += absD;
+        return;
+      }
+    }
+
+    if (wheelLock) return;
+    e.preventDefault();
+    wheelLock = true;
+    absD > 0 ? next() : prev();
+    setTimeout(() => { wheelLock = false; }, 700);
+  }, { passive: false });
+
+  go(0);
+</script>
+</body>
+</html>

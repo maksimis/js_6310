@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Тема 10 · React Router и формы · Группа 6310</title>
+<style>
+  :root {
+    --accent: #058DC7;
+    --accent-dark: #0472a0;
+    --accent-soft: #e3f2fb;
+    --dark: #20242b;
+    --gray: #5b6470;
+    --bg: #f2f5f8;
+    --card: #ffffff;
+    --green: #1e8e3e;
+    --red: #c0392b;
+    --amber: #b7791f;
+    --code-bg: #f6f8fa;
+    --code-fg: #20242b;
+    --code-border: #dce3ea;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: radial-gradient(1200px 700px at 80% -10%, #dbeef9 0%, var(--bg) 55%);
+    color: var(--dark);
+    overflow: hidden;
+  }
+
+  /* ---------- slide deck ---------- */
+  .deck { height: 100%; position: relative; }
+  .slide {
+    position: absolute; inset: 0;
+    display: none;
+    padding: 4vh 4vw;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .slide.active { display: flex; }
+
+  .frame {
+    width: 100%; max-width: 1180px;
+    max-height: 92vh;
+    overflow: auto;
+    background: var(--card);
+    border-radius: 22px;
+    box-shadow: 0 24px 60px rgba(20, 40, 70, .14), 0 3px 10px rgba(20, 40, 70, .08);
+    padding: clamp(24px, 4.4vh, 54px) clamp(24px, 4.4vw, 60px);
+    position: relative;
+  }
+  .frame::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 6px; background: linear-gradient(180deg, var(--accent), #5ec3ef);
+    border-radius: 0 8px 8px 0;
+  }
+
+  .eyebrow {
+    display: inline-block;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--accent);
+    background: var(--accent-soft);
+    padding: 5px 12px; border-radius: 999px;
+    margin-bottom: 14px;
+  }
+  h1 { font-size: clamp(30px, 4.6vh, 46px); line-height: 1.15; margin-bottom: 6px; }
+  h2 { font-size: clamp(26px, 3.8vh, 36px); line-height: 1.2; margin-bottom: 18px; color: var(--accent-dark); }
+  h3 { font-size: 20px; margin: 20px 0 8px; color: var(--dark); }
+  p, li { font-size: clamp(15px, 2.3vh, 20px); line-height: 1.55; }
+  ul, ol { list-style: none; }
+  li { position: relative; padding-left: 26px; margin: 7px 0; }
+  li::before {
+    content: "▸"; position: absolute; left: 0; top: 0;
+    color: var(--accent); font-weight: 700;
+  }
+  .muted { color: var(--gray); }
+  .lead { font-size: clamp(16px, 2.6vh, 22px); margin-top: 6px; }
+  strong { color: var(--accent-dark); }
+
+  .two-col { display: grid; grid-template-columns: 1fr minmax(240px, 340px); gap: 28px; align-items: center; }
+  .two-col.flip { grid-template-columns: minmax(240px, 340px) 1fr; }
+  .img-card img { width: 100%; height: auto; border-radius: 14px; box-shadow: 0 10px 26px rgba(0,0,0,.16); display: block; }
+
+  /* table */
+  table { border-collapse: collapse; width: 100%; margin: 6px 0; font-size: clamp(15px, 2.2vh, 19px); }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid #e4e9ef; }
+  th { background: var(--accent); color: #fff; font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #f6f9fc; }
+  th:first-child { border-radius: 10px 0 0 0; }
+  th:last-child { border-radius: 0 10px 0 0; }
+  .good { color: var(--green); font-weight: 700; }
+  .bad { color: var(--red); font-weight: 700; }
+
+  /* checklist */
+  .check li::before { content: "✅"; }
+  .wrong li::before { content: "❌"; }
+  .ok li::before { content: "✔"; color: var(--green); }
+
+  /* code block */
+  pre {
+    background: var(--code-bg); color: var(--code-fg);
+    border: 1px solid var(--code-border);
+    border-radius: 14px; padding: 20px 24px;
+    font: 14px/1.6 "Consolas", "Cascadia Code", monospace;
+    overflow-x: auto; margin: 10px 0;
+  }
+  .code-title { font: 12px "Consolas", monospace; color: var(--gray); margin: 14px 0 0; }
+
+  /* steps */
+  .steps { counter-reset: step; list-style: none; }
+  .steps li {
+    counter-increment: step; padding-left: 0; margin: 12px 0;
+    display: grid; grid-template-columns: 38px 1fr; gap: 14px; align-items: baseline;
+  }
+  .steps li::before {
+    content: counter(step);
+    position: static; width: 38px; height: 38px; line-height: 38px;
+    text-align: center; border-radius: 50%;
+    background: var(--accent); color: #fff; font-weight: 700; font-size: 17px;
+  }
+  .steps b { color: var(--accent-dark); }
+
+  /* cycle diagram */
+  .cycle-wrap { display: flex; flex-direction: column; align-items: center; }
+  .cycle svg { width: min(76vh, 820px); height: auto; display: block; }
+  .cycle-node rect.card { fill: #fff; stroke: var(--accent); stroke-width: 2; rx: 18; }
+  .cycle-node .node-title { fill: var(--accent-dark); font-weight: 700; }
+  .cycle-node .node-strike { fill: var(--gray); }
+  .cycle-node .node-line { fill: var(--red); font-weight: 700; }
+  .cycle .cycle-arrow { fill: none; stroke: var(--accent); stroke-width: 4; stroke-linecap: round; }
+  .cycle .cycle-arrowhead { fill: var(--accent); }
+
+  /* title slide */
+  .title-frame {
+    text-align: center; background:
+      linear-gradient(150deg, rgba(5,141,199,.10), rgba(255,255,255,0) 60%),
+      var(--card);
+  }
+  .title-frame::before { width: 100%; height: 6px; border-radius: 0 0 8px 8px; top: auto; bottom: 0; }
+  .title-frame h1 { font-size: clamp(38px, 6.4vh, 58px); color: var(--accent-dark); }
+  .title-frame .sub { font-size: clamp(18px, 2.8vh, 24px); color: var(--gray); margin-top: 10px; }
+  .title-frame .teacher { font-size: clamp(16px, 2.4vh, 20px); margin-top: 22px; font-weight: 600; }
+  .badge-row { margin-top: 20px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .badge {
+    border: 1px solid var(--accent); color: var(--accent); border-radius: 999px;
+    padding: 7px 16px; font-weight: 600; font-size: 15px; background: #fff;
+  }
+
+  /* nav */
+  .controls { position: fixed; right: 18px; bottom: 14px; z-index: 50; display: flex; gap: 8px; }
+  .ctrl-btn {
+    width: 40px; height: 40px; border-radius: 10px; border: none; cursor: pointer;
+    background: #ffffffdd; color: var(--accent-dark); font-size: 18px; font-weight: 700;
+    box-shadow: 0 6px 16px rgba(0,0,0,.18); backdrop-filter: blur(4px);
+  }
+  .ctrl-btn:hover { background: var(--accent); color: #fff; }
+  .counter { position: fixed; left: 18px; bottom: 14px; z-index: 50;
+    font: 600 13px/38px "Segoe UI", Arial; color: var(--gray);
+    background: #ffffffcc; padding: 0 14px; border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,.12); backdrop-filter: blur(4px);
+  }
+  .progress {
+    position: fixed; left: 0; top: 0; height: 5px; background: var(--accent);
+    z-index: 60; width: 0%; transition: width .25s ease; border-radius: 0 0 4px 0;
+  }
+  .dots { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    z-index: 50; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: 60vw; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; border: none; cursor: pointer;
+    background: #b6c6d6; transition: background .2s, transform .2s; }
+  .dot.active { background: var(--accent); transform: scale(1.35); }
+
+  .foot-note { margin-top: 16px; font-size: 12px; color: var(--gray); }
+
+  @media (max-width: 760px) {
+    .two-col, .two-col.flip { grid-template-columns: 1fr; }
+    .frame { padding: 22px; max-height: 86vh; }
+  }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="deck" id="deck">
+    <section class="slide"><div class="frame title-frame">
+    <h1 id="t-title">Тема 10 · React Router и формы</h1>
+    <div class="badge-row"><span class="badge">Курс «JavaScript»</span><span class="badge">Группа 6310</span><span class="badge">2026</span></div>
+    <div class="teacher">{FIO_prepod}</div>  </div></section>
+  <!-- 1 · SPA и роутер -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">React Router</span>
+    <h1>SPA и client-side routing</h1>
+    <ul style="margin-top:14px">
+      <li><strong>SPA</strong> — одно HTML, много «страниц» без перезагрузки</li>
+      <li>Стандартная библиотека маршрутизации: <strong>react-router</strong></li>
+      <li>Клиентский роутинг: URL меняется, страница не перезагружается</li>
+      <li>Динамические маршруты — параметры в URL: <code>:userId</code></li>
+      <li>Установка: <code>npm i react-router</code></li>
+    </ul>
+  </div></section>
+  <!-- 2 · Данные: структура -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">React Router</span>
+    <h1>Структура страниц</h1>
+    <p class="code-title"></p>
+    <pre>
+src/
+├── pages/
+│   ├── Home.tsx
+│   ├── About.tsx
+│   └── UserProfile.tsx
+├── components/
+│   ├── Button/
+│   └── Card/
+├── contexts/AuthContext/
+├── router.tsx
+└── App.tsx      // рендерит &lt;RouterProvider/&gt;
+</pre>
+    <p class="foot-note">Router работает в data mode (createBrowserRouter + RouterProvider).</p>
+  </div></section>
+  <!-- 3 · Первый роутинг -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Первый роутинг (data mode)</span>
+    <h1>createBrowserRouter · RouterProvider</h1>
+    <p class="code-title">2/router.tsx</p>
+    <pre>
+import { createBrowserRouter, Navigate } from 'react-router'
+
+import App from './App'
+import About from './pages/About'
+import ErrorPage from './pages/ErrorPage'
+import Home from './pages/Home'
+import Login from './pages/Login'
+
+export const router = createBrowserRouter([
+  {
+    path: '/',
+    element: &lt;App /&gt;,
+    errorElement: &lt;ErrorPage /&gt;,
+    children: [
+      { index: true, element: &lt;Home /&gt; },
+      { path: 'about', element: &lt;About /&gt; },
+      { path: 'login', element: &lt;Login /&gt; },
+      { path: '*', element: &lt;Navigate to="/" replace /&gt; },
+    ],
+  },
+])
+</pre>
+  </div></section>
+  <!-- 4 · Расширяем -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Расширяем роутинг</span>
+    <h1>Вложенные маршруты и layout</h1>
+    <p class="code-title"></p>
+    <pre>
+// Layout с &lt;Outlet/&gt; — общая рамка для вложенных страниц
+function App() {
+  return (
+    &lt;AuthProvider&gt;
+      &lt;Header /&gt;             {/* навигация */}
+      &lt;Outlet /&gt;             {/* сюда подставляется дочерний маршрут */}
+    &lt;/AuthProvider&gt;
+  );
+}
+</pre>
+    <ul style="margin-top:14px">
+      <li>Навигация: <code>&lt;Link&gt;</code> / <code>&lt;NavLink&gt;</code></li>
+      <li>Страницы ошибок: <code>errorElement</code></li>
+      <li>Защита: <code>&lt;Navigate to="/login" replace /&gt;</code></li>
+    </ul>
+  </div></section>
+  <!-- 5 · useParams/useNavigate -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Динамические маршруты</span>
+    <h1>useParams · useNavigate · useLocation</h1>
+    <p class="code-title">3/UserProfile.tsx</p>
+    <pre>
+const UserProfile: React.FC = () =&gt; {
+  const { userId } = useParams&lt;UserProfileParams&gt;()   // из URL
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  const handleGoBack = () =&gt; navigate(-1)
+  const handleEdit = () =&gt;
+    navigate(`/user/${userId}/edit`, {
+      state: { from: location.pathname }
+    })
+
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Профиль пользователя {userId}&lt;/h1&gt;
+      &lt;p&gt;Текущий путь: {location.pathname}&lt;/p&gt;
+      &lt;Button onClick={handleGoBack}&gt;Назад&lt;/Button&gt;
+      &lt;Button onClick={handleEdit}&gt;Редактировать&lt;/Button&gt;
+    &lt;/div&gt;
+  )
+}
+</pre>
+  </div></section>
+  <!-- 6 · Context API -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Context API</span>
+    <h1>Глобальное состояние: AuthContext</h1>
+    <p class="code-title">4/AuthContext.ts</p>
+    <pre>
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface AuthContextType {
+  user: User | null;
+  login: (email: string, password: string) =&gt; Promise&lt;void&gt;;
+  logout: () =&gt; void;
+  isAuthenticated: boolean;
+}
+
+export const AuthContext =
+  createContext&lt;AuthContextType | undefined&gt;(undefined)
+
+export const useAuth = () =&gt; {
+  const context = useContext(AuthContext)
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider')
+  }
+  return context
+}
+</pre>
+    <p>Когда использовать: тема, аутентификация, язык, настройки. Когда нет: часто меняющиеся данные.</p>
+  </div></section>
+  <!-- 7 · AuthProvider -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Context API</span>
+    <h1>AuthProvider</h1>
+    <p class="code-title">4/AuthProvider.tsx</p>
+    <pre>
+export const AuthProvider: React.FC&lt;{ children: ReactNode }&gt; =
+({ children }) =&gt; {
+  const [user, setUser] = useState&lt;User | null&gt;(null)
+
+  const login = async (email: string, password: string): Promise&lt;void&gt; =&gt; {
+    await new Promise(resolve =&gt; setTimeout(resolve, 1000)) // имитация API
+    setUser({ id: '1', name: 'Анна Петрова', email })
+  }
+
+  const logout = () =&gt; setUser(null)
+
+  const value: AuthContextType = {
+    user, login, logout,
+    isAuthenticated: !!user
+  }
+
+  return (
+    &lt;AuthContext.Provider value={value}&gt;
+      {children}
+    &lt;/AuthContext.Provider&gt;
+  )
+}
+</pre>
+  </div></section>
+  <!-- 8 · Формы: useForm -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Формы</span>
+    <h1>Кастомный хук useForm</h1>
+    <p class="code-title">6/useForm.ts</p>
+    <pre>
+export const useForm = ({ initialValues, validationRules = {}, onSubmit }) =&gt; {
+  const [values, setValues] = useState(initialValues)
+  const [errors, setErrors] = useState&lt;Record&lt;string, string&gt;&gt;({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleChange = (name: string, value: any) =&gt; {
+    setValues(prev =&gt; ({ ...prev, [name]: value }))
+    setErrors(prev =&gt; ({ ...prev, [name]: validateField(name, value) }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) =&gt; {
+    e.preventDefault()
+    if (!validateForm()) return
+    setIsSubmitting(true)
+    try { await onSubmit(values) } finally { setIsSubmitting(false) }
+  }
+
+  return { values, errors, isSubmitting, handleChange, handleSubmit }
+}
+</pre>
+    <p style="margin-top:14px">Валидация: required, minLength/maxLength, pattern, custom.</p>
+  </div></section>
+  <!-- 9 · Итоги -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Итоги</span>
+    <h1>Роутер + Контекст + Формы</h1>
+    <ul style="margin-top:14px">
+      <li><strong>createBrowserRouter + RouterProvider</strong> — data mode</li>
+      <li><strong>useParams/useNavigate/useLocation</strong> — навигация</li>
+      <li><strong>Context API</strong> — глобальное состояние (auth)</li>
+      <li><strong>Защищённые маршруты</strong> — useAuth + Navigate</li>
+      <li><strong>useForm</strong> — типизированный кастомный хук</li>
+      <li>Этот же проект станет основой темы 12 (оптимизация)</li>
+    </ul>
+  </div></section>
+
+</div>
+
+<div class="counter" id="counter"></div>
+<div class="controls">
+  <button class="ctrl-btn" id="prev" title="Назад">‹</button>
+  <button class="ctrl-btn" id="next" title="Вперёд">›</button>
+</div>
+<div class="dots" id="dots"></div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll(".slide"));
+  let cur = 0;
+  const counter = document.getElementById("counter");
+  const progress = document.getElementById("progress");
+  const dotsWrap = document.getElementById("dots");
+  const dots = slides.map((_, i) => {
+    const b = document.createElement("button");
+    b.className = "dot"; b.title = "Слайд " + (i + 1);
+    b.addEventListener("click", () => go(i));
+    dotsWrap.appendChild(b);
+    return b;
+  });
+  function go(i) {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, k) => s.classList.toggle("active", k === cur));
+    dots.forEach((d, k) => d.classList.toggle("active", k === cur));
+    counter.textContent = (cur + 1) + " / " + slides.length;
+    progress.style.width = ((cur + 1) / slides.length * 100) + "%";
+    const fr = slides[cur].querySelector && slides[cur].querySelector(".frame");
+    if (fr) fr.scrollTop = 0;
+  }
+  const next = () => go(cur + 1);
+  const prev = () => go(cur - 1);
+  document.getElementById("next").addEventListener("click", next);
+  document.getElementById("prev").addEventListener("click", prev);
+  document.addEventListener("keydown", e => {
+    if (["ArrowRight", "ArrowDown", "PageDown", " ", "Enter"].includes(e.key)) { e.preventDefault(); next(); }
+    if (["ArrowLeft", "ArrowUp", "PageUp"].includes(e.key)) { e.preventDefault(); prev(); }
+    if (e.key === "Home") go(0);
+    if (e.key === "End") go(slides.length - 1);
+  });
+
+  /* клик ЛКМ по пустому месту листает вперёд */
+  document.addEventListener("click", e => {
+    if (e.button !== 0) return;
+    const tag = (e.target.tagName || "").toLowerCase();
+    if (["button", "a"].includes(tag)) return;          // кнопки/ссылки — мимо
+    if (e.target.closest(".controls, .dots, .counter")) return;
+    if (e.target.closest(".frame")) {
+      // клик по контенту: не листаем, если удерживали/выделяли текст
+      if (window.getSelection && window.getSelection().toString()) return;
+    }
+    next();
+  });
+
+  /* скролл листает слайды */
+  let wheelLock = false;
+  document.addEventListener("wheel", e => {
+    const dy = e.deltaY;
+    const dx = e.deltaX;
+    const absD = Math.abs(dy) > Math.abs(dx) ? dy : dx;
+    if (absD === 0) return;
+
+    // если у текущего слайда рамка переполнена — скроллим её, слайды не листаем
+    const frame = slides[cur].querySelector && slides[cur].querySelector(".frame");
+    if (frame && frame.scrollHeight > frame.clientHeight + 2) {
+      const atBottom = frame.scrollTop + frame.clientHeight >= frame.scrollHeight - 2;
+      const atTop = frame.scrollTop <= 2;
+      const down = absD > 0;
+      if ((down && !atBottom) || (!down && !atTop)) {
+        frame.scrollTop += absD;
+        return;
+      }
+    }
+
+    if (wheelLock) return;
+    e.preventDefault();
+    wheelLock = true;
+    absD > 0 ? next() : prev();
+    setTimeout(() => { wheelLock = false; }, 700);
+  }, { passive: false });
+
+  go(0);
+</script>
+</body>
+</html>

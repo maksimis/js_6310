@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Тема 5 · HTML Forms — работа с формами · Группа 6310</title>
+<style>
+  :root {
+    --accent: #058DC7;
+    --accent-dark: #0472a0;
+    --accent-soft: #e3f2fb;
+    --dark: #20242b;
+    --gray: #5b6470;
+    --bg: #f2f5f8;
+    --card: #ffffff;
+    --green: #1e8e3e;
+    --red: #c0392b;
+    --amber: #b7791f;
+    --code-bg: #f6f8fa;
+    --code-fg: #20242b;
+    --code-border: #dce3ea;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: radial-gradient(1200px 700px at 80% -10%, #dbeef9 0%, var(--bg) 55%);
+    color: var(--dark);
+    overflow: hidden;
+  }
+
+  /* ---------- slide deck ---------- */
+  .deck { height: 100%; position: relative; }
+  .slide {
+    position: absolute; inset: 0;
+    display: none;
+    padding: 4vh 4vw;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .slide.active { display: flex; }
+
+  .frame {
+    width: 100%; max-width: 1180px;
+    max-height: 92vh;
+    overflow: auto;
+    background: var(--card);
+    border-radius: 22px;
+    box-shadow: 0 24px 60px rgba(20, 40, 70, .14), 0 3px 10px rgba(20, 40, 70, .08);
+    padding: clamp(24px, 4.4vh, 54px) clamp(24px, 4.4vw, 60px);
+    position: relative;
+  }
+  .frame::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 6px; background: linear-gradient(180deg, var(--accent), #5ec3ef);
+    border-radius: 0 8px 8px 0;
+  }
+
+  .eyebrow {
+    display: inline-block;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--accent);
+    background: var(--accent-soft);
+    padding: 5px 12px; border-radius: 999px;
+    margin-bottom: 14px;
+  }
+  h1 { font-size: clamp(30px, 4.6vh, 46px); line-height: 1.15; margin-bottom: 6px; }
+  h2 { font-size: clamp(26px, 3.8vh, 36px); line-height: 1.2; margin-bottom: 18px; color: var(--accent-dark); }
+  h3 { font-size: 20px; margin: 20px 0 8px; color: var(--dark); }
+  p, li { font-size: clamp(15px, 2.3vh, 20px); line-height: 1.55; }
+  ul, ol { list-style: none; }
+  li { position: relative; padding-left: 26px; margin: 7px 0; }
+  li::before {
+    content: "▸"; position: absolute; left: 0; top: 0;
+    color: var(--accent); font-weight: 700;
+  }
+  .muted { color: var(--gray); }
+  .lead { font-size: clamp(16px, 2.6vh, 22px); margin-top: 6px; }
+  strong { color: var(--accent-dark); }
+
+  .two-col { display: grid; grid-template-columns: 1fr minmax(240px, 340px); gap: 28px; align-items: center; }
+  .two-col.flip { grid-template-columns: minmax(240px, 340px) 1fr; }
+  .img-card img { width: 100%; height: auto; border-radius: 14px; box-shadow: 0 10px 26px rgba(0,0,0,.16); display: block; }
+
+  /* table */
+  table { border-collapse: collapse; width: 100%; margin: 6px 0; font-size: clamp(15px, 2.2vh, 19px); }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid #e4e9ef; }
+  th { background: var(--accent); color: #fff; font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #f6f9fc; }
+  th:first-child { border-radius: 10px 0 0 0; }
+  th:last-child { border-radius: 0 10px 0 0; }
+  .good { color: var(--green); font-weight: 700; }
+  .bad { color: var(--red); font-weight: 700; }
+
+  /* checklist */
+  .check li::before { content: "✅"; }
+  .wrong li::before { content: "❌"; }
+  .ok li::before { content: "✔"; color: var(--green); }
+
+  /* code block */
+  pre {
+    background: var(--code-bg); color: var(--code-fg);
+    border: 1px solid var(--code-border);
+    border-radius: 14px; padding: 20px 24px;
+    font: 14px/1.6 "Consolas", "Cascadia Code", monospace;
+    overflow-x: auto; margin: 10px 0;
+  }
+  .code-title { font: 12px "Consolas", monospace; color: var(--gray); margin: 14px 0 0; }
+
+  /* steps */
+  .steps { counter-reset: step; list-style: none; }
+  .steps li {
+    counter-increment: step; padding-left: 0; margin: 12px 0;
+    display: grid; grid-template-columns: 38px 1fr; gap: 14px; align-items: baseline;
+  }
+  .steps li::before {
+    content: counter(step);
+    position: static; width: 38px; height: 38px; line-height: 38px;
+    text-align: center; border-radius: 50%;
+    background: var(--accent); color: #fff; font-weight: 700; font-size: 17px;
+  }
+  .steps b { color: var(--accent-dark); }
+
+  /* cycle diagram */
+  .cycle-wrap { display: flex; flex-direction: column; align-items: center; }
+  .cycle svg { width: min(76vh, 820px); height: auto; display: block; }
+  .cycle-node rect.card { fill: #fff; stroke: var(--accent); stroke-width: 2; rx: 18; }
+  .cycle-node .node-title { fill: var(--accent-dark); font-weight: 700; }
+  .cycle-node .node-strike { fill: var(--gray); }
+  .cycle-node .node-line { fill: var(--red); font-weight: 700; }
+  .cycle .cycle-arrow { fill: none; stroke: var(--accent); stroke-width: 4; stroke-linecap: round; }
+  .cycle .cycle-arrowhead { fill: var(--accent); }
+
+  /* title slide */
+  .title-frame {
+    text-align: center; background:
+      linear-gradient(150deg, rgba(5,141,199,.10), rgba(255,255,255,0) 60%),
+      var(--card);
+  }
+  .title-frame::before { width: 100%; height: 6px; border-radius: 0 0 8px 8px; top: auto; bottom: 0; }
+  .title-frame h1 { font-size: clamp(38px, 6.4vh, 58px); color: var(--accent-dark); }
+  .title-frame .sub { font-size: clamp(18px, 2.8vh, 24px); color: var(--gray); margin-top: 10px; }
+  .title-frame .teacher { font-size: clamp(16px, 2.4vh, 20px); margin-top: 22px; font-weight: 600; }
+  .badge-row { margin-top: 20px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .badge {
+    border: 1px solid var(--accent); color: var(--accent); border-radius: 999px;
+    padding: 7px 16px; font-weight: 600; font-size: 15px; background: #fff;
+  }
+
+  /* nav */
+  .controls { position: fixed; right: 18px; bottom: 14px; z-index: 50; display: flex; gap: 8px; }
+  .ctrl-btn {
+    width: 40px; height: 40px; border-radius: 10px; border: none; cursor: pointer;
+    background: #ffffffdd; color: var(--accent-dark); font-size: 18px; font-weight: 700;
+    box-shadow: 0 6px 16px rgba(0,0,0,.18); backdrop-filter: blur(4px);
+  }
+  .ctrl-btn:hover { background: var(--accent); color: #fff; }
+  .counter { position: fixed; left: 18px; bottom: 14px; z-index: 50;
+    font: 600 13px/38px "Segoe UI", Arial; color: var(--gray);
+    background: #ffffffcc; padding: 0 14px; border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,.12); backdrop-filter: blur(4px);
+  }
+  .progress {
+    position: fixed; left: 0; top: 0; height: 5px; background: var(--accent);
+    z-index: 60; width: 0%; transition: width .25s ease; border-radius: 0 0 4px 0;
+  }
+  .dots { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    z-index: 50; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: 60vw; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; border: none; cursor: pointer;
+    background: #b6c6d6; transition: background .2s, transform .2s; }
+  .dot.active { background: var(--accent); transform: scale(1.35); }
+
+  .foot-note { margin-top: 16px; font-size: 12px; color: var(--gray); }
+
+  @media (max-width: 760px) {
+    .two-col, .two-col.flip { grid-template-columns: 1fr; }
+    .frame { padding: 22px; max-height: 86vh; }
+  }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="deck" id="deck">
+    <section class="slide"><div class="frame title-frame">
+    <h1 id="t-title">Тема 5 · HTML Forms — работа с формами</h1>
+    <div class="badge-row"><span class="badge">Курс «JavaScript»</span><span class="badge">Группа 6310</span><span class="badge">2026</span></div>
+    <div class="teacher">Исанькин М.А.</div>  </div></section>
+  <!-- 1 · Что такое формы -->
+  <section class="slide"><div class="frame">
+    <div class="two-col" style="align-items:start">
+      <div>
+<h1>Что такое формы</h1>
+        <ul style="margin-top:14px">
+          <li><strong>Контейнер</strong> для input-элементов: <code>&lt;form&gt;</code></li>
+          <li>Атрибуты: <code>action</code> — куда отправлять, <code>method</code> — как</li>
+          <li>Сценарии: логин, регистрация, поиск, обратная связь</li>
+          <li>Без форм нет ни одной настоящей веб-лабы</li>
+        </ul>
+      </div>
+      <div class="img-card">
+        <img src="05_forms/slide12_0.png" alt="Мем про повторную отправку формы">
+      </div>
+    </div>
+  </div></section>
+  <!-- 2 · Базовая форма -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Базовая форма</span>
+    <h1>Минимальная форма</h1>
+    <p class="code-title">1.html</p>
+    <pre>
+&lt;form action="/submit" method="POST"&gt;
+    &lt;!-- Поля формы здесь --&gt;
+    &lt;button type="submit"&gt;Отправить&lt;/button&gt;
+&lt;/form&gt;
+</pre>
+    <ul style="margin-top:14px">
+      <li><code>action</code> — URL, куда уйдут данные</li>
+      <li><code>method="POST"</code> — отправка «в теле» запроса</li>
+      <li>Кнопка <code>type="submit"</code> запускает отправку</li>
+    </ul>
+  </div></section>
+  <!-- 3 · Базовые input -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Базовые input</span>
+    <h1>text · password · email</h1>
+    <p class="code-title">2.html</p>
+    <pre>
+&lt;div&gt;
+    &lt;label for="username"&gt;Имя пользователя:&lt;/label&gt;
+    &lt;input type="text" id="username" name="username" required&gt;
+&lt;/div&gt;
+&lt;div&gt;
+    &lt;label for="password"&gt;Пароль:&lt;/label&gt;
+    &lt;input type="password" id="password" name="password" required&gt;
+&lt;/div&gt;
+&lt;div&gt;
+    &lt;label for="email"&gt;Email:&lt;/label&gt;
+    &lt;input type="email" id="email" name="email"&gt;
+&lt;/div&gt;
+</pre>
+    <ul style="margin-top:14px">
+      <li><code>label for="id"</code> — клик по тексту фокусирует поле</li>
+      <li><code>name</code> — ключ данных при отправке</li>
+      <li><code>required</code> — поле обязательно</li>
+    </ul>
+  </div></section>
+  <!-- 4 · Разнообразие типов -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Разнообразие типов</span>
+    <h1>number · range · date · file</h1>
+    <p class="code-title">2.html</p>
+    <pre>
+&lt;div&gt;
+    &lt;input type="number" name="age" min="18" max="100"&gt;
+&lt;/div&gt;
+&lt;div&gt;
+    &lt;input type="range" name="volume" min="0" max="100"&gt;
+&lt;/div&gt;
+&lt;div&gt;
+    &lt;input type="date" name="birthday"&gt;
+&lt;/div&gt;
+&lt;div&gt;
+    &lt;input type="file" name="document" accept=".pdf,.doc"&gt;
+&lt;/div&gt;
+</pre>
+    <ul style="margin-top:14px">
+      <li><code>accept</code> ограничивает типы файлов при выборе</li>
+      <li>У <code>number</code>/<code>range</code> свои <code>min/max</code></li>
+    </ul>
+  </div></section>
+  <!-- 5 · Radio и checkbox -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Radio / Checkbox</span>
+    <h1>Один выбор vs множественный</h1>
+    <p class="code-title">3.html</p>
+    <pre>
+&lt;fieldset&gt;
+    &lt;!-- Radio: одинаковый name =&gt; один выбор --&gt;
+    &lt;p&gt;Выберите пол:&lt;/p&gt;
+    &lt;input type="radio" id="male" name="gender" value="male"&gt;
+    &lt;label for="male"&gt;Мужской&lt;/label&gt;
+    &lt;input type="radio" id="female" name="gender" value="female"&gt;
+    &lt;label for="female"&gt;Женский&lt;/label&gt;
+&lt;/fieldset&gt;
+&lt;fieldset&gt;
+    &lt;!-- Checkbox: value у каждого свой --&gt;
+    &lt;p&gt;Выберите интересы:&lt;/p&gt;
+    &lt;input type="checkbox" id="sports" name="interests" value="sports"&gt;
+    &lt;label for="sports"&gt;Спорт&lt;/label&gt;
+    &lt;input type="checkbox" id="music" name="interests" value="music"&gt;
+    &lt;label for="music"&gt;Музыка&lt;/label&gt;
+&lt;/fieldset&gt;
+</pre>
+    <ul style="margin-top:14px">
+      <li>Обязательный <code>value</code> — иначе уйдёт значение «on»</li>
+      <li>Radio группируются по <code>name</code></li>
+    </ul>
+  </div></section>
+  <!-- 6 · Select -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Select</span>
+    <h1>select + option</h1>
+    <p class="code-title">3.html</p>
+    <pre>
+&lt;label for="country"&gt;Страна:&lt;/label&gt;
+&lt;select id="country" name="country"&gt;
+    &lt;option value=""&gt;-- Выберите страну --&lt;/option&gt;
+    &lt;option value="ru"&gt;Россия&lt;/option&gt;
+    &lt;option value="us"&gt;США&lt;/option&gt;
+    &lt;option value="de"&gt;Германия&lt;/option&gt;
+&lt;/select&gt;
+
+&lt;!-- Множественный выбор --&gt;
+&lt;select id="languages" name="languages" multiple size="4"&gt;
+    &lt;option value="js"&gt;JavaScript&lt;/option&gt;
+    &lt;option value="py"&gt;Python&lt;/option&gt;
+    &lt;option value="java"&gt;Java&lt;/option&gt;
+    &lt;option value="cpp"&gt;C++&lt;/option&gt;
+&lt;/select&gt;
+</pre>
+    <li><code>multiple size="4"</code> — список с выбором нескольких</li>
+  </div></section>
+  <!-- 7 · Textarea и кнопки -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Textarea и кнопки</span>
+    <h1>Многострочный текст · fieldset/legend</h1>
+    <p class="code-title">3.html</p>
+    <pre>
+&lt;fieldset&gt;
+    &lt;legend&gt;Контактная информация&lt;/legend&gt;
+    &lt;label for="message"&gt;Сообщение:&lt;/label&gt;
+    &lt;textarea id="message" name="message"
+              rows="4" cols="50"
+              placeholder="Введите ваше сообщение..."&gt;&lt;/textarea&gt;
+&lt;/fieldset&gt;
+
+&lt;button type="submit"&gt;Отправить&lt;/button&gt;
+&lt;button type="reset"&gt;Очистить&lt;/button&gt;
+&lt;button type="button"&gt;Простая кнопка&lt;/button&gt;
+</pre>
+    <ul style="margin-top:14px">
+      <li><code>fieldset/legend</code> — рамка и заголовок группы полей</li>
+      <li><code>reset</code> сбрасывает форму, <code>button</code> ничего не шлёт</li>
+    </ul>
+  </div></section>
+  <!-- 8 · Валидация -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Атрибуты валидации</span>
+    <h1>required · minlength · pattern</h1>
+    <p class="code-title">4.html</p>
+    <pre>
+&lt;div&gt;
+    &lt;label for="username"&gt;Валидация длины&lt;/label&gt;
+    &lt;input type="text" name="username" required minlength="3" maxlength="20"&gt;
+&lt;/div&gt;
+&lt;div&gt;
+    &lt;label for="age"&gt;Валидация числа&lt;/label&gt;
+    &lt;input type="number" name="age" min="18" max="99"&gt;
+&lt;/div&gt;
+&lt;div&gt;
+    &lt;label for="zipcode"&gt;Валидация по pattern&lt;/label&gt;
+    &lt;input type="text" name="zipcode" pattern="[0-9]{5}"
+           title="Почтовый индекс (5 цифр)"&gt;
+&lt;/div&gt;
+&lt;div&gt;
+    &lt;label for="email"&gt;Валидация email&lt;/label&gt;
+    &lt;input type="email" name="email" required&gt;
+&lt;/div&gt;
+</pre>
+    <ul style="margin-top:14px">
+      <li><code>pattern</code> + <code>title</code> — подсказка при ошибке</li>
+      <li>Email проверяется браузером автоматически</li>
+    </ul>
+  </div></section>
+  <!-- 9 · Отправка -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Отправка</span>
+    <h1>GET vs POST</h1>
+    <table style="margin-top:14px">
+      <tr><th>method</th><th>Когда</th><th>Где данные</th></tr>
+      <tr><td><code>GET</code></td><td>поиск, фильтры</td><td>в URL: <code>?q=…</code></td></tr>
+      <tr><td><code>POST</code></td><td>регистрация, формы</td><td>в теле запроса</td></tr>
+    </table>
+    <ul style="margin-top:16px">
+      <li>Обычные формы: <code>application/x-www-form-urlencoded</code></li>
+      <li>Файлы: <code>enctype="multipart/form-data"</code></li>
+      <li>Без <code>action</code> — отправка на текущую страницу</li>
+    </ul>
+  </div></section>
+  <!-- 10 · Обработка на JS -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Обработка на JS</span>
+    <h1>submit + preventDefault + FormData</h1>
+    <p class="code-title">5.html</p>
+    <pre>
+const form = document.getElementById('registrationForm');
+
+form.addEventListener('submit', function (event) {
+    event.preventDefault();                     // отменяем стандартную отправку
+    const formData = new FormData(this);         // собираем данные формы
+    const data = Object.fromEntries(formData.entries());
+    console.log('Данные для отправки:', data);
+});
+</pre>
+    <ul style="margin-top:14px">
+      <li><code>preventDefault()</code> — JS сам решает, что делать</li>
+      <li><code>FormData</code> + <code>entries()</code> — данные как объект</li>
+      <li>Дальше — валидация и отправка через <code>fetch</code></li>
+    </ul>
+  </div></section>
+  <!-- 11 · Форма → fetch → DOM -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Связка тем 3 и 4</span>
+    <h1>Форма → fetch → рендер результата</h1>
+    <p class="code-title"></p>
+    <pre>
+const form = document.getElementById('registrationForm');
+
+form.addEventListener('submit', async (event) =&gt; {
+    event.preventDefault();
+    const data = Object.fromEntries(new FormData(form).entries());
+
+    if (!data.username || !data.email.includes('@')) return; // валидация
+
+    const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+    const result = await response.json();
+
+    document.getElementById('result').textContent = result.message; // в DOM!
+});
+</pre>
+    <p class="foot-note">DOM (тема 3) + асинхронность (тема 4) + формы = любая реальная лаба.</p>
+  </div></section>
+  <!-- 12 · Итоги -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Итоги</span>
+    <h1>Формы</h1>
+    <ul style="margin-top:14px">
+      <li>Разметка: <strong>form + label + input + select + textarea</strong></li>
+      <li>Валидация: <strong>required, min/max, pattern</strong> — браузером</li>
+      <li>Обработка: <strong>onSubmit → preventDefault → FormData</strong></li>
+      <li>Отправка: <strong>fetch(POST) → рендер ответа в DOM</strong></li>
+      <li>Управляемые формы в React — та же идея (тема 8)</li>
+    </ul>
+  </div></section>
+
+</div>
+
+<div class="counter" id="counter"></div>
+<div class="controls">
+  <button class="ctrl-btn" id="prev" title="Назад">‹</button>
+  <button class="ctrl-btn" id="next" title="Вперёд">›</button>
+</div>
+<div class="dots" id="dots"></div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll(".slide"));
+  let cur = 0;
+  const counter = document.getElementById("counter");
+  const progress = document.getElementById("progress");
+  const dotsWrap = document.getElementById("dots");
+  const dots = slides.map((_, i) => {
+    const b = document.createElement("button");
+    b.className = "dot"; b.title = "Слайд " + (i + 1);
+    b.addEventListener("click", () => go(i));
+    dotsWrap.appendChild(b);
+    return b;
+  });
+  function go(i) {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, k) => s.classList.toggle("active", k === cur));
+    dots.forEach((d, k) => d.classList.toggle("active", k === cur));
+    counter.textContent = (cur + 1) + " / " + slides.length;
+    progress.style.width = ((cur + 1) / slides.length * 100) + "%";
+    const fr = slides[cur].querySelector && slides[cur].querySelector(".frame");
+    if (fr) fr.scrollTop = 0;
+  }
+  const next = () => go(cur + 1);
+  const prev = () => go(cur - 1);
+  document.getElementById("next").addEventListener("click", next);
+  document.getElementById("prev").addEventListener("click", prev);
+  document.addEventListener("keydown", e => {
+    if (["ArrowRight", "ArrowDown", "PageDown", " ", "Enter"].includes(e.key)) { e.preventDefault(); next(); }
+    if (["ArrowLeft", "ArrowUp", "PageUp"].includes(e.key)) { e.preventDefault(); prev(); }
+    if (e.key === "Home") go(0);
+    if (e.key === "End") go(slides.length - 1);
+  });
+
+  /* клик ЛКМ по пустому месту листает вперёд */
+  document.addEventListener("click", e => {
+    if (e.button !== 0) return;
+    const tag = (e.target.tagName || "").toLowerCase();
+    if (["button", "a"].includes(tag)) return;          // кнопки/ссылки — мимо
+    if (e.target.closest(".controls, .dots, .counter")) return;
+    if (e.target.closest(".frame")) {
+      // клик по контенту: не листаем, если удерживали/выделяли текст
+      if (window.getSelection && window.getSelection().toString()) return;
+    }
+    next();
+  });
+
+  /* скролл листает слайды */
+  let wheelLock = false;
+  document.addEventListener("wheel", e => {
+    const dy = e.deltaY;
+    const dx = e.deltaX;
+    const absD = Math.abs(dy) > Math.abs(dx) ? dy : dx;
+    if (absD === 0) return;
+
+    // если у текущего слайда рамка переполнена — скроллим её, слайды не листаем
+    const frame = slides[cur].querySelector && slides[cur].querySelector(".frame");
+    if (frame && frame.scrollHeight > frame.clientHeight + 2) {
+      const atBottom = frame.scrollTop + frame.clientHeight >= frame.scrollHeight - 2;
+      const atTop = frame.scrollTop <= 2;
+      const down = absD > 0;
+      if ((down && !atBottom) || (!down && !atTop)) {
+        frame.scrollTop += absD;
+        return;
+      }
+    }
+
+    if (wheelLock) return;
+    e.preventDefault();
+    wheelLock = true;
+    absD > 0 ? next() : prev();
+    setTimeout(() => { wheelLock = false; }, 700);
+  }, { passive: false });
+
+  go(0);
+</script>
+</body>
+</html>

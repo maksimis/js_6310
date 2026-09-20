@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Тема 6 · Node.js, npm и реальные приложения · Группа 6310</title>
+<style>
+  :root {
+    --accent: #058DC7;
+    --accent-dark: #0472a0;
+    --accent-soft: #e3f2fb;
+    --dark: #20242b;
+    --gray: #5b6470;
+    --bg: #f2f5f8;
+    --card: #ffffff;
+    --green: #1e8e3e;
+    --red: #c0392b;
+    --amber: #b7791f;
+    --code-bg: #f6f8fa;
+    --code-fg: #20242b;
+    --code-border: #dce3ea;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: radial-gradient(1200px 700px at 80% -10%, #dbeef9 0%, var(--bg) 55%);
+    color: var(--dark);
+    overflow: hidden;
+  }
+
+  /* ---------- slide deck ---------- */
+  .deck { height: 100%; position: relative; }
+  .slide {
+    position: absolute; inset: 0;
+    display: none;
+    padding: 4vh 4vw;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .slide.active { display: flex; }
+
+  .frame {
+    width: 100%; max-width: 1180px;
+    max-height: 92vh;
+    overflow: auto;
+    background: var(--card);
+    border-radius: 22px;
+    box-shadow: 0 24px 60px rgba(20, 40, 70, .14), 0 3px 10px rgba(20, 40, 70, .08);
+    padding: clamp(24px, 4.4vh, 54px) clamp(24px, 4.4vw, 60px);
+    position: relative;
+  }
+  .frame::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 6px; background: linear-gradient(180deg, var(--accent), #5ec3ef);
+    border-radius: 0 8px 8px 0;
+  }
+
+  .eyebrow {
+    display: inline-block;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--accent);
+    background: var(--accent-soft);
+    padding: 5px 12px; border-radius: 999px;
+    margin-bottom: 14px;
+  }
+  h1 { font-size: clamp(30px, 4.6vh, 46px); line-height: 1.15; margin-bottom: 6px; }
+  h2 { font-size: clamp(26px, 3.8vh, 36px); line-height: 1.2; margin-bottom: 18px; color: var(--accent-dark); }
+  h3 { font-size: 20px; margin: 20px 0 8px; color: var(--dark); }
+  p, li { font-size: clamp(15px, 2.3vh, 20px); line-height: 1.55; }
+  ul, ol { list-style: none; }
+  li { position: relative; padding-left: 26px; margin: 7px 0; }
+  li::before {
+    content: "▸"; position: absolute; left: 0; top: 0;
+    color: var(--accent); font-weight: 700;
+  }
+  .muted { color: var(--gray); }
+  .lead { font-size: clamp(16px, 2.6vh, 22px); margin-top: 6px; }
+  strong { color: var(--accent-dark); }
+
+  .two-col { display: grid; grid-template-columns: 1fr minmax(240px, 340px); gap: 28px; align-items: center; }
+  .two-col.flip { grid-template-columns: minmax(240px, 340px) 1fr; }
+  .img-card img { width: 100%; height: auto; border-radius: 14px; box-shadow: 0 10px 26px rgba(0,0,0,.16); display: block; }
+
+  /* table */
+  table { border-collapse: collapse; width: 100%; margin: 6px 0; font-size: clamp(15px, 2.2vh, 19px); }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid #e4e9ef; }
+  th { background: var(--accent); color: #fff; font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #f6f9fc; }
+  th:first-child { border-radius: 10px 0 0 0; }
+  th:last-child { border-radius: 0 10px 0 0; }
+  .good { color: var(--green); font-weight: 700; }
+  .bad { color: var(--red); font-weight: 700; }
+
+  /* checklist */
+  .check li::before { content: "✅"; }
+  .wrong li::before { content: "❌"; }
+  .ok li::before { content: "✔"; color: var(--green); }
+
+  /* code block */
+  pre {
+    background: var(--code-bg); color: var(--code-fg);
+    border: 1px solid var(--code-border);
+    border-radius: 14px; padding: 20px 24px;
+    font: 14px/1.6 "Consolas", "Cascadia Code", monospace;
+    overflow-x: auto; margin: 10px 0;
+  }
+  .code-title { font: 12px "Consolas", monospace; color: var(--gray); margin: 14px 0 0; }
+
+  /* steps */
+  .steps { counter-reset: step; list-style: none; }
+  .steps li {
+    counter-increment: step; padding-left: 0; margin: 12px 0;
+    display: grid; grid-template-columns: 38px 1fr; gap: 14px; align-items: baseline;
+  }
+  .steps li::before {
+    content: counter(step);
+    position: static; width: 38px; height: 38px; line-height: 38px;
+    text-align: center; border-radius: 50%;
+    background: var(--accent); color: #fff; font-weight: 700; font-size: 17px;
+  }
+  .steps b { color: var(--accent-dark); }
+
+  /* cycle diagram */
+  .cycle-wrap { display: flex; flex-direction: column; align-items: center; }
+  .cycle svg { width: min(76vh, 820px); height: auto; display: block; }
+  .cycle-node rect.card { fill: #fff; stroke: var(--accent); stroke-width: 2; rx: 18; }
+  .cycle-node .node-title { fill: var(--accent-dark); font-weight: 700; }
+  .cycle-node .node-strike { fill: var(--gray); }
+  .cycle-node .node-line { fill: var(--red); font-weight: 700; }
+  .cycle .cycle-arrow { fill: none; stroke: var(--accent); stroke-width: 4; stroke-linecap: round; }
+  .cycle .cycle-arrowhead { fill: var(--accent); }
+
+  /* title slide */
+  .title-frame {
+    text-align: center; background:
+      linear-gradient(150deg, rgba(5,141,199,.10), rgba(255,255,255,0) 60%),
+      var(--card);
+  }
+  .title-frame::before { width: 100%; height: 6px; border-radius: 0 0 8px 8px; top: auto; bottom: 0; }
+  .title-frame h1 { font-size: clamp(38px, 6.4vh, 58px); color: var(--accent-dark); }
+  .title-frame .sub { font-size: clamp(18px, 2.8vh, 24px); color: var(--gray); margin-top: 10px; }
+  .title-frame .teacher { font-size: clamp(16px, 2.4vh, 20px); margin-top: 22px; font-weight: 600; }
+  .badge-row { margin-top: 20px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .badge {
+    border: 1px solid var(--accent); color: var(--accent); border-radius: 999px;
+    padding: 7px 16px; font-weight: 600; font-size: 15px; background: #fff;
+  }
+
+  /* nav */
+  .controls { position: fixed; right: 18px; bottom: 14px; z-index: 50; display: flex; gap: 8px; }
+  .ctrl-btn {
+    width: 40px; height: 40px; border-radius: 10px; border: none; cursor: pointer;
+    background: #ffffffdd; color: var(--accent-dark); font-size: 18px; font-weight: 700;
+    box-shadow: 0 6px 16px rgba(0,0,0,.18); backdrop-filter: blur(4px);
+  }
+  .ctrl-btn:hover { background: var(--accent); color: #fff; }
+  .counter { position: fixed; left: 18px; bottom: 14px; z-index: 50;
+    font: 600 13px/38px "Segoe UI", Arial; color: var(--gray);
+    background: #ffffffcc; padding: 0 14px; border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,.12); backdrop-filter: blur(4px);
+  }
+  .progress {
+    position: fixed; left: 0; top: 0; height: 5px; background: var(--accent);
+    z-index: 60; width: 0%; transition: width .25s ease; border-radius: 0 0 4px 0;
+  }
+  .dots { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    z-index: 50; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: 60vw; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; border: none; cursor: pointer;
+    background: #b6c6d6; transition: background .2s, transform .2s; }
+  .dot.active { background: var(--accent); transform: scale(1.35); }
+
+  .foot-note { margin-top: 16px; font-size: 12px; color: var(--gray); }
+
+  @media (max-width: 760px) {
+    .two-col, .two-col.flip { grid-template-columns: 1fr; }
+    .frame { padding: 22px; max-height: 86vh; }
+  }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="deck" id="deck">
+    <section class="slide"><div class="frame title-frame">
+    <h1 id="t-title">Тема 6 · Node.js, npm и создание реальных приложений</h1>
+    <div class="badge-row"><span class="badge">Курс «JavaScript»</span><span class="badge">Группа 6310</span><span class="badge">2026</span></div>
+    <div class="teacher">{FIO_prepod}</div>  </div></section>
+  <!-- 1 · Node.js -->
+  <section class="slide"><div class="frame">
+    <div class="two-col" style="align-items:start">
+      <div>
+<h1>Node.js</h1>
+        <ul style="margin-top:14px">
+          <li>Среда выполнения <strong>JS вне браузера</strong> на движке V8</li>
+          <li>Событийная <strong>неблокирующая</strong> I/O — тот же Event Loop</li>
+          <li>Где используется: серверы, утилиты, инструменты сборки</li>
+          <li><strong>npm</strong> — крупнейший реестр пакетов (альтернатива — Yarn)</li>
+        </ul>
+      </div>
+      <div class="img-card">
+        <img src="06_node/slide1_0.png" alt="Мем: Node.js проект">
+      </div>
+    </div>
+  </div></section>
+  <!-- 2 · Повторение JS -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Повторение JS</span>
+    <h1>Всё, что вы уже знаете</h1>
+    <ul style="margin-top:14px">
+      <li><code>let</code>/<code>const</code>, <code>undefined</code> vs <code>null</code></li>
+      <li>function expression и <strong>стрелочные функции</strong> (полная и сокращённая)</li>
+      <li>Замыкания и <strong>каррирование</strong></li>
+      <li>Классы: <code>extends</code>, <code>super</code></li>
+    </ul>
+    <p class="lead" style="margin-top:18px">В Node используется ровно тот же JavaScript — без браузера.</p>
+  </div></section>
+  <!-- 3 · Установка -->
+  <section class="slide"><div class="frame">
+    <div class="two-col" style="align-items:start">
+      <div>
+<h1>Установка</h1>
+        <ul style="margin-top:14px">
+          <li>Сайт <strong>nodejs.org</strong> → LTS-версия</li>
+          <li>npm устанавливается <strong>вместе с Node</strong></li>
+          <li>Проверка: <code>node --version</code>, <code>npm --version</code></li>
+          <li>Рекомендация: менеджер версий <strong>nvm</strong> (для разных версий Node)</li>
+        </ul>
+      </div>
+      <div class="img-card">
+        <img src="06_node/slide12_0.png" alt="Мем: слышал Node.js">
+      </div>
+    </div>
+  </div></section>
+  <!-- 4 · Основы npm -->
+  <section class="slide"><div class="frame">
+    <div class="two-col" style="align-items:start">
+      <div>
+<h1>Основы npm</h1>
+        <ul style="margin-top:14px">
+          <li><code>npm init -y</code> — новый проект; <code>npm init es6 -y</code> — с ES-модулями</li>
+          <li><code>npm install</code> / <code>--save-dev</code> / <code>-g</code></li>
+          <li><code>npm uninstall</code>, <code>npm update</code></li>
+          <li><code>npx</code> — запуск пакета без установки: <code>npx cowsay</code></li>
+        </ul>
+      </div>
+      <div class="img-card">
+        <img src="06_node/slide5_0.png" alt="Мем: жду npm install">
+      </div>
+    </div>
+  </div></section>
+  <!-- 5 · package.json -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">package.json</span>
+    <h1>Манифест проекта</h1>
+    <p class="code-title">4_package_json/package.json</p>
+    <pre>
+{
+  "name": "init_es6",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "jest --passWithNoTests"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "jest": "^30.2.0"
+  }
+}
+</pre>
+    <ul style="margin-top:14px">
+      <li><code>scripts</code> — команды проекта: <code>npm run dev</code>, <code>npm test</code></li>
+      <li><code>dependencies</code> vs <code>devDependencies</code></li>
+    </ul>
+  </div></section>
+  <!-- 6 · Структура и модули -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Структура приложения</span>
+    <h1>Модули: CommonJS vs ES6</h1>
+    <div class="two-col" style="align-items:start; margin-top:14px">
+      <div>
+    <p class="code-title">utils/math.js (CommonJS)</p>
+    <pre>
+module.exports = {
+    sum: (a, b) =&gt; a + b,
+    multiply: (a, b) =&gt; a * b
+};
+</pre>
+      </div>
+      <div>
+    <p class="code-title">utils/math.js (ES6)</p>
+    <pre>
+export function sum(a, b) {
+    return a + b;
+}
+export function multiply(a, b) {
+    return a * b;
+}
+</pre>
+      </div>
+    </div>
+    <p class="foot-note">ES6-модули включаются полем <code>"type": "module"</code> в package.json.</p>
+  </div></section>
+  <!-- 7 · Тестирование -->
+  <section class="slide"><div class="frame">
+    <div class="two-col" style="align-items:start">
+      <div>
+<h1>Тестирование</h1>
+        <ul style="margin-top:14px">
+          <li>Юнит- и интеграционные тесты</li>
+          <li><strong>Jest</strong> (популярный) vs Mocha + Chai</li>
+          <li>Польза: ранние ошибки, безопасный рефакторинг, документация поведения</li>
+          <li><code>npm i -D jest</code> + скрипты <code>test</code>/<code>test:watch</code>/<code>test:coverage</code></li>
+        </ul>
+      </div>
+      <div class="img-card">
+        <img src="06_node/slide8_0.png" alt="Иллюстрация структуры node_modules">
+      </div>
+    </div>
+  </div></section>
+  <!-- 8 · Написание тестов -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Jest</span>
+    <h1>describe · test · expect</h1>
+    <p class="code-title">tests/math.test.js</p>
+    <pre>
+import * as math from '../src/utils';
+import { describe, test, expect } from '@jest/globals';
+
+describe('Math module', () =&gt; {
+    test('sums two numbers correctly', () =&gt; {
+        expect(math.sum(2, 3)).toBe(5);
+    });
+    test('multiplies two numbers correctly', () =&gt; {
+        expect(math.multiply(2, 3)).toBe(6);
+    });
+    test('sum handles negative numbers', () =&gt; {
+        expect(math.sum(-1, -2)).toBe(-3);
+    });
+});
+</pre>
+    <li><code>describe</code> группирует, <code>test</code> — случай, <code>expect(...).toBe(...)</code> — проверка</li>
+  </div></section>
+  <!-- 9 · Telegram-бот -->
+  <section class="slide"><div class="frame">
+    <div class="two-col" style="align-items:start">
+      <div>
+<h1>Практика: Telegram-бот</h1>
+    <p class="code-title">src/index.js</p>
+    <pre>
+import TelegramBot from 'node-telegram-bot-api';
+import dotenv from 'dotenv';
+
+dotenv.config();
+const token = process.env.TELEGRAM_BOT_TOKEN;
+
+const bot = new TelegramBot(token, { polling: true });
+
+bot.onText(/\/start/, (msg) =&gt; {
+    bot.sendMessage(msg.chat.id, 'Привет! Я твой первый бот!');
+});
+
+bot.on('message', (msg) =&gt; {
+    if (msg.text !== '/start') {
+        bot.sendMessage(msg.chat.id, `Вы сказали: "${msg.text}"`);
+    }
+});
+</pre>
+      </div>
+      <div class="img-card">
+        <img src="06_node/slide13_0.png" alt="Скриншот кода Telegram-бота">
+      </div>
+    </div>
+    <p class="foot-note">Токен — через BotFather; хранить в .env, читать через dotenv.</p>
+  </div></section>
+  <!-- 10 · Бот: как это работает -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Telegram-бот</span>
+    <h1>BotFather · webhook vs polling</h1>
+    <ul style="margin-top:14px">
+      <li><strong>BotFather</strong> — создание бота и получение токена в Телеграме</li>
+      <li><strong>Polling</strong> — бот сам опрашивает сервер (просто, без сервера)</li>
+      <li><strong>Webhook</strong> — Telegram сам шлёт события на URL (нужен сервер)</li>
+      <li><code>nodemon</code> — авто-перезапуск при изменении кода</li>
+      <li>Polling — наглядная демонстрация событийного цикла из темы 4</li>
+    </ul>
+  </div></section>
+  <!-- 11 · Mocking -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Mocking</span>
+    <h1>jest.fn() · jest.mock()</h1>
+    <p class="code-title"></p>
+    <pre>
+import TelegramBot from 'node-telegram-bot-api';
+
+jest.mock('node-telegram-bot-api');   // заменяем библиотеку моком
+
+const mockSend = jest.fn();
+TelegramBot.mockImplementation(() =&gt; ({
+    onText: jest.fn(),
+    on: jest.fn(),
+    sendMessage: mockSend
+}));
+
+test('бот отвечает на /start', async () =&gt; {
+    require('../src/index');
+    expect(TelegramBot).toHaveBeenCalledWith(expect.anything(),
+        { polling: true });
+});
+</pre>
+    <ul style="margin-top:14px">
+      <li><code>mockResolvedValue</code> — замок ответа промиса для async/await</li>
+      <li>Интеграционный тест бота проверяет, что <code>onText</code> вызван</li>
+    </ul>
+  </div></section>
+  <!-- 12 · ESLint -->
+  <section class="slide"><div class="frame">
+    <div class="two-col" style="align-items:start">
+      <div>
+<h1>ESLint</h1>
+        <ul style="margin-top:14px">
+          <li>Статический анализ: единый стиль, ошибки до запуска</li>
+          <li><code>npm i -D eslint</code>, <code>npx eslint --init</code>, <code>--fix</code></li>
+          <li>Актуальный формат — <strong>flat config</strong> <code>eslint.config.js</code></li>
+          <li>VS Code: <code>settings.json</code> → <code>source.fixAll.eslint</code></li>
+        </ul>
+      </div>
+      <div class="img-card">
+        <img src="06_node/slide22_0.png" alt="Мем: HEAVIEST OBJECTS IN THE UNIVERSE">
+      </div>
+    </div>
+  </div></section>
+  <!-- 13 · ESLint flat config -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">ESLint 2026</span>
+    <h1>eslint.config.js (flat config)</h1>
+    <p class="code-title">8_eslint/eslint.config.js</p>
+    <pre>
+import js from "@eslint/js";
+import globals from "globals";
+import { defineConfig } from "eslint/config";
+
+export default defineConfig([
+  {
+    files: ["**/*.{js,mjs,cjs}"],
+    plugins: { js },
+    extends: ["js/recommended"],
+    languageOptions: { globals: globals.node }
+  },
+]);
+</pre>
+    <p style="margin-top:14px">Скрипты в package.json:</p>
+    <p class="code-title"></p>
+    <pre>
+"lint": "eslint .",
+"lint:fix": "eslint . --fix"
+</pre>
+    <p class="foot-note">Правила: indent, quotes, semi, no-unused-vars, no-console, prefer-const, eqeqeq.</p>
+  </div></section>
+  <!-- 14 · Рабочий процесс -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Рабочий процесс</span>
+    <h1>Сборка → тесты → линтер → CI</h1>
+    <ol class="steps" style="margin-top:14px">
+      <li><b>Сборка</b> — npm-скрипты: <code>start</code> / <code>dev</code></li>
+      <li><b>Тесты</b> — Jest: юнит + интеграционные (мок бота)</li>
+      <li><b>Линтер</b> — ESLint: единый стиль и ранние ошибки</li>
+      <li><b>CI</b> — то же самое на сервере при каждом PR</li>
+    </ol>
+    <p class="lead" style="margin-top:14px">Этот же процесс ждёт вас в React-проектах тем 8–12.</p>
+  </div></section>
+  <!-- 15 · Итоги -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Итоги</span>
+    <h1>Node.js · npm · реальное приложение</h1>
+    <ul style="margin-top:14px">
+      <li><strong>Node/npm</strong> — базовый инструмент всего курса</li>
+      <li><strong>package.json</strong> — манифест со скриптами и зависимостями</li>
+      <li><strong>Jest</strong> — тестируем утилиты и бота через моки</li>
+      <li><strong>ESLint (flat)</strong> — автоподдержка стиля</li>
+      <li>Telegram-бот — готовый pet-проект для GitHub и курсовых</li>
+    </ul>
+  </div></section>
+
+</div>
+
+<div class="counter" id="counter"></div>
+<div class="controls">
+  <button class="ctrl-btn" id="prev" title="Назад">‹</button>
+  <button class="ctrl-btn" id="next" title="Вперёд">›</button>
+</div>
+<div class="dots" id="dots"></div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll(".slide"));
+  let cur = 0;
+  const counter = document.getElementById("counter");
+  const progress = document.getElementById("progress");
+  const dotsWrap = document.getElementById("dots");
+  const dots = slides.map((_, i) => {
+    const b = document.createElement("button");
+    b.className = "dot"; b.title = "Слайд " + (i + 1);
+    b.addEventListener("click", () => go(i));
+    dotsWrap.appendChild(b);
+    return b;
+  });
+  function go(i) {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, k) => s.classList.toggle("active", k === cur));
+    dots.forEach((d, k) => d.classList.toggle("active", k === cur));
+    counter.textContent = (cur + 1) + " / " + slides.length;
+    progress.style.width = ((cur + 1) / slides.length * 100) + "%";
+    const fr = slides[cur].querySelector && slides[cur].querySelector(".frame");
+    if (fr) fr.scrollTop = 0;
+  }
+  const next = () => go(cur + 1);
+  const prev = () => go(cur - 1);
+  document.getElementById("next").addEventListener("click", next);
+  document.getElementById("prev").addEventListener("click", prev);
+  document.addEventListener("keydown", e => {
+    if (["ArrowRight", "ArrowDown", "PageDown", " ", "Enter"].includes(e.key)) { e.preventDefault(); next(); }
+    if (["ArrowLeft", "ArrowUp", "PageUp"].includes(e.key)) { e.preventDefault(); prev(); }
+    if (e.key === "Home") go(0);
+    if (e.key === "End") go(slides.length - 1);
+  });
+
+  /* клик ЛКМ по пустому месту листает вперёд */
+  document.addEventListener("click", e => {
+    if (e.button !== 0) return;
+    const tag = (e.target.tagName || "").toLowerCase();
+    if (["button", "a"].includes(tag)) return;          // кнопки/ссылки — мимо
+    if (e.target.closest(".controls, .dots, .counter")) return;
+    if (e.target.closest(".frame")) {
+      // клик по контенту: не листаем, если удерживали/выделяли текст
+      if (window.getSelection && window.getSelection().toString()) return;
+    }
+    next();
+  });
+
+  /* скролл листает слайды */
+  let wheelLock = false;
+  document.addEventListener("wheel", e => {
+    const dy = e.deltaY;
+    const dx = e.deltaX;
+    const absD = Math.abs(dy) > Math.abs(dx) ? dy : dx;
+    if (absD === 0) return;
+
+    // если у текущего слайда рамка переполнена — скроллим её, слайды не листаем
+    const frame = slides[cur].querySelector && slides[cur].querySelector(".frame");
+    if (frame && frame.scrollHeight > frame.clientHeight + 2) {
+      const atBottom = frame.scrollTop + frame.clientHeight >= frame.scrollHeight - 2;
+      const atTop = frame.scrollTop <= 2;
+      const down = absD > 0;
+      if ((down && !atBottom) || (!down && !atTop)) {
+        frame.scrollTop += absD;
+        return;
+      }
+    }
+
+    if (wheelLock) return;
+    e.preventDefault();
+    wheelLock = true;
+    absD > 0 ? next() : prev();
+    setTimeout(() => { wheelLock = false; }, 700);
+  }, { passive: false });
+
+  go(0);
+</script>
+</body>
+</html>

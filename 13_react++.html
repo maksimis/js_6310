@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Тема 13 · От React к фреймворкам и production · Группа 6310</title>
+<style>
+  :root {
+    --accent: #058DC7;
+    --accent-dark: #0472a0;
+    --accent-soft: #e3f2fb;
+    --dark: #20242b;
+    --gray: #5b6470;
+    --bg: #f2f5f8;
+    --card: #ffffff;
+    --green: #1e8e3e;
+    --red: #c0392b;
+    --amber: #b7791f;
+    --code-bg: #f6f8fa;
+    --code-fg: #20242b;
+    --code-border: #dce3ea;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: radial-gradient(1200px 700px at 80% -10%, #dbeef9 0%, var(--bg) 55%);
+    color: var(--dark);
+    overflow: hidden;
+  }
+
+  /* ---------- slide deck ---------- */
+  .deck { height: 100%; position: relative; }
+  .slide {
+    position: absolute; inset: 0;
+    display: none;
+    padding: 4vh 4vw;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .slide.active { display: flex; }
+
+  .frame {
+    width: 100%; max-width: 1180px;
+    max-height: 92vh;
+    overflow: auto;
+    background: var(--card);
+    border-radius: 22px;
+    box-shadow: 0 24px 60px rgba(20, 40, 70, .14), 0 3px 10px rgba(20, 40, 70, .08);
+    padding: clamp(24px, 4.4vh, 54px) clamp(24px, 4.4vw, 60px);
+    position: relative;
+  }
+  .frame::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 6px; background: linear-gradient(180deg, var(--accent), #5ec3ef);
+    border-radius: 0 8px 8px 0;
+  }
+
+  .eyebrow {
+    display: inline-block;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--accent);
+    background: var(--accent-soft);
+    padding: 5px 12px; border-radius: 999px;
+    margin-bottom: 14px;
+  }
+  h1 { font-size: clamp(30px, 4.6vh, 46px); line-height: 1.15; margin-bottom: 6px; }
+  h2 { font-size: clamp(26px, 3.8vh, 36px); line-height: 1.2; margin-bottom: 18px; color: var(--accent-dark); }
+  h3 { font-size: 20px; margin: 20px 0 8px; color: var(--dark); }
+  p, li { font-size: clamp(15px, 2.3vh, 20px); line-height: 1.55; }
+  ul, ol { list-style: none; }
+  li { position: relative; padding-left: 26px; margin: 7px 0; }
+  li::before {
+    content: "▸"; position: absolute; left: 0; top: 0;
+    color: var(--accent); font-weight: 700;
+  }
+  .muted { color: var(--gray); }
+  .lead { font-size: clamp(16px, 2.6vh, 22px); margin-top: 6px; }
+  strong { color: var(--accent-dark); }
+
+  .two-col { display: grid; grid-template-columns: 1fr minmax(240px, 340px); gap: 28px; align-items: center; }
+  .two-col.flip { grid-template-columns: minmax(240px, 340px) 1fr; }
+  .img-card img { width: 100%; height: auto; border-radius: 14px; box-shadow: 0 10px 26px rgba(0,0,0,.16); display: block; }
+
+  /* table */
+  table { border-collapse: collapse; width: 100%; margin: 6px 0; font-size: clamp(15px, 2.2vh, 19px); }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid #e4e9ef; }
+  th { background: var(--accent); color: #fff; font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #f6f9fc; }
+  th:first-child { border-radius: 10px 0 0 0; }
+  th:last-child { border-radius: 0 10px 0 0; }
+  .good { color: var(--green); font-weight: 700; }
+  .bad { color: var(--red); font-weight: 700; }
+
+  /* checklist */
+  .check li::before { content: "✅"; }
+  .wrong li::before { content: "❌"; }
+  .ok li::before { content: "✔"; color: var(--green); }
+
+  /* code block */
+  pre {
+    background: var(--code-bg); color: var(--code-fg);
+    border: 1px solid var(--code-border);
+    border-radius: 14px; padding: 20px 24px;
+    font: 14px/1.6 "Consolas", "Cascadia Code", monospace;
+    overflow-x: auto; margin: 10px 0;
+  }
+  .code-title { font: 12px "Consolas", monospace; color: var(--gray); margin: 14px 0 0; }
+
+  /* steps */
+  .steps { counter-reset: step; list-style: none; }
+  .steps li {
+    counter-increment: step; padding-left: 0; margin: 12px 0;
+    display: grid; grid-template-columns: 38px 1fr; gap: 14px; align-items: baseline;
+  }
+  .steps li::before {
+    content: counter(step);
+    position: static; width: 38px; height: 38px; line-height: 38px;
+    text-align: center; border-radius: 50%;
+    background: var(--accent); color: #fff; font-weight: 700; font-size: 17px;
+  }
+  .steps b { color: var(--accent-dark); }
+
+  /* cycle diagram */
+  .cycle-wrap { display: flex; flex-direction: column; align-items: center; }
+  .cycle svg { width: min(76vh, 820px); height: auto; display: block; }
+  .cycle-node rect.card { fill: #fff; stroke: var(--accent); stroke-width: 2; rx: 18; }
+  .cycle-node .node-title { fill: var(--accent-dark); font-weight: 700; }
+  .cycle-node .node-strike { fill: var(--gray); }
+  .cycle-node .node-line { fill: var(--red); font-weight: 700; }
+  .cycle .cycle-arrow { fill: none; stroke: var(--accent); stroke-width: 4; stroke-linecap: round; }
+  .cycle .cycle-arrowhead { fill: var(--accent); }
+
+  /* title slide */
+  .title-frame {
+    text-align: center; background:
+      linear-gradient(150deg, rgba(5,141,199,.10), rgba(255,255,255,0) 60%),
+      var(--card);
+  }
+  .title-frame::before { width: 100%; height: 6px; border-radius: 0 0 8px 8px; top: auto; bottom: 0; }
+  .title-frame h1 { font-size: clamp(38px, 6.4vh, 58px); color: var(--accent-dark); }
+  .title-frame .sub { font-size: clamp(18px, 2.8vh, 24px); color: var(--gray); margin-top: 10px; }
+  .title-frame .teacher { font-size: clamp(16px, 2.4vh, 20px); margin-top: 22px; font-weight: 600; }
+  .badge-row { margin-top: 20px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .badge {
+    border: 1px solid var(--accent); color: var(--accent); border-radius: 999px;
+    padding: 7px 16px; font-weight: 600; font-size: 15px; background: #fff;
+  }
+
+  /* nav */
+  .controls { position: fixed; right: 18px; bottom: 14px; z-index: 50; display: flex; gap: 8px; }
+  .ctrl-btn {
+    width: 40px; height: 40px; border-radius: 10px; border: none; cursor: pointer;
+    background: #ffffffdd; color: var(--accent-dark); font-size: 18px; font-weight: 700;
+    box-shadow: 0 6px 16px rgba(0,0,0,.18); backdrop-filter: blur(4px);
+  }
+  .ctrl-btn:hover { background: var(--accent); color: #fff; }
+  .counter { position: fixed; left: 18px; bottom: 14px; z-index: 50;
+    font: 600 13px/38px "Segoe UI", Arial; color: var(--gray);
+    background: #ffffffcc; padding: 0 14px; border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,.12); backdrop-filter: blur(4px);
+  }
+  .progress {
+    position: fixed; left: 0; top: 0; height: 5px; background: var(--accent);
+    z-index: 60; width: 0%; transition: width .25s ease; border-radius: 0 0 4px 0;
+  }
+  .dots { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    z-index: 50; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: 60vw; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; border: none; cursor: pointer;
+    background: #b6c6d6; transition: background .2s, transform .2s; }
+  .dot.active { background: var(--accent); transform: scale(1.35); }
+
+  .foot-note { margin-top: 16px; font-size: 12px; color: var(--gray); }
+
+  @media (max-width: 760px) {
+    .two-col, .two-col.flip { grid-template-columns: 1fr; }
+    .frame { padding: 22px; max-height: 86vh; }
+  }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="deck" id="deck">
+    <section class="slide"><div class="frame title-frame">
+    <h1 id="t-title">Тема 13 · От React к фреймворкам и production</h1>
+    <div class="badge-row"><span class="badge">Курс «JavaScript»</span><span class="badge">Группа 6310</span><span class="badge">2026</span></div>
+    <div class="teacher">{FIO_prepod}</div>  </div></section>
+  <!-- 1 · Что изучили -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Итог курса</span>
+    <h1>Что вы умеете</h1>
+    <table style="margin-top:14px">
+      <tr><th>Блок</th><th>Темы</th></tr>
+      <tr><td>Основы JS и TS</td><td>синтаксис, типы, интерфейсы, дженерики</td></tr>
+      <tr><td>Асинхронность</td><td>Promise, async/await, Event Loop</td></tr>
+      <tr><td>Node.js / npm</td><td>серверы, утилиты, сборка</td></tr>
+      <tr><td>React</td><td>компоненты, хуки, Context, Router</td></tr>
+      <tr><td>Продвинутое</td><td>memo/useMemo/useCallback, тесты, деплой</td></tr>
+    </table>
+  </div></section>
+  <!-- 2 · React как библиотека -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">React как библиотека</span>
+    <h1>Что мы настраивали сами</h1>
+    <ul style="margin-top:14px">
+      <li>Роутинг — <strong>React Router</strong></li>
+      <li>Стилизация — <strong>CSS Modules / Tailwind</strong></li>
+      <li>Сборка — <strong>Vite / Webpack</strong></li>
+      <li>API — свои хуки для fetch</li>
+      <li>Архитектура — своя</li>
+    </ul>
+    <p class="lead" style="margin-top:14px">Наш стек для React SPA: <strong>React + React Router + Vite + CSS Modules + fetch</strong></p>
+  </div></section>
+  <!-- 3 · Библиотека vs фреймворк -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Библиотека vs фреймворк</span>
+    <h1>Кто кого вызывает</h1>
+    <table style="margin-top:14px">
+      <tr><th></th><th>Библиотека</th><th>Фреймворк</th></tr>
+      <tr><td>Поток</td><td>Вы вызываете код</td><td>Код вызывает вас</td></tr>
+      <tr><td>Архитектура</td><td>собираете из частей</td><td>определённая, готовая</td></tr>
+      <tr><td>Гибкость</td><td>больше</td><td>меньше</td></tr>
+      <tr><td>Ответственность</td><td>выше</td><td>ниже</td></tr>
+    </table>
+  </div></section>
+  <!-- 4 · React Router как микро-фреймворк -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Микро-фреймворк</span>
+    <h1>Что уже даёт React Router</h1>
+    <ul style="margin-top:14px">
+      <li>Роутинг — маршруты и вложенные layout'ы</li>
+      <li>Data loading — <code>loader</code>/<code>action</code></li>
+      <li>Form handling — обработка форм</li>
+      <li>Auth protection — защита маршрутов</li>
+      <li>Nested layouts — через <code>&lt;Outlet/&gt;</code></li>
+    </ul>
+  </div></section>
+  <!-- 5 · Next.js -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Фреймворки</span>
+    <h1>Next.js</h1>
+    <ul style="margin-top:14px">
+      <li><strong>SSR / SSG / ISR / CSR</strong> — режимы рендеринга</li>
+      <li>File-based routing — маршруты из файлов</li>
+      <li>Оптимизация изображений, шрифтов, скриптов</li>
+      <li>API Routes, стилизация, сборка Webpack</li>
+      <li><code>npx create-next-app@latest --typescript --tailwind --eslint</code></li>
+    </ul>
+  </div></section>
+  <!-- 6 · React Native / Expo -->
+  <section class="slide"><div class="frame">
+    <div class="two-col" style="align-items:start">
+      <div>
+<h1>React Native / Expo</h1>
+        <ul style="margin-top:14px">
+          <li>Кроссплатформенность: <strong>iOS/Android</strong></li>
+          <li>Те же React-принципы — компоненты, props, state</li>
+          <li>Нативные компоненты (<strong>не WebView</strong>)</li>
+          <li>Производительность близка к нативной</li>
+          <li>Старт: <code>npx create-expo-app</code></li>
+        </ul>
+      </div>
+      <div class="img-card">
+        <img src="13_react++/slide8_0.png" alt="Platform support: Android, iOS, web">
+      </div>
+    </div>
+  </div></section>
+  <!-- 7 · Сборка фронтенда -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Сборка</span>
+    <h1>Как фронтенд становится «production»</h1>
+    <ol class="steps" style="margin-top:14px">
+      <li><b>Исходный код</b> — .tsx, .css, assets</li>
+      <li><b>Транспиляция</b> — TS → JS, современный → совместимый</li>
+      <li><b>Бандлинг</b> — объединение модулей</li>
+      <li><b>Минификация</b> — сжатие кода</li>
+      <li><b>Выход</b> — index.html, bundle.js, assets/</li>
+    </ol>
+    <p class="foot-note">npm run build → папка dist/, особенно GitHub Pages.</p>
+  </div></section>
+  <!-- 8 · Статический хостинг -->
+  <section class="slide"><div class="frame">
+    <div class="two-col" style="align-items:start">
+      <div>
+<h1>Хостинг SPA и SSR</h1>
+        <ul style="margin-top:14px">
+          <li><strong>SPA</strong>: заливаем <code>dist/</code> → GitHub Pages, Netlify, Vercel, S3</li>
+          <li><strong>SSR Next.js</strong>: <code>npm run build</code> + <code>npm start</code> на Node-сервере</li>
+          <li>nginx — вариант раздачи статики</li>
+        </ul>
+      </div>
+      <div class="img-card">
+        <img src="13_react++/slide12_0.png" alt="GitHub Pages: публикация из /docs">
+      </div>
+    </div>
+  </div></section>
+  <!-- 9 · Безопасность -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Безопасность — чек-лист</span>
+    <h1>Перед сдачей курсовой</h1>
+    <ul class="check" style="margin-top:14px">
+      <li>CSP — ограничение источников скриптов</li>
+      <li>HTTP-only cookies для токенов</li>
+      <li>Настроенный CORS</li>
+      <li>Регулярное обновление зависимостей</li>
+      <li>Environment variables — никаких секретов в коде</li>
+    </ul>
+    <p class="foot-note">Угрозы: XSS, CSRF, Information leakage, dependency vulnerabilities.</p>
+  </div></section>
+  <!-- 10 · Дальнейший путь -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Дальше</span>
+    <h1>Куда двигаться</h1>
+    <ul style="margin-top:14px">
+      <li>Next.js: App Router, Server Actions</li>
+      <li>React Native, PWA / service workers</li>
+      <li>Облака: AWS / GCP / Azure</li>
+      <li>DevOps: Docker / K8s / CI-CD</li>
+      <li>UI/UX и UI-фреймворки</li>
+    </ul>
+  </div></section>
+  <!-- 11 · Что у вас есть -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Портфолио</span>
+    <h1>Что у вас есть</h1>
+    <ul style="margin-top:14px">
+      <li>JS-расширение для браузера (тема 3)</li>
+      <li>Telegram-бот (тема 6)</li>
+      <li>Веб-проект на TS + React (темы 8–12)</li>
+      <li>Всё можно выложить в <strong>GitHub</strong> и положить в pet-проекты</li>
+      <li>Знания — в резюме; напутствие на экзамен</li>
+    </ul>
+  </div></section>
+
+</div>
+
+<div class="counter" id="counter"></div>
+<div class="controls">
+  <button class="ctrl-btn" id="prev" title="Назад">‹</button>
+  <button class="ctrl-btn" id="next" title="Вперёд">›</button>
+</div>
+<div class="dots" id="dots"></div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll(".slide"));
+  let cur = 0;
+  const counter = document.getElementById("counter");
+  const progress = document.getElementById("progress");
+  const dotsWrap = document.getElementById("dots");
+  const dots = slides.map((_, i) => {
+    const b = document.createElement("button");
+    b.className = "dot"; b.title = "Слайд " + (i + 1);
+    b.addEventListener("click", () => go(i));
+    dotsWrap.appendChild(b);
+    return b;
+  });
+  function go(i) {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, k) => s.classList.toggle("active", k === cur));
+    dots.forEach((d, k) => d.classList.toggle("active", k === cur));
+    counter.textContent = (cur + 1) + " / " + slides.length;
+    progress.style.width = ((cur + 1) / slides.length * 100) + "%";
+    const fr = slides[cur].querySelector && slides[cur].querySelector(".frame");
+    if (fr) fr.scrollTop = 0;
+  }
+  const next = () => go(cur + 1);
+  const prev = () => go(cur - 1);
+  document.getElementById("next").addEventListener("click", next);
+  document.getElementById("prev").addEventListener("click", prev);
+  document.addEventListener("keydown", e => {
+    if (["ArrowRight", "ArrowDown", "PageDown", " ", "Enter"].includes(e.key)) { e.preventDefault(); next(); }
+    if (["ArrowLeft", "ArrowUp", "PageUp"].includes(e.key)) { e.preventDefault(); prev(); }
+    if (e.key === "Home") go(0);
+    if (e.key === "End") go(slides.length - 1);
+  });
+
+  /* клик ЛКМ по пустому месту листает вперёд */
+  document.addEventListener("click", e => {
+    if (e.button !== 0) return;
+    const tag = (e.target.tagName || "").toLowerCase();
+    if (["button", "a"].includes(tag)) return;          // кнопки/ссылки — мимо
+    if (e.target.closest(".controls, .dots, .counter")) return;
+    if (e.target.closest(".frame")) {
+      // клик по контенту: не листаем, если удерживали/выделяли текст
+      if (window.getSelection && window.getSelection().toString()) return;
+    }
+    next();
+  });
+
+  /* скролл листает слайды */
+  let wheelLock = false;
+  document.addEventListener("wheel", e => {
+    const dy = e.deltaY;
+    const dx = e.deltaX;
+    const absD = Math.abs(dy) > Math.abs(dx) ? dy : dx;
+    if (absD === 0) return;
+
+    // если у текущего слайда рамка переполнена — скроллим её, слайды не листаем
+    const frame = slides[cur].querySelector && slides[cur].querySelector(".frame");
+    if (frame && frame.scrollHeight > frame.clientHeight + 2) {
+      const atBottom = frame.scrollTop + frame.clientHeight >= frame.scrollHeight - 2;
+      const atTop = frame.scrollTop <= 2;
+      const down = absD > 0;
+      if ((down && !atBottom) || (!down && !atTop)) {
+        frame.scrollTop += absD;
+        return;
+      }
+    }
+
+    if (wheelLock) return;
+    e.preventDefault();
+    wheelLock = true;
+    absD > 0 ? next() : prev();
+    setTimeout(() => { wheelLock = false; }, 700);
+  }, { passive: false });
+
+  go(0);
+</script>
+</body>
+</html>
