@@ -242,7 +242,7 @@
           <li><code>npm init -y</code> — новый проект; <code>npm init es6 -y</code> — с ES-модулями</li>
           <li><code>npm install</code> / <code>--save-dev</code> / <code>-g</code></li>
           <li><code>npm uninstall</code>, <code>npm update</code></li>
-          <li><code>npx</code> — запуск пакета без установки: <code>npx cowsay</code></li>
+          <li><code>npx</code> — запуск пакета без установки: <code>npx cowsay "Hello, Node.js!"</code></li>
         </ul>
       </div>
       <div class="img-card">
@@ -421,7 +421,7 @@ test('бот отвечает на /start', async () =&gt; {
   </div></section>
   <!-- 12 · ESLint -->
   <section class="slide"><div class="frame">
-    <div class="two-col" style="align-items:start">
+    <div style="align-items:start">
       <div>
 <h1>ESLint</h1>
         <ul style="margin-top:14px">
@@ -430,9 +430,6 @@ test('бот отвечает на /start', async () =&gt; {
           <li>Актуальный формат — <strong>flat config</strong> <code>eslint.config.js</code></li>
           <li>VS Code: <code>settings.json</code> → <code>source.fixAll.eslint</code></li>
         </ul>
-      </div>
-      <div class="img-card">
-        <img src="06_node/slide22_0.png" alt="Мем: HEAVIEST OBJECTS IN THE UNIVERSE">
       </div>
     </div>
   </div></section>
@@ -467,25 +464,30 @@ export default defineConfig([
   <section class="slide"><div class="frame">
     <span class="eyebrow">Рабочий процесс</span>
     <h1>Сборка → тесты → линтер → CI</h1>
-    <ol class="steps" style="margin-top:14px">
-      <li><b>Сборка</b> — npm-скрипты: <code>start</code> / <code>dev</code></li>
-      <li><b>Тесты</b> — Jest: юнит + интеграционные (мок бота)</li>
-      <li><b>Линтер</b> — ESLint: единый стиль и ранние ошибки</li>
-      <li><b>CI</b> — то же самое на сервере при каждом PR</li>
-    </ol>
+    <ul style="margin-top:14px">
+      <li><strong>Сборка</strong> — npm-скрипты: start/dev</li>
+      <li><strong>Тесты</strong> — Jest: юнит + интеграционные (мок бота)</li>
+      <li><strong>Линтер</strong> — ESLint: единый стиль и ранние ошибки</li>
+      <li><strong>CI</strong> — то же самое на сервере при каждом PR</li>
+    </ul>
     <p class="lead" style="margin-top:14px">Этот же процесс ждёт вас в React-проектах тем 8–12.</p>
   </div></section>
   <!-- 15 · Итоги -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">Итоги</span>
     <h1>Node.js · npm · реальное приложение</h1>
-    <ul style="margin-top:14px">
-      <li><strong>Node/npm</strong> — базовый инструмент всего курса</li>
-      <li><strong>package.json</strong> — манифест со скриптами и зависимостями</li>
-      <li><strong>Jest</strong> — тестируем утилиты и бота через моки</li>
-      <li><strong>ESLint (flat)</strong> — автоподдержка стиля</li>
-      <li>Telegram-бот — готовый pet-проект для GitHub и курсовых</li>
-    </ul>
+    <div class="two-col">
+      <ul style="margin-top:14px">
+        <li><strong>Node/npm</strong> — базовый инструмент всего курса</li>
+        <li><strong>package.json</strong> — манифест со скриптами и зависимостями</li>
+        <li><strong>Jest</strong> — тестируем утилиты и бота через моки</li>
+        <li><strong>ESLint (flat)</strong> — автоподдержка стиля</li>
+        <li>Telegram-бот — готовый pet-проект для GitHub и курсовых</li>
+      </ul>
+      <div class="img-card">
+        <img src="06_node/slide22_0.png" alt="Мем: HEAVIEST OBJECTS IN THE UNIVERSE">
+      </div>
+    </div>
   </div></section>
 
 </div>

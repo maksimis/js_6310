@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Заголовок страницы</title>
+    <meta charset="UTF-8">
+</head>
+
+<body>
+    <form action="/submit" method="POST">
+        <div>
+            <label for="username">Валидация длины</label>
+            <input type="text" name="username" required minlength="3" maxlength="20">
+        </div>
+        <div>
+            <label for="age">Валидация числа</label>
+            <input type="number" name="age" min="18" max="99">
+        </div>
+        <div>
+            <label for="zipcode">Валидация по pattern</label>
+            <input type="text" name="zipcode" pattern="[0-9]{5}" title="Почтовый индекс (5 цифр)">
+        </div>
+        <div>
+            <label for="email">Валидация email</label>
+            <input type="email" name="email" required>
+        </div>
+
+        <div>
+            <button type="submit">Отправить</button>
+        </div>
+    </form>
+</body>
+
+</html>
