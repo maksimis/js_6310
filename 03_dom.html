@@ -239,7 +239,62 @@
       </div>
     </div>
   </div></section>
-  <!-- 4 · DOM-дерево -->
+  <!-- 3a · Специфичность CSS-селекторов -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Специфичность CSS</span>
+    <h1>Специфичность CSS-селекторов</h1>
+    <ul style="margin-top:14px">
+      <li><strong>Специфичность</strong> — способ браузера определить, какое CSS-правило применить при конфликте стилей</li>
+      <li>Чем выше специфичность — тем приоритетнее правило</li>
+      <li>Формула: <strong>(inline, ID, class/attr/pseudo-class, element/pseudo-element)</strong></li>
+      <li><code>!important</code> перебивает почти всё</li>
+    </ul>
+  </div></section>
+  <!-- 3b · Как считать специфичность -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Специфичность CSS</span>
+    <h1>Как считать специфичность</h1>
+    <ul style="margin-top:10px">
+      <li><strong>A</strong> — inline-стиль <code>style="..."</code></li>
+      <li><strong>B</strong> — количество селекторов <code>#id</code></li>
+      <li><strong>C</strong> — классы, атрибуты, псевдоклассы</li>
+      <li><strong>D</strong> — теги, псевдоэлементы</li>
+    </ul>
+    <pre>*                -> (0,0,0,0)
+p                -> (0,0,0,1)
+.text            -> (0,0,1,0)
+p.text           -> (0,0,1,1)
+#title           -> (0,1,0,0)
+#block p.text    -> (0,1,1,1)
+style="color:red" -> (1,0,0,0)</pre>
+  </div></section>
+  <!-- 3c · Правила специфичности -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Специфичность CSS</span>
+    <h1>Правила специфичности</h1>
+    <ul style="margin-top:14px">
+      <li>Сравниваем слева направо: A → B → C → D</li>
+      <li><code>*</code> и комбинаторы (<code>+</code>, <code>&gt;</code>, <code>~</code>, пробел) не увеличивают специфичность</li>
+      <li><code>:not()</code> сам не добавляет баллов — считает селектор внутри</li>
+      <li><code>!important</code> сильнее всего; при нескольких <code>!important</code> выше специфичность селектора</li>
+      <li>Если специфичность равна — побеждает <strong>последнее</strong> объявление в CSS</li>
+    </ul>
+  </div></section>
+  <!-- 3d · Пример на практике -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Специфичность CSS</span>
+    <h1>Пример на практике</h1>
+    <p class="code-title">03_dom/specificity.html</p>
+    <pre>&lt;p id="title" class="text"&gt;Какой цвет текста применится?&lt;/p&gt;
+
+p { color: gray; }           /* (0,0,0,1) */
+.text { color: blue; }       /* (0,0,1,0) */
+p.text { color: green; }     /* (0,0,1,1) */
+#title { color: red; }       /* (0,1,0,0) */
+#block p { color: orange; }  /* (0,1,0,1) */
+#block p.text { color: darkviolet; } /* (0,1,1,1) — победит */</pre>
+    <p style="margin-top:10px"><a href="03_dom/specificity.html" target="_blank" rel="noopener">Открыть specificity.html в браузере</a></p>
+  </div></section><!-- 4 · DOM-дерево -->
   <section class="slide"><div class="frame">
     <div class="two-col" style="align-items:start">
       <div>
