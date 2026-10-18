@@ -223,7 +223,7 @@
       <li>Строчные: <code>span</code>, <code>a</code>, <code>img</code></li>
     </ul>
   </div></section>
-  <!-- 3 · Основы CSS -->
+    <!-- 3 · Основы CSS -->
   <section class="slide"><div class="frame">
     <div class="two-col" style="align-items:start">
       <div>
@@ -250,16 +250,17 @@
       <li><code>!important</code> перебивает почти всё</li>
     </ul>
   </div></section>
-  <!-- 3b · Как считать специфичность -->
+    <!-- 3b · Как считать специфичность -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">Специфичность CSS</span>
     <h1>Как считать специфичность</h1>
     <ul style="margin-top:10px">
       <li><strong>A</strong> — inline-стиль <code>style="..."</code></li>
       <li><strong>B</strong> — количество селекторов <code>#id</code></li>
-      <li><strong>C</strong> — классы, атрибуты, псевдоклассы</li>
-      <li><strong>D</strong> — теги, псевдоэлементы</li>
+      <li><strong>C</strong> — классы (<code>.class</code>), атрибуты (<code>[attr]</code>), псевдоклассы (<code>:hover</code>, <code>:focus</code>)</li>
+      <li><strong>D</strong> — теги (<code>div</code>, <code>p</code>), псевдоэлементы (<code>::before</code>, <code>::after</code>)</li>
     </ul>
+    <p class="muted">Специфичность сравнивается <strong>по группам</strong>, а не как одно число. Сначала сравниваем группу A: если значения в ней различаются — побеждает селектор с большим значением в группе A, остальные группы не сравниваются. Если значения равны — переходим к группе B, потом C, потом D.</p>
     <pre>*                -> (0,0,0,0)
 p                -> (0,0,0,1)
 .text            -> (0,0,1,0)
@@ -267,20 +268,19 @@ p.text           -> (0,0,1,1)
 #title           -> (0,1,0,0)
 #block p.text    -> (0,1,1,1)
 style="color:red" -> (1,0,0,0)</pre>
-  </div></section>
-  <!-- 3c · Правила специфичности -->
+  </div></section>  <!-- 3c · Правила специфичности -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">Специфичность CSS</span>
     <h1>Правила специфичности</h1>
     <ul style="margin-top:14px">
-      <li>Сравниваем слева направо: A → B → C → D</li>
-      <li><code>*</code> и комбинаторы (<code>+</code>, <code>&gt;</code>, <code>~</code>, пробел) не увеличивают специфичность</li>
-      <li><code>:not()</code> сам не добавляет баллов — считает селектор внутри</li>
-      <li><code>!important</code> сильнее всего; при нескольких <code>!important</code> выше специфичность селектора</li>
-      <li>Если специфичность равна — побеждает <strong>последнее</strong> объявление в CSS</li>
+      <li>Сравнение идёт <strong>по группам</strong> (A → B → C → D). Если в какой-то группе значение больше — селектор с большим значением в этой группе побеждает, остальные группы не сравниваются.</li>
+      <li><strong>Вложенность селекторов</strong> увеличивает специфичность в соответствующих группах. Например: <code>.menu .link.active</code> содержит три селектора группы C → (0,0,3,0). Оно сильнее <code>.link</code> (0,0,1,0), но слабее <code>#menu .link</code> (0,1,1,0) — из-за селектора <code>#menu</code> (группа B).</li>
+      <li><code>*</code> и комбинаторы (<code>+</code>, <code>&gt;</code>, <code>~</code>, пробел) <strong>не увеличивают</strong> специфичность.</li>
+      <li><code>:not()</code> сам по себе не добавляет баллов — учитывается только селектор внутри <code>:not(...)</code>.</li>
+      <li><code>!important</code> перебивает обычные правила. Если оба правила содержат <code>!important</code> — победит то, у которого <strong>выше специфичность селектора</strong>.</li>
+      <li>Если специфичности селекторов полностью равны — применяется <strong>последнее</strong> объявление в CSS.</li>
     </ul>
-  </div></section>
-  <!-- 3d · Пример на практике -->
+  </div></section><!-- 3d · Пример на практике -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">Специфичность CSS</span>
     <h1>Пример на практике</h1>

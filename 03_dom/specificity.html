@@ -4,19 +4,43 @@
   <meta charset="utf-8">
   <title>Специфичность CSS-селекторов</title>
   <style>
+
     * { font-family: "Segoe UI", Arial, sans-serif; }
+
     p { color: gray; margin: 8px 0; }
+
     .text { color: blue; }
+
     p.text { color: green; }
+
     #title { color: red; }
+
     #block p { color: orange; }
+
     #block p.text { color: darkviolet; }
+
     div p { font-style: italic; }
+
+
+
+    /* Пример вложенности классов в группе C */
+
+    .box .item .link { color: teal; font-weight: 600; }
+
+    .link { color: purple; }
+
+
+
     .example {
+
       margin: 20px; padding: 16px; border: 1px solid #dce3ea; border-radius: 12px;
+
       background: #f6f9fc;
+
     }
+
     code { background: #fff; padding: 2px 6px; border-radius: 6px; border: 1px solid #e4e9ef; }
+
   </style>
 </head>
 <body>
@@ -27,13 +51,43 @@
     </div>
     <p>Откройте DevTools (F12) → Elements → Styles и посмотрите, какие правила перекрываются.</p>
     <ul>
-      <li><code>p { color: gray; }</code> — (0,0,1)</li>
-      <li><code>.text { color: blue; }</code> — (0,1,0)</li>
-      <li><code>p.text { color: green; }</code> — (0,1,1)</li>
-      <li><code>#title { color: red; }</code> — (1,0,0)</li>
-      <li><code>#block p { color: orange; }</code> — (1,0,1)</li>
-      <li><code>#block p.text { color: darkviolet; }</code> — (1,1,1) — <strong>победит</strong></li>
+
+      <li><code>p { color: gray; }</code> — (0,0,0,1)</li>
+
+      <li><code>.text { color: blue; }</code> — (0,0,1,0)</li>
+
+      <li><code>p.text { color: green; }</code> — (0,0,1,1)</li>
+
+      <li><code>#title { color: red; }</code> — (0,1,0,0)</li>
+
+      <li><code>#block p { color: orange; }</code> — (0,1,0,1)</li>
+
+      <li><code>#block p.text { color: darkviolet; }</code> — (0,1,1,1) — <strong>победит</strong></li>
+
     </ul>
+
+    <h3 style="margin-top:16px">Вложенность классов (группа C)</h3>
+
+    <div class="box">
+
+      <div class="item">
+
+        <a class="link">Ссылка с селектором .box .item .link</a>
+
+      </div>
+
+    </div>
+
+    <ul>
+
+      <li><code>.box .item .link</code> → 3 класса в группе C: (0,0,3,0)</li>
+
+      <li><code>.link</code> → (0,0,1,0) — слабее</li>
+
+    </ul>
+
+    <p class="muted">Сравнение идёт по группам: (0,0,3,0) &gt; (0,0,1,0).</p>
   </div>
 </body>
 </html>
+
