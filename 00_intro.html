@@ -204,7 +204,7 @@
         </ul>
       </div>
       <div class="img-card">
-        <img src="00_intro/photo_2026-09-04_20-26-23.jpg" alt="Путь в разработчики: JS и vibe coding">
+        <img src="00_intro/image.png" alt="Твит о буднях разработчика: сгенерированные тикеты, PR и ревью агентом">
       </div>
     </div>
   </div></section>
@@ -216,8 +216,9 @@
     <table>
       <tr><th>Компонент</th><th>Кол-во</th><th>Ак. ч.</th><th>Формат</th></tr>
       <tr><td>Лекции</td><td>8</td><td>2</td><td>теория + демо-код</td></tr>
-      <tr><td>Лабораторные</td><td>8</td><td>4</td><td>индивидуальные</td></tr>
-      <tr><td>Курсовая работа</td><td>1</td><td>—</td><td>индивидуальный проект</td></tr>
+      <tr><td>Лабораторные</td><td>8 занятий</td><td>4</td><td>6 работ: lab1–lab4 + lab5–lab6 (этапы курсовой)</td></tr>
+      <tr><td>Курсовая работа</td><td>1</td><td>—</td><td>индивидуальный проект, отдельная оценка</td></tr>
+      <tr><td>Экзамен</td><td>1</td><td>—</td><td>в конце семестра</td></tr>
     </table>
     <div class="two-col" style="margin-top:22px">
       <div>
@@ -237,12 +238,12 @@
     <h1>Формат лабораторных работ</h1>
     <ul>
       <li>Репозиторий <strong>js_6310_labs_2026</strong> → <strong>форк</strong> для каждого студента</li>
-      <li>Ветка: <code>student-{номер}-lab{N}</code> · решение: <code>solutions/student-{номер}/solution.js</code></li>
-      <li><strong>Ревьюер</strong> — одногруппник: <code>(номер + номер лабы) % кол-во студентов</code></li>
+      <li>Ветка: <code>student-{номер}-lab{N}</code> · где лежит решение — в README каждой лабы (в lab1 — <code>solutions/student-{номер}/solution.js</code>, lab5–lab6 — репозиторий курсовой)</li>
+      <li><strong>Ревьюер</strong> — одногруппник: <code>(номер + номер лабы) % 30</code>, если получилось 0 — студент №30. Запасной, если основной не может: <code>(номер + 2 × номер лабы) % 30</code>. Ревью от других студентов не засчитывается</li>
       <li>Название PR: <code>Lab{N} solution by student{N}</code></li>
-      <li>Сдача: <strong>ветка → PR → правки → защита</strong></li>
+      <li>Сдача: <strong>ветка → PR → ревью одногруппника → правки → апрув → защита у преподавателя</strong></li>
       <li>На защите — объяснить <strong>каждую строку</strong> своего кода</li>
-      <li>Сроки сдачи соблюдаются, но без перенапряжения 😌</li>
+      <li>У каждой лабы свой срок — он указан в её README. Сроки соблюдаем, но без перенапряжения 😌</li>
     </ul>
   </div></section>
 
@@ -250,17 +251,22 @@
   <section class="slide"><div class="frame">
     <span class="eyebrow">Практика</span>
     <h1>Как клонировать и делать лабу</h1>
-    <p class="code-title"># терминал</p>
-    <pre>git clone &lt;url форка&gt; js_6310_labs_2026
+<p class="code-title">терминал · по README lab1</p>
+<pre>
+# 0. На GitHub: Fork репозитория maksimis/js_6310_labs_2026 (один раз за семестр)
+git clone git@github.com:{ваш_ник}/js_6310_labs_2026.git
 cd js_6310_labs_2026/lab1-js-core
 git checkout -b student-{номер}-lab1
 mkdir solutions/student-{номер}
 cp tasks/lab1-tasks.js solutions/student-{номер}/solution.js
 # выполняем задания...
 node solutions/student-{номер}/solution.js
-git add .
+git add solutions/student-{номер}/solution.js   # только свой файл, не "git add ."
 git commit -m "Lab 1 solution by student {номер}"
-git push origin student-{номер}-lab1</pre>
+git push origin student-{номер}-lab1
+# дальше: PR в maksimis/js_6310_labs_2026 с названием "Lab1 solution by student{номер}"
+</pre>
+    <p class="foot-note"><code>git add .</code> добавит всё подряд — <code>node_modules</code>, <code>.env</code> с токенами, <code>coverage</code>. Перед коммитом смотрите <code>git status</code>.</p>
   </div></section>
 
   <!-- 5 · Что нужно для работы -->
@@ -270,8 +276,8 @@ git push origin student-{номер}-lab1</pre>
     <ul class="ok">
       <li><strong>GitHub-аккаунт</strong></li>
       <li><strong>Node.js</strong> (актуальная LTS) — проверка: <code>node -v</code>, <code>npm -v</code></li>
-      <li><strong>Git</strong> — проверка: <code>git --version</code></li>
-      <li><strong>VS Code</strong> + расширения ESLint, Prettier, Git</li>
+      <li><strong>Git</strong> — проверка: <code>git --version</code>; <strong>SSH-ключ</strong> добавлен в GitHub — проверка: <code>ssh -T git@github.com</code></li>
+      <li><strong>VS Code</strong> + расширение ESLint: стиль кода в лабах проверяет ESLint, <code>npm run lint</code>. Если ставите Prettier — настройте его под ESLint проекта (без точек с запятой, одинарные кавычки), иначе они будут спорить</li>
     </ul>
   </div></section>
 
@@ -281,14 +287,15 @@ git push origin student-{номер}-lab1</pre>
     <h1>ИИ — наставник, а не сервис</h1>
     <div class="two-col" style="align-items:start">
       <div>
-        <p class="lead">Готовый код от ИИ = <strong>минимальный балл</strong> и провал на защите.</p>
+        <p class="lead">В работе можно использовать только то, что вы <strong>понимаете и готовы защитить</strong>. Решение задания, сгенерированное ИИ, = <strong>минимальный балл</strong> и провал на защите.</p>
         <ul>
           <li>Защита проверяет понимание каждой строки</li>
           <li>Ревьюер оценивает качество кода</li>
+          <li>Правила — в разделе «Инструкции по использованию ИИ» README лаб</li>
         </ul>
       </div>
       <div class="img-card">
-        <img src="00_intro/image.png" alt="Твит Johnny Ruokokoski: митинг-ноутс, джира-тикет, PR и агент-ревью">
+        <img src="00_intro/photo_2026-09-04_20-26-23.jpg" alt="Мем Life of a Software Dev: навыки растут до vibe coding tools и падают">
       </div>
     </div>
   </div></section>
@@ -298,7 +305,7 @@ git push origin student-{номер}-lab1</pre>
     <span class="eyebrow">Куда не надо уходить</span>
     <h1>Не «фабрика кода»: замкнутый круг</h1>
     <div class="cycle-wrap">
-      <svg class="cycle" viewBox="0 0 800 520" role="img" aria-label="Цикл: задания генерирует агент вместо преподавателя, решения — агент вместо студента, проверка — агент">
+      <svg class="cycle" style="width:min(68vh, 760px)" viewBox="0 0 800 520" role="img" aria-label="Цикл: задания генерирует агент вместо преподавателя, решения — агент вместо студента, проверка — агент">
         <defs>
           <marker id="arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="12" markerHeight="12" orient="auto-start-reverse">
             <path d="M0 0 L12 6 L0 12 z" fill="#058DC7"/>
@@ -337,20 +344,21 @@ git push origin student-{номер}-lab1</pre>
 
   <!-- 8 · Правила: разрешено -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Правила ИИ</span>
+    <span class="eyebrow">Правила для ИИ-ассистента</span>
     <h1>Разрешено ✅</h1>
     <ul class="check">
-      <li>Объяснять концепции, синтаксис, поведение методов — MDN, лекции <code>js_6310/2025/</code></li>
+      <li>Объяснять концепции, синтаксис, поведение методов — MDN, лекции <code>js_6310</code></li>
       <li>Разбирать по шагам, <strong>как подойти</strong> к заданию (без реализации)</li>
       <li>Проверять и комментировать <strong>написанный студентом</strong> код: ошибки, краевые случаи</li>
       <li>Задавать наводящие вопросы, предлагать стратегии тестирования</li>
       <li>Читать чужой код и объяснять, что он делает</li>
     </ul>
+    <p class="foot-note">Эти правила записаны в <code>AGENTS.md</code> / <code>CLAUDE.md</code> репозитория лаб — их читает ИИ-ассистент в вашем редакторе. Для вас самих — таблица «Как спрашивать ИИ» дальше.</p>
   </div></section>
 
   <!-- 9 · Правила: запрещено -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Правила ИИ</span>
+    <span class="eyebrow">Правила для ИИ-ассистента</span>
     <h1>Запрещено ❌</h1>
     <ul class="wrong">
       <li>Писать код за студента (полностью или фрагментами), даже «для примера»</li>
@@ -399,7 +407,7 @@ git push origin student-{номер}-lab1</pre>
     <span class="eyebrow">Курсовая работа</span>
     <h1>Формат курсовой</h1>
     <ul>
-      <li>Индивидуальная тема, общая структура — сдача как у лабораторных</li>
+      <li>Индивидуальная тема, общая структура — сдача как у лабораторных: этапы lab5 (проектирование и каркас) и lab6 (MVP)</li>
       <li>Стек: <strong>React + TypeScript</strong> (+ Node.js по мере изучения)</li>
       <li>2 части: репозиторий с кодом + пояснительная записка (на кафедру)</li>
       <li>В течение семестра согласовывается план поэтапной сдачи</li>
@@ -415,7 +423,7 @@ git push origin student-{номер}-lab1</pre>
     <h1>Порядок назначения тем</h1>
     <ul>
       <li>Темы назначаются в начале семестра, каждая — за одним студентом</li>
-      <li>Тему можно <strong>выбрать из списка</strong>, можно <strong>согласовать свою</strong></li>
+      <li>Тему можно <strong>выбрать из списка</strong> (выдаёт преподаватель) или <strong>согласовать свою</strong></li>
     </ul>
     <div style="margin-top:22px">
       <h3>Направления тем</h3>
