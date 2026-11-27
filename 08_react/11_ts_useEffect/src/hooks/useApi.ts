@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
-// Хук для API запросов
+// Кастомный хук для GET-запросов
 interface UseApiResult<T> {
     data: T | null;
     loading: boolean;
@@ -12,49 +12,36 @@ export function useApi<T>(url: string): UseApiResult<T> {
     const [data, setData] = useState<T | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    
-    const fetchData = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-            const response = await fetch(url);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const result: T = await response.json();
-            setData(result);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Unknown error');
-        } finally {
-            setLoading(false);
-        }
-    };
-    
+    // смена reloadKey перезапускает эффект — так устроен refetch
+    const [reloadKey, setReloadKey] = useState(0);
+
     useEffect(() => {
-        fetchData();
-    }, [url]);
-    
-    return { data, loading, error, refetch: fetchData };
+        const controller = new AbortController();
+
+        setLoading(true);
+        setError(null);
+
+        fetch(url, { signal: controller.signal })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                // тип T только объявлен, форму ответа TypeScript не проверяет
+                return response.json() as Promise<T>;
+            })
+            .then(setData)
+            .catch(err => {
+                if (!controller.signal.aborted) {
+                    setError(err instanceof Error ? err.message : 'Unknown error');
+                }
+            })
+            .finally(() => {
+                if (!controller.signal.aborted) setLoading(false);
+            });
+
+        return () => controller.abort();
+    }, [url, reloadKey]);
+
+    return { data, loading, error, refetch: () => setReloadKey(k => k + 1) };
 }
-
-// Использование кастомных хуков
-interface Settings {
-    theme: 'light' | 'dark';
-    language: string;
-    notifications: boolean;
-}
-
-// function UserSettings() {
-//     const [settings, setSettings] = useLocalStorage<Settings>('user-settings', {
-//         theme: 'light',
-//         language: 'ru',
-//         notifications: true
-//     });
-    
-//     const { data: user, loading, error } = useApi<User>('/api/user/1');
-    
-//     // ... компонент
-// }
-

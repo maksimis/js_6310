@@ -1,7 +1,6 @@
 import { useState, type JSX } from 'react'
 
 import './App.css'
-import './App.css'
 import { Button } from './components/Button/Button'
 import { Card } from './components/Card/Card'
 

@@ -1,25 +1,10 @@
-import TelegramBot from 'node-telegram-bot-api'
 import dotenv from 'dotenv'
 
-dotenv.config();
-const token = process.env.TELEGRAM_BOT_TOKEN;
+import { createBot } from './bot.js'
 
-// Создаем экземпляр бота
-const bot = new TelegramBot(token, { polling: true });
+// читает переменные из файла .env в process.env
+// (без dotenv: node --env-file=.env src/index.js, Node >= 20.6)
+dotenv.config()
 
-// Обрабатываем команду /start
-bot.onText(/\/start/, (msg) => {
-    const chatId = msg.chat.id;
-    bot.sendMessage(chatId, 'Привет! Я твой первый бот!');
-});
-
-// Обрабатываем текстовые сообщения
-bot.on('message', (msg) => {
-    const chatId = msg.chat.id;
-    const text = msg.text;    
-    if (text !== '/start') {
-        bot.sendMessage(chatId, `Вы сказали: "${text}"`);
-    }
-});
-
-console.log('Бот запущен...');
+createBot(process.env.TELEGRAM_BOT_TOKEN)
+console.log('Бот запущен...')

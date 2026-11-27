@@ -1,8 +1,7 @@
 import UserCard from './components/UserCard';
 import './App.css'
-import React from 'react';
 import Counter from './components/Counter';
-import LoginForm from './components/LoginFrom';
+import LoginForm from './components/LoginForm';
 
 function App() {
     const user = {

@@ -1,4 +1,3 @@
-import React from 'react';
 import { useState } from 'react';
 
 function LoginForm() {
@@ -27,8 +26,9 @@ function LoginForm() {
             <h2>Вход в систему</h2>
             
             <div className="form-group">
-                <label>Email:</label>
+                <label htmlFor="email">Email:</label>
                 <input
+                    id="email"
                     type="email"
                     name="email"
                     value={formData.email}
@@ -38,8 +38,9 @@ function LoginForm() {
             </div>
             
             <div className="form-group">
-                <label>Пароль:</label>
+                <label htmlFor="password">Пароль:</label>
                 <input
+                    id="password"
                     type="password"
                     name="password"
                     value={formData.password}

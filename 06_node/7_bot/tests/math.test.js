@@ -1,5 +1,4 @@
-// const math = require('../src/utils/math');
-import * as math from '../src/utils';
+import * as math from '../src/utils/index.js';
 import { describe, test, expect } from '@jest/globals';
 
 describe('Math module', () => {

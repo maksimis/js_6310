@@ -1,4 +1,3 @@
-import React from 'react';
 import { useState } from 'react';
 
 function Counter() {
@@ -6,11 +5,11 @@ function Counter() {
     const [name, setName] = useState('');
     
     const increment = () => {
-        setCount(count + 1);
+        setCount(prev => prev + 1); // новое значение считаем из предыдущего
     };
     
     const decrement = () => {
-        setCount(count - 1);
+        setCount(prev => prev - 1);
     };
     
     const reset = () => {

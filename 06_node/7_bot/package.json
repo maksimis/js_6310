@@ -1,14 +1,13 @@
 {
-  "name": "init_es6",
+  "name": "lecture6-7-bot",
   "version": "1.0.0",
   "description": "Мой первый Node.js проект",
   "main": "./src/index.js",
   "type": "module",
-  "license": "AGPL-version-3.0",
+  "license": "AGPL-3.0-only",
   "private": false,
   "engines": {
-    "node": ">= 14.0.0",
-    "npm": ">= 6.0.0"
+    "node": ">=20.6"
   },
   "homepage": "",
   "repository": {
@@ -20,11 +19,10 @@
   "contributors": [],
   "scripts": {
     "start": "node ./src/index.js",
-    "dev": "nodemon ./src/index.js",
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --passWithNoTests",
-    "test:watch": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --passWithNoTests --watch",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "dev": "node --watch ./src/index.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --passWithNoTests",
+    "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --passWithNoTests --watch",
+    "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage"
   },
   "dependencies": {
     "dotenv": "^17.2.3",
@@ -32,7 +30,6 @@
     "node-telegram-bot-api": "^0.66.0"
   },
   "devDependencies": {
-    "cross-env": "^10.1.0",
     "jest": "^30.2.0"
   },
   "jest": {

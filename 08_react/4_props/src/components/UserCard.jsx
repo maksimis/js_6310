@@ -1,5 +1,3 @@
-import React from "react";
-
 function UserCard({ name, age, email, isOnline = false }) {
     return (
         <div className={`user-card ${isOnline ? 'online' : 'offline'}`}>

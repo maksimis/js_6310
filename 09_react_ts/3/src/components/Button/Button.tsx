@@ -1,38 +1,33 @@
-import React from 'react'
+import React, { type ComponentProps } from 'react'
 
 import styles from './Button.module.css'
 
-export interface ButtonProps {
-  variant?: 'primary' | 'secondary';
+// ComponentProps<'button'> — все атрибуты нативной кнопки:
+// type, disabled, onClick(event), aria-*, name, form, className...
+export interface ButtonProps extends ComponentProps<'button'> {
+  variant?: 'primary' | 'secondary';  // union types
   size?: 'small' | 'medium' | 'large';
-  type?: 'submit' | 'button';
-  disabled?: boolean;
-  onClick?: () => void;
   children: React.ReactNode;
 }
 
 export const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
   size = 'medium',
-  disabled = false,
   type = 'button',
-  onClick,
+  className,
   children,
+  ...rest                              // остальные атрибуты передаём кнопке как есть
 }) => {
-  const className = [
+  const classes = [
     styles.btn,
     styles[`btn--${variant}`],
     styles[`btn--${size}`],
-    disabled ? styles.disabled : '',
-  ].join(' ')
+    rest.disabled ? styles.disabled : '',
+    className,
+  ].filter(Boolean).join(' ')
 
   return (
-    <button
-      className={className}
-      disabled={disabled}
-      onClick={onClick}
-      type={type}
-    >
+    <button {...rest} type={type} className={classes}>
       {children}
     </button>
   )

@@ -34,4 +34,12 @@ describe('Button', () => {
     
     expect(container.firstChild).toHaveClass('btn--large')
   })
+
+  test('передаёт нативные атрибуты кнопке', () => {
+    render(<Button aria-label="Закрыть" name="close" type="submit">×</Button>)
+    const button = screen.getByRole('button', { name: 'Закрыть' })
+
+    expect(button).toHaveAttribute('name', 'close')
+    expect(button).toHaveAttribute('type', 'submit')
+  })
 })

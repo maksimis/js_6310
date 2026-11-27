@@ -1,5 +1,21 @@
-describe('math', () => {
-  test('plus', () => {
-    expect(2 + 2).toEqual(4)
+import { fireEvent, render, screen } from '@testing-library/react'
+
+import App from './App'
+
+describe('App', () => {
+  test('показывает заголовок приложения', () => {
+    render(<App />)
+    expect(screen.getByRole('heading', { name: 'React TS Demo' })).toBeInTheDocument()
+  })
+
+  test('Card выводит заголовок и содержимое', () => {
+    render(<App />)
+    expect(screen.getAllByRole('heading', { level: 3 }).length).toBeGreaterThan(0)
+  })
+
+  test('клик по кнопке увеличивает счётчик', () => {
+    render(<App />)
+    fireEvent.click(screen.getAllByRole('button', { name: 'Кнопка' })[0])
+    expect(screen.getByText(/Счетчик: 1/)).toBeInTheDocument()
   })
 })

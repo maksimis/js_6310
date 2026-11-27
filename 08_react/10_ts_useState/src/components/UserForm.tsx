@@ -1,72 +1,81 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 
 interface User {
-    id: number;
+    id: string;
     name: string;
     age: number;
     email: string;
-    role: 'admin' | 'user' | 'moderator';
+    role: 'admin' | 'user' | 'moderator'; // union-тип ограничивает значения
+    isActive: boolean;
 }
 
 export function UserForm() {
-    // Типизация состояния с примитивами
-    const [name, setName] = useState<string>('');
-    const [age, setAge] = useState<number>(0);
-    const [isActive, setIsActive] = useState<boolean>(false);
-    
-    // Типизация состояния с объектами
-    const [user, setUser] = useState<User | null>(null);
-    
-    // Типизация состояния с массивом
+    // Примитивы: тип выводится из начального значения
+    const [name, setName] = useState('');
+    const [age, setAge] = useState(0);
+    const [isActive, setIsActive] = useState(false);
+
+    // Объект или null: тип указываем явно
+    const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+    // Массив объектов
     const [users, setUsers] = useState<User[]>([]);
-    
-    // Union type для ограничения значений
-    const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
-    
+
     // Обработчики с типизацией событий
     const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
         setName(e.target.value);
     };
-    
+
     const handleAgeChange = (e: ChangeEvent<HTMLInputElement>) => {
         setAge(Number(e.target.value));
     };
-    
+
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        
+
         const newUser: User = {
-            id: Date.now(),
+            id: crypto.randomUUID(),
             name,
             age,
             email: `${name.toLowerCase()}@example.com`,
-            role: 'user'
+            role: 'user',
+            isActive,
         };
-        
+
         setUsers(prev => [...prev, newUser]);
         setName('');
         setAge(0);
+        setIsActive(false);
     };
-    
+
     return (
         <form onSubmit={handleSubmit}>
-            <input 
-                type="text"
-                value={name}
-                onChange={handleNameChange}
-                placeholder="Имя пользователя"
-            />
-            <input 
-                type="number"
-                value={age}
-                onChange={handleAgeChange}
-                placeholder="Возраст"
-            />
-            <button type="submit">Добавить пользователя</button>
-            {users.map(us => <div><span>{us.name}</span> <span>{us.age}</span></div>
+            <label htmlFor="name">Имя</label>
+            <input id="name" type="text" value={name} onChange={handleNameChange} />
+
+            <label htmlFor="age">Возраст</label>
+            <input id="age" type="number" value={age} onChange={handleAgeChange} />
+
+            <label>
+                <input type="checkbox" checked={isActive} onChange={e => setIsActive(e.target.checked)} />
+                Активен
+            </label>
+
+            <button type="submit" disabled={!name}>Добавить пользователя</button>
+
+            <ul>
+                {users.map(user => (
+                    // key — стабильный id элемента, а не индекс массива
+                    <li key={user.id}>
+                        <button type="button" onClick={() => setSelectedUser(user)}>{user.name}</button>
+                        {' '}{user.age} {user.isActive ? '🟢' : '⚪'}
+                    </li>
+                ))}
+            </ul>
+
+            {selectedUser && (
+                <p>Выбран: {selectedUser.name}, {selectedUser.email}, роль: {selectedUser.role}</p>
             )}
         </form>
     );
 }
-
-

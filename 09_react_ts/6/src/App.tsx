@@ -1,15 +1,14 @@
 import { useState, type JSX } from 'react'
 
 import './App.css'
-import './App.css'
 import { Button } from './components/Button/Button'
 import { Card } from './components/Card/Card'
 
 function App(): JSX.Element {
-  const [count, setСount] = useState(0)
+  const [count, setCount] = useState(0)
 
   const handleButtonClick = () => {
-    setСount(prev => prev + 1)
+    setCount(prev => prev + 1)
   }
 
   return (
