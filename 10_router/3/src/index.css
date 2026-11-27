@@ -1,0 +1,46 @@
+#root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  width: 100%;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #318edf;
+    background-color: #ffffff;
+  }
+}
+
+/* Навигация: ссылки оформлены как кнопки, активная подсвечивается (NavLink) */
+.app-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.app-nav a {
+  padding: 6px 14px;
+  border: 1px solid #318edf;
+  border-radius: 6px;
+  color: #318edf;
+  text-decoration: none;
+}
+
+.app-nav a.active {
+  background: #318edf;
+  color: #fff;
+}

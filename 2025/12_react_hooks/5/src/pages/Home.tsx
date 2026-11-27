@@ -31,23 +31,21 @@ const ChildWithMemo = memo(({ counter }: ChildProps) => <Child counter={counter}
 function Child({ counter }: ChildProps) {
   console.log('Child rendered!') // Вызывается каждый раз
 
-  const factorial = useCallback((num: bigint): bigint => {
+  const fibonacci = useCallback((num: bigint): bigint => {
     if (num <= 1n) {
-      return 1n
-    } else if (num == 2n) {
-      return 2n
+      return num
     } else {
-      return factorial(num - 1n) * factorial(num - 2n)
+      return fibonacci(num - 1n) + fibonacci(num - 2n)
     }
   }, [])  
 
-  const fact = useMemo(() => {
-    console.log("fact counted")
+  const fib = useMemo(() => {
+    console.log("fib counted")
 
-    return factorial(BigInt(counter))
-  }, [counter, factorial])
+    return fibonacci(BigInt(counter))
+  }, [counter, fibonacci])
 
-  return <div>Factorial {fact}</div>
+  return <div>Fibonacci {fib}</div>
 }
 
 export default Home

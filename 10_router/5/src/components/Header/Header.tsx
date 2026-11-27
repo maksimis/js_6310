@@ -1,0 +1,24 @@
+import { useAuth } from '../../contexts/AuthContext/AuthContext'
+import { Button } from '../Button/Button'
+
+const Header: React.FC = () => {
+  const { user, logout, isAuthenticated } = useAuth()
+
+  return (
+    <header>
+      <h1>Мое приложение</h1>
+      <div className="header-controls">
+        {isAuthenticated ? (
+          <div className="user-info">
+            <span>Привет, {user?.name}!</span>
+            <Button size="small" onClick={logout}>Выйти</Button>
+          </div>
+        ) : (
+          <span>Гость</span>
+        )}
+      </div>
+    </header>
+  )
+}
+
+export default Header

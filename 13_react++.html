@@ -197,7 +197,8 @@
       <tr><td>Асинхронность</td><td>Promise, async/await, Event Loop</td></tr>
       <tr><td>Node.js / npm</td><td>серверы, утилиты, сборка</td></tr>
       <tr><td>React</td><td>компоненты, хуки, Context, Router</td></tr>
-      <tr><td>Продвинутое</td><td>memo/useMemo/useCallback, тесты, деплой</td></tr>
+      <tr><td>Продвинутое</td><td>memo/useMemo/useCallback, React Compiler, деплой</td></tr>
+      <tr><td>Качество кода</td><td>ESLint, Jest и coverage — в лабах 3–4</td></tr>
     </table>
   </div></section>
   <!-- 2 · React как библиотека -->
@@ -235,6 +236,7 @@
       <li>Form handling — обработка форм</li>
       <li>Auth protection — защита маршрутов</li>
       <li>Nested layouts — через <code>&lt;Outlet/&gt;</code></li>
+      <li><strong>Framework mode</strong> (бывший Remix): SSR, маршруты из файлов — <code>npx create-react-router@latest</code></li>
     </ul>
   </div></section>
   <!-- 5 · Next.js -->
@@ -243,10 +245,10 @@
     <h1>Next.js</h1>
     <ul style="margin-top:14px">
       <li><strong>SSR / SSG / ISR / CSR</strong> — режимы рендеринга</li>
-      <li>File-based routing — маршруты из файлов</li>
-      <li>Оптимизация изображений, шрифтов, скриптов</li>
-      <li>API Routes, стилизация, сборка Webpack</li>
-      <li><code>npx create-next-app@latest --typescript --tailwind --eslint</code></li>
+      <li><strong>App Router</strong>: маршруты из папки <code>app/</code>, по умолчанию Server Components</li>
+      <li>Серверный код: <strong>Route Handlers</strong> (<code>app/api/…/route.ts</code>) и Server Actions; API Routes остались только в старом Pages Router</li>
+      <li>Оптимизация изображений, шрифтов, скриптов; сборка — <strong>Turbopack</strong> (по умолчанию с Next.js 16)</li>
+      <li><code>npx create-next-app@latest</code> — TypeScript, ESLint и Tailwind выбираются в диалоге</li>
     </ul>
   </div></section>
   <!-- 6 · React Native / Expo -->
@@ -278,7 +280,7 @@
       <li><b>Минификация</b> — сжатие кода</li>
       <li><b>Выход</b> — index.html, bundle.js, assets/</li>
     </ol>
-    <p class="foot-note">npm run build → папка dist/, особенно GitHub Pages.</p>
+    <p class="foot-note">Vite: <code>npm run build</code> → папка <code>dist/</code>. Её и публикуем, например на GitHub Pages. Пример библиотеки компонентов и приложения — в <code>13_react++/example</code> (ui-library + frontend), шаблоны Next.js и Expo — в <code>13_react++/next-app</code> и <code>expo-app</code>.</p>
   </div></section>
   <!-- 8 · Статический хостинг -->
   <section class="slide"><div class="frame">
@@ -289,6 +291,7 @@
           <li><strong>SPA</strong>: заливаем <code>dist/</code> → GitHub Pages, Netlify, Vercel, S3</li>
           <li><strong>SSR Next.js</strong>: <code>npm run build</code> + <code>npm start</code> на Node-сервере</li>
           <li>nginx — вариант раздачи статики</li>
+          <li>SPA с роутером: <code>base</code> в Vite + fallback <code>404.html</code> или HashRouter (тема 10)</li>
         </ul>
       </div>
       <div class="img-card">
@@ -314,7 +317,7 @@
     <span class="eyebrow">Дальше</span>
     <h1>Куда двигаться</h1>
     <ul style="margin-top:14px">
-      <li>Next.js: App Router, Server Actions</li>
+      <li>Next.js: App Router, Server Components, Server Actions</li>
       <li>React Native, PWA / service workers</li>
       <li>Облака: AWS / GCP / Azure</li>
       <li>DevOps: Docker / K8s / CI-CD</li>

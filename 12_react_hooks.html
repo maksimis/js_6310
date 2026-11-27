@@ -187,60 +187,63 @@
     <h1 id="t-title">Тема 12 · React + Hooks — оптимизация производительности</h1>
     <div class="badge-row"><span class="badge">Курс «JavaScript»</span><span class="badge">Группа 6310</span><span class="badge">2026</span></div>
     <div class="teacher">{FIO_prepod}</div>  </div></section>
-  <!-- 1 · useState и useEffect -->
+  <!-- useState и useEffect -->
   <section class="slide"><div class="frame">
     <div class="two-col" style="align-items:start">
       <div>
+    <span class="eyebrow">Базовые хуки</span>
 <h1>useState · useEffect</h1>
-        <ul style="margin-top:14px">
-          <li><strong>useState</strong> — состояние компонента</li>
-          <li><strong>useEffect</strong> — побочные эффекты и жизненный цикл</li>
-          <li><strong>Правила хуков</strong>: только на верхнем уровне, только в React-функциях</li>
-        </ul>
+    <ul style="margin-top:14px">
+      <li><strong>useState</strong> — состояние компонента</li>
+      <li><strong>useEffect</strong> — побочные эффекты: запросы, таймеры, подписки</li>
+      <li><strong>Правила хуков</strong>: вызывать только на верхнем уровне и только в компонентах или других хуках</li>
+    </ul>
       </div>
       <div class="img-card">
         <img src="12_react_hooks/slide1_0.png" alt="Код: useState — Home со счётчиком">
       </div>
     </div>
   </div></section>
-  <!-- 2 · useEffect: три режима -->
+  <!-- useEffect: три режима -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">useEffect</span>
     <h1>Три режима эффектов</h1>
-    <p class="code-title">UserProfile.tsx</p>
-    <pre>
-// 1. Без зависимостей — при КАЖДОМ рендере
+<p class="code-title">12_react_hooks/1/src/pages/UserProfile.tsx</p>
+<pre>
+// 1. Без массива зависимостей — после КАЖДОГО рендера
 useEffect(() =&gt; {
-    console.log("Hi hi! Every time")
-    document.title = user ? `Profile ${user.name}` : 'My App'
+  document.title = user ? `Profile ${user.name}` : 'My App'
 })
 
-// 2. [userId] — только при изменении userId
+// 2. [userId] — при монтировании и при каждом изменении userId
 useEffect(() =&gt; {
-    fetchUser(userIdState).then(setUser)
-}, [userIdState])
+  let ignore = false
+  setUser(null)
+  fetchUser(userId).then(u =&gt; { if (!ignore) setUser(u) })
+  return () =&gt; { ignore = true }   // ответ для старого userId отбрасываем
+}, [userId])
 
-// 3. [] — только при монтировании + очистка
+// 3. [] — только при монтировании, очистка при размонтировании
 useEffect(() =&gt; {
-    const timer = setInterval(() =&gt; {}, 1000)
-    return () =&gt; clearInterval(timer)   // очистка при размонтировании
+  const timer = setInterval(() =&gt; setSeconds(s =&gt; s + 1), 1000)
+  return () =&gt; clearInterval(timer)
 }, [])
 </pre>
-    <p class="foot-note">Функция очистки — для таймеров, подписок, отмены запросов.</p>
+    <p style="margin-top:10px">Функция очистки нужна для таймеров, подписок и отмены запросов (флаг <code>ignore</code> или <code>AbortController</code>). В режиме разработки <code>&lt;StrictMode&gt;</code> специально запускает эффект дважды: эффект → очистка → эффект. Так проверяется, что очистка написана.</p>
   </div></section>
-  <!-- 3 · Проблемы производительности -->
+  <!-- Проблемы производительности -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">Проблемы производительности</span>
     <h1>Что не так?</h1>
     <ul style="margin-top:14px">
       <li><strong>Лишние ре-рендеры</strong> — компоненты перерисовываются без необходимости</li>
-      <li><strong>Тяжёлые вычисления</strong> — на каждом рендере</li>
+      <li><strong>Тяжёлые вычисления</strong> — выполняются на каждом рендере</li>
       <li><strong>Большие бандлы</strong> — медленная загрузка</li>
-      <li><strong>Память</strong> — утечки, неоптимизированные структуры</li>
+      <li><strong>Память</strong> — утечки (неочищенные таймеры и подписки)</li>
     </ul>
-    <p class="lead" style="margin-top:14px">Признаки: медленный интерфейс, задержки, лишние мерцания.</p>
+    <p class="lead" style="margin-top:14px">Признаки: интерфейс тормозит, ввод запаздывает, элементы мерцают.</p>
   </div></section>
-  <!-- 4 · Профилирование -->
+  <!-- Профилирование -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">Профилирование</span>
     <h1>React DevTools Profiler</h1>
@@ -248,95 +251,139 @@ useEffect(() =&gt; {
       <li><b>Установить</b> расширение React DevTools</li>
       <li>Вкладка <b>Profiler</b> → кнопка Record</li>
       <li>Выполнить <b>взаимодействие</b> (клик, ввод)</li>
-      <li>Остановить и <b>проанализировать</b> рендеры</li>
+      <li>Остановить запись и <b>разобрать</b> рендеры: кто, сколько раз и почему</li>
     </ol>
     <p class="lead" style="margin-top:14px">Оптимизируем только то, что подтверждено замерами.</p>
   </div></section>
-  <!-- 5 · React.memo -->
+  <!-- React.memo -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">React.memo</span>
     <h1>Мемоизация компонентов</h1>
-    <p class="code-title">Home.tsx</p>
-    <pre>
-import { memo } from "react"
+<p class="code-title">12_react_hooks/5/src/pages/Home.tsx (фрагмент)</p>
+<pre>
+import { memo, useState } from 'react'
 
-// без memo — Child рендерится при каждом ре-рендере родителя
-function Child({ counter }) {
+function Child({ counter }: { counter: number }) {
   console.log('Child rendered!')
-  return &lt;div&gt;Factorial {counter}&lt;/div&gt;
+  return &lt;div&gt;Counter {counter}&lt;/div&gt;     // в шаге 5 — ещё и useMemo, см. дальше
 }
 
-// с memo — перерисовка ТОЛЬКО если изменились props
-const ChildWithMemo = memo(({ counter }) =&gt;
-  &lt;Child counter={counter} /&gt;)
+const ChildWithMemo = memo(Child)   // тот же компонент, обёрнутый в memo
+
+const Home = () =&gt; {
+  const [count, setCount] = useState(0)
+  const [count2, setCount2] = useState(0)
+  return (
+    &lt;&gt;
+      &lt;Button onClick={() =&gt; setCount(c =&gt; c + 1)}&gt;Count +&lt;/Button&gt;
+      &lt;Button onClick={() =&gt; setCount2(c =&gt; c + 1)}&gt;Count 2 +&lt;/Button&gt;
+      &lt;Child counter={count} /&gt;          {/* рендерится на любой клик */}
+      &lt;ChildWithMemo counter={count} /&gt;  {/* только при изменении count */}
+    &lt;/&gt;
+  )
+}
 </pre>
-    <p style="margin-top:14px">HOC <code>memo</code> — поверхностное сравнение props; возможна своя функция сравнения.</p>
+    <p style="margin-top:10px"><code>memo</code> — HOC: сравнивает props поверхностно (<code>Object.is</code>); вторым аргументом можно передать свою функцию сравнения.</p>
   </div></section>
-  <!-- 6 · useMemo -->
+  <!-- useMemo -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">useMemo</span>
     <h1>Мемоизация значений</h1>
-    <p class="code-title">Home.tsx</p>
-    <pre>
-import { useMemo, useCallback } from "react"
+<p class="code-title">12_react_hooks/5/src/pages/Home.tsx (фрагмент)</p>
+<pre>
+// Чистая функция без props и state — объявляем ВНЕ компонента:
+// ссылка на неё стабильна, в зависимости её добавлять не нужно
+function slowFib(n: number): number {        // O(2^n): специально медленно
+  return n &lt;= 1 ? n : slowFib(n - 1) + slowFib(n - 2)
+}
 
-function Child({ counter }) {
-  // тяжёлое вычисление — пересчёт только при изменении зависимостей
-  const fact = useMemo(() =&gt; {
-    console.log("fact counted")
-    return factorial(BigInt(counter))
-  }, [counter, factorial])
+function Child({ counter }: { counter: number }) {
+  const fib = useMemo(() =&gt; {
+    console.log('fib counted')
+    return slowFib(counter)
+  }, [counter])            // пересчёт только при изменении counter
 
-  return &lt;div&gt;Factorial {fact}&lt;/div&gt;
+  return &lt;div&gt;Fibonacci({counter}) = {fib}&lt;/div&gt;
 }
 </pre>
-    <p style="margin-top:14px">Когда: фильтрация, сортировка, создание объектов/массивов в props. Когда нет: простые примитивы.</p>
+    <p style="margin-top:10px">Когда: фильтрация и сортировка больших списков, объекты и массивы, которые передаются в props memo-компонентам. Когда нет: простые вычисления и примитивы.</p>
   </div></section>
-  <!-- 7 · useCallback -->
+  <!-- useCallback -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">useCallback</span>
     <h1>Мемоизация функций</h1>
-    <p class="code-title">Home.tsx</p>
-    <pre>
-// функция СТАБИЛЬНА между рендерами
-const factorial = useCallback((num: bigint): bigint =&gt; {
-  if (num &lt;= 1n) return 1n
-  if (num == 2n) return 2n
-  return factorial(num - 1n) * factorial(num - 2n)
-}, [])
+<p class="code-title">12_react_hooks/5/src/pages/Home.tsx (фрагмент)</p>
+<pre>
+const MemoButton = memo(Button)
 
-// передаём в memo-компонент — ссылка не меняется,
-// и дочерний компонент не ре-рендерится зря
+const Home = () =&gt; {
+  const [count, setCount] = useState(0)
+  const [text, setText] = useState('')
+
+  // без useCallback на каждый рендер создаётся НОВАЯ функция,
+  // memo видит «новый» onClick и всё равно перерисовывает кнопку
+  const increment = useCallback(() =&gt; setCount(c =&gt; c + 1), [])
+
+  return (
+    &lt;&gt;
+      &lt;input value={text} onChange={e =&gt; setText(e.target.value)} /&gt;
+      &lt;MemoButton onClick={increment}&gt;+ ({count})&lt;/MemoButton&gt;
+      {/* при вводе текста кнопка не перерисовывается */}
+    &lt;/&gt;
+  )
+}
 </pre>
-    <p style="margin-top:14px">Стабильная ссылка для дочерних компонентов — колбэки как props.</p>
+    <p style="margin-top:10px"><code>useCallback(fn, deps)</code> — то же, что <code>useMemo(() =&gt; fn, deps)</code>. Имеет смысл только вместе с <code>memo</code>-ребёнком или если функция стоит в зависимостях эффекта. Так же можно стабилизировать <code>value</code> в AuthProvider из темы 10.</p>
   </div></section>
-  <!-- 8 · Что и когда -->
+  <!-- React Compiler -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">React Compiler</span>
+    <h1>Мемоизация автоматически</h1>
+    <ul style="margin-top:14px">
+      <li><strong>React Compiler 1.0</strong> (стабилен с осени 2025) — плагин сборки, который сам расставляет мемоизацию компонентов, значений и колбэков</li>
+      <li>В новых проектах ручные <code>memo</code> / <code>useMemo</code> / <code>useCallback</code> нужны редко</li>
+      <li>Знать их всё равно надо: старый код, библиотеки, случаи, где компилятор пропустил компонент</li>
+      <li>Компилятор работает только с «правильными» компонентами: чистый рендер, правила хуков. Нарушения подсвечивает <code>eslint-plugin-react-hooks</code></li>
+    </ul>
+<p class="code-title">подключение в Vite</p>
+<pre>
+npm i -D babel-plugin-react-compiler
+
+// vite.config.ts (@vitejs/plugin-react 5.x)
+export default defineConfig({
+  plugins: [react({ babel: { plugins: ['babel-plugin-react-compiler'] } })],
+})
+</pre>
+    <p class="foot-note">Актуальная инструкция: react.dev/learn/react-compiler. Проверить работу можно в React DevTools: у оптимизированных компонентов значок «Memo ✨».</p>
+  </div></section>
+  <!-- Что и когда -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">Что и когда</span>
     <h1>Выбор инструмента</h1>
     <table style="margin-top:14px">
       <tr><th>Инструмент</th><th>Зачем</th></tr>
       <tr><td><code>useState</code></td><td>состояние</td></tr>
-      <tr><td><code>useEffect</code></td><td>побочные эффекты</td></tr>
-      <tr><td><code>memo</code></td><td>компонент с одинаковыми props ре-рендерится часто</td></tr>
-      <tr><td><code>useMemo</code></td><td>тяжёлые вычисления, объекты/массивы в props</td></tr>
-      <tr><td><code>useCallback</code></td><td>стабильные функции для memo-детей</td></tr>
+      <tr><td><code>useEffect</code></td><td>побочные эффекты + очистка</td></tr>
+      <tr><td><code>memo</code></td><td>компонент с теми же props часто перерисовывается</td></tr>
+      <tr><td><code>useMemo</code></td><td>тяжёлые вычисления, объекты и массивы в props</td></tr>
+      <tr><td><code>useCallback</code></td><td>стабильные функции для memo-детей и зависимостей эффектов</td></tr>
+      <tr><td>React Compiler</td><td>всё перечисленное выше — автоматически при сборке</td></tr>
     </table>
-    <p class="lead" style="margin-top:16px">✅ часто ре-рендерится, тяжёлые вычисления &gt;1 мс, большие списки. ❌ преждевременная оптимизация без замеров.</p>
+    <p class="lead" style="margin-top:16px">✅ частые ре-рендеры, вычисления дольше 1 мс, большие списки. ❌ оптимизация «на всякий случай», без замеров.</p>
   </div></section>
-  <!-- 9 · Итоги -->
+  <!-- Итоги -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">Итоги</span>
     <h1>Оптимизация</h1>
     <ul style="margin-top:14px">
-      <li><strong>Сначала профилируй</strong> (Profiler), потом оптимизируй</li>
+      <li><strong>Сначала профилируем</strong> (Profiler), потом оптимизируем</li>
       <li><strong>memo</strong> — компоненты, <strong>useMemo</strong> — значения, <strong>useCallback</strong> — функции</li>
-      <li>Мемоизация <strong>не бесплатна</strong> и не нужна везде</li>
-      <li>Фишка: включить <strong>Highlight updates</strong> и найти лишние рендеры</li>
-      <li>Этот стек — «эталонная» структура для курсовых на React</li>
+      <li>Мемоизация <strong>не бесплатна</strong> и нужна не везде</li>
+      <li><strong>React Compiler</strong> делает это автоматически — но только для чистых компонентов</li>
+      <li>Приём: включить <strong>Highlight updates</strong> в DevTools и найти лишние рендеры</li>
+      <li>Этот стек — образец структуры для курсовых на React</li>
     </ul>
   </div></section>
-
 </div>
 
 <div class="counter" id="counter"></div>

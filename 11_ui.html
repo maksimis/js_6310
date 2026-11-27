@@ -187,252 +187,419 @@
     <h1 id="t-title">Тема 11 · Basic UI — лекция-квиз</h1>
     <div class="badge-row"><span class="badge">Курс «JavaScript»</span><span class="badge">Группа 6310</span><span class="badge">2026</span></div>
     <div class="teacher">{FIO_prepod}</div>  </div></section>
-  <!-- 1 · Правила -->
+  <!-- Правила -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">Квиз</span>
     <h1>Что это за компонент?</h1>
     <ul style="margin-top:14px">
-      <li>Повторяем всё, что прошли с темы 8 по тему 10</li>
-      <li>На каждом слайде — виджет, определите <strong>компонент/паттерн</strong></li>
+      <li>Учимся узнавать стандартные UI-компоненты по внешнему виду</li>
+      <li>На каждом слайде — виджет: назовите <strong>компонент</strong></li>
       <li>Ответ — на следующем слайде</li>
+      <li>Пригодится в lab4 (своя библиотека компонентов) и в курсовой</li>
     </ul>
-    <div class="img-card" style="margin-top:22px">
-      <img src="11_ui/slide1_0.gif" alt="Квиз: UI-компонент (введение)">
+    <div class="img-card" style="margin-top:22px;display:flex;justify-content:center">
+      <img src="11_ui/slide1_0.gif" alt="Анимация: ввод текста в поле" style="width:auto;max-width:100%;max-height:34vh">
     </div>
   </div></section>
-  <!-- question {num} -->
+  <!-- Вопрос 1 -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Вопрос · Что это за компонент?</span>
-    <h1>Полe ввода с меткой «Мате…»</h1>
-    <div class="img-card" style="margin-top:18px">
-      <img src="11_ui/slide2_0.png" alt="Квиз-мок {num}">
+    <span class="eyebrow">Вопрос 1 из 22 · Что это за компонент?</span>
+    <h1>Поле «Name» с подсказкой под ним</h1>
+    <div class="img-card" style="margin-top:18px;display:flex;justify-content:center">
+      <img src="11_ui/slide2_0.png" alt="Вопрос 1: Поле «Name» с подсказкой под ним" style="width:auto;max-width:100%;max-height:56vh">
     </div>
   </div></section>
-  <!-- answer {num} -->
+  <!-- Ответ 1 -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Ответ</span>
-    <h1>Input + label (обязательное поле с валидацией Required)</h1>
+    <span class="eyebrow">Ответ 1</span>
+    <h1>Field — поле формы</h1>
     <ul style="margin-top:18px" class="check">
-      <li>Этот паттерн вы встречали в темах 8–10</li>
-      <li>В курсовых такие компоненты строятся из Button + Card + форм</li>
+      <li>Field = label + control + description + сообщение об ошибке. «Required» здесь — просто плейсхолдер, а не валидация</li>
+      <li>В Base UI: <code>Field</code></li>
     </ul>
   </div></section>
-  <!-- question {num} -->
+  <!-- Вопрос 2 -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Вопрос · Что это за компонент?</span>
-    <h1>Секция Billing details: Company, Tax ID</h1>
-    <div class="img-card" style="margin-top:18px">
-      <img src="11_ui/slide3_0.png" alt="Квиз-мок {num}">
+    <span class="eyebrow">Вопрос 2 из 22 · Что это за компонент?</span>
+    <h1>Секция «Billing details»: Company, Tax ID</h1>
+    <div class="img-card" style="margin-top:18px;display:flex;justify-content:center">
+      <img src="11_ui/slide3_0.png" alt="Вопрос 2: Секция «Billing details»: Company, Tax ID" style="width:auto;max-width:100%;max-height:56vh">
     </div>
   </div></section>
-  <!-- answer {num} -->
+  <!-- Ответ 2 -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Ответ</span>
-    <h1>Форма (поля сгруппированы в section)</h1>
+    <span class="eyebrow">Ответ 2</span>
+    <h1>Fieldset — группа полей</h1>
     <ul style="margin-top:18px" class="check">
-      <li>Этот паттерн вы встречали в темах 8–10</li>
-      <li>В курсовых такие компоненты строятся из Button + Card + форм</li>
+      <li>Связанные поля под общим заголовком (legend), как &lt;fieldset&gt; + &lt;legend&gt; в HTML (тема 5)</li>
+      <li>В Base UI: <code>Fieldset</code></li>
     </ul>
   </div></section>
-  <!-- question {num} -->
+  <!-- Вопрос 3 -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Вопрос · Что это за компонент?</span>
-    <h1>Список фруктов с подпунктами</h1>
-    <div class="img-card" style="margin-top:18px">
-      <img src="11_ui/slide4_0.png" alt="Квиз-мок {num}">
+    <span class="eyebrow">Вопрос 3 из 22 · Что это за компонент?</span>
+    <h1>Галочка «Enable notifications»</h1>
+    <div class="img-card" style="margin-top:18px;display:flex;justify-content:center">
+      <img src="11_ui/slide4_1.gif" alt="Вопрос 3: Галочка «Enable notifications»" style="width:auto;max-width:100%;max-height:56vh">
     </div>
   </div></section>
-  <!-- answer {num} -->
+  <!-- Ответ 3 -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Ответ</span>
-    <h1>Select / Combobox (вложенные options)</h1>
+    <span class="eyebrow">Ответ 3</span>
+    <h1>Checkbox</h1>
     <ul style="margin-top:18px" class="check">
-      <li>Этот паттерн вы встречали в темах 8–10</li>
-      <li>В курсовых такие компоненты строятся из Button + Card + форм</li>
+      <li>Одиночный флажок: да / нет</li>
+      <li>В Base UI: <code>Checkbox</code></li>
     </ul>
   </div></section>
-  <!-- question {num} -->
+  <!-- Вопрос 4 -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Вопрос · Что это за компонент?</span>
-    <h1>Выбор одного из трёх яблок</h1>
-    <div class="img-card" style="margin-top:18px">
-      <img src="11_ui/slide5_0.png" alt="Квиз-мок {num}">
+    <span class="eyebrow">Вопрос 4 из 22 · Что это за компонент?</span>
+    <h1>Apples: несколько галочек под общим заголовком</h1>
+    <div class="img-card" style="margin-top:18px;display:flex;justify-content:center">
+      <img src="11_ui/slide4_0.png" alt="Вопрос 4: Apples: несколько галочек под общим заголовком" style="width:auto;max-width:100%;max-height:56vh">
     </div>
   </div></section>
-  <!-- answer {num} -->
+  <!-- Ответ 4 -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Ответ</span>
-    <h1>Radio group (одиночный выбор)</h1>
+    <span class="eyebrow">Ответ 4</span>
+    <h1>Checkbox group</h1>
     <ul style="margin-top:18px" class="check">
-      <li>Этот паттерн вы встречали в темах 8–10</li>
-      <li>В курсовых такие компоненты строятся из Button + Card + форм</li>
+      <li>Можно выбрать <strong>несколько</strong> вариантов из списка</li>
+      <li>В Base UI: <code>CheckboxGroup</code></li>
     </ul>
   </div></section>
-  <!-- question {num} -->
+  <!-- Вопрос 5 -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Вопрос · Что это за компонент?</span>
-    <h1>Меню выбора шрифта (Serif, theme.css)</h1>
-    <div class="img-card" style="margin-top:18px">
-      <img src="11_ui/slide6_0.gif" alt="Квиз-мок {num}">
+    <span class="eyebrow">Вопрос 5 из 22 · Что это за компонент?</span>
+    <h1>Best apple: выбор одного сорта</h1>
+    <div class="img-card" style="margin-top:18px;display:flex;justify-content:center">
+      <img src="11_ui/slide5_0.png" alt="Вопрос 5: Best apple: выбор одного сорта" style="width:auto;max-width:100%;max-height:56vh">
     </div>
   </div></section>
-  <!-- answer {num} -->
+  <!-- Ответ 5 -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Ответ</span>
-    <h1>Dropdown / Menu</h1>
+    <span class="eyebrow">Ответ 5</span>
+    <h1>Radio group</h1>
     <ul style="margin-top:18px" class="check">
-      <li>Этот паттерн вы встречали в темах 8–10</li>
-      <li>В курсовых такие компоненты строятся из Button + Card + форм</li>
+      <li>Можно выбрать <strong>только один</strong> вариант</li>
+      <li>В Base UI: <code>RadioGroup + Radio</code></li>
     </ul>
   </div></section>
-  <!-- question {num} -->
+  <!-- Вопрос 6 -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Вопрос · Что это за компонент?</span>
-    <h1>Select «Choose a fruit»</h1>
-    <div class="img-card" style="margin-top:18px">
-      <img src="11_ui/slide7_0.gif" alt="Квиз-мок {num}">
+    <span class="eyebrow">Вопрос 6 из 22 · Что это за компонент?</span>
+    <h1>Кнопка-сердечко, которая «залипает»</h1>
+    <div class="img-card" style="margin-top:18px;display:flex;justify-content:center">
+      <img src="11_ui/slide19_0.gif" alt="Вопрос 6: Кнопка-сердечко, которая «залипает»" style="width:auto;max-width:100%;max-height:56vh">
     </div>
   </div></section>
-  <!-- answer {num} -->
+  <!-- Ответ 6 -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Ответ</span>
-    <h1>Select (выпадающий список)</h1>
+    <span class="eyebrow">Ответ 6</span>
+    <h1>Toggle</h1>
     <ul style="margin-top:18px" class="check">
-      <li>Этот паттерн вы встречали в темах 8–10</li>
-      <li>В курсовых такие компоненты строятся из Button + Card + форм</li>
+      <li>Кнопка с состоянием вкл/выкл (aria-pressed), например «В избранное»</li>
+      <li>В Base UI: <code>Toggle</code></li>
     </ul>
   </div></section>
-  <!-- question {num} -->
+  <!-- Вопрос 7 -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Вопрос · Что это за компонент?</span>
-    <h1>Поле поиска тегов @base-ui…</h1>
-    <div class="img-card" style="margin-top:18px">
-      <img src="11_ui/slide8_0.gif" alt="Квиз-мок {num}">
+    <span class="eyebrow">Вопрос 7 из 22 · Что это за компонент?</span>
+    <h1>Три кнопки выравнивания текста</h1>
+    <div class="img-card" style="margin-top:18px;display:flex;justify-content:center">
+      <img src="11_ui/slide19_1.gif" alt="Вопрос 7: Три кнопки выравнивания текста" style="width:auto;max-width:100%;max-height:56vh">
     </div>
   </div></section>
-  <!-- answer {num} -->
+  <!-- Ответ 7 -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Ответ</span>
-    <h1>Autocomplete (поиск с подсказками)</h1>
+    <span class="eyebrow">Ответ 7</span>
+    <h1>Toggle group (одиночный выбор)</h1>
     <ul style="margin-top:18px" class="check">
-      <li>Этот паттерн вы встречали в темах 8–10</li>
-      <li>В курсовых такие компоненты строятся из Button + Card + форм</li>
+      <li>Набор Toggle, нажата только одна кнопка — как Radio group, но в виде кнопок</li>
+      <li>В Base UI: <code>ToggleGroup</code></li>
     </ul>
   </div></section>
-  <!-- question {num} -->
+  <!-- Вопрос 8 -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Вопрос · Что это за компонент?</span>
-    <h1>Числовое поле Amount</h1>
-    <div class="img-card" style="margin-top:18px">
-      <img src="11_ui/slide9_0.gif" alt="Квиз-мок {num}">
+    <span class="eyebrow">Вопрос 8 из 22 · Что это за компонент?</span>
+    <h1>Кнопки B / I / U</h1>
+    <div class="img-card" style="margin-top:18px;display:flex;justify-content:center">
+      <img src="11_ui/slide12_0.gif" alt="Вопрос 8: Кнопки B / I / U" style="width:auto;max-width:100%;max-height:56vh">
     </div>
   </div></section>
-  <!-- answer {num} -->
+  <!-- Ответ 8 -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Ответ</span>
-    <h1>Number input (с шагом +/−)</h1>
+    <span class="eyebrow">Ответ 8</span>
+    <h1>Toggle group (множественный выбор)</h1>
     <ul style="margin-top:18px" class="check">
-      <li>Этот паттерн вы встречали в темах 8–10</li>
-      <li>В курсовых такие компоненты строятся из Button + Card + форм</li>
+      <li>Жирный, курсив и подчёркивание включаются независимо друг от друга</li>
+      <li>В Base UI: <code>ToggleGroup (multiple)</code></li>
     </ul>
   </div></section>
-  <!-- question {num} -->
+  <!-- Вопрос 9 -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Вопрос · Что это за компонент?</span>
-    <h1>Форма сервера: name, region, storage</h1>
-    <div class="img-card" style="margin-top:18px">
-      <img src="11_ui/slide10_0.png" alt="Квиз-мок {num}">
+    <span class="eyebrow">Вопрос 9 из 22 · Что это за компонент?</span>
+    <h1>Кнопка «Serif ⌃⌄» с выбором шрифта</h1>
+    <div class="img-card" style="margin-top:18px;display:flex;justify-content:center">
+      <img src="11_ui/slide6_0.gif" alt="Вопрос 9: Кнопка «Serif ⌃⌄» с выбором шрифта" style="width:auto;max-width:100%;max-height:56vh">
     </div>
   </div></section>
-  <!-- answer {num} -->
+  <!-- Ответ 9 -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Ответ</span>
-    <h1>Форма + настройки (двухколоночный макет)</h1>
+    <span class="eyebrow">Ответ 9</span>
+    <h1>Select</h1>
     <ul style="margin-top:18px" class="check">
-      <li>Этот паттерн вы встречали в темах 8–10</li>
-      <li>В курсовых такие компоненты строятся из Button + Card + форм</li>
+      <li>Выбор значения из фиксированного списка, текст вводить нельзя</li>
+      <li>В Base UI: <code>Select</code></li>
     </ul>
   </div></section>
-  <!-- question {num} -->
+  <!-- Вопрос 10 -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Вопрос · Что это за компонент?</span>
-    <h1>FAQ: раскрывающиеся блоки</h1>
-    <div class="img-card" style="margin-top:18px">
-      <img src="11_ui/slide11_0.gif" alt="Квиз-мок {num}">
+    <span class="eyebrow">Вопрос 10 из 22 · Что это за компонент?</span>
+    <h1>Поле «Choose a fruit» со стрелкой</h1>
+    <div class="img-card" style="margin-top:18px;display:flex;justify-content:center">
+      <img src="11_ui/slide7_0.gif" alt="Вопрос 10: Поле «Choose a fruit» со стрелкой" style="width:auto;max-width:100%;max-height:56vh">
     </div>
   </div></section>
-  <!-- answer {num} -->
+  <!-- Ответ 10 -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Ответ</span>
-    <h1>Accordion (аккордеон)</h1>
+    <span class="eyebrow">Ответ 10</span>
+    <h1>Combobox</h1>
     <ul style="margin-top:18px" class="check">
-      <li>Этот паттерн вы встречали в темах 8–10</li>
-      <li>В курсовых такие компоненты строятся из Button + Card + форм</li>
+      <li>Ввод текста фильтрует список, но значение можно взять только из списка</li>
+      <li>В Base UI: <code>Combobox</code></li>
     </ul>
   </div></section>
-  <!-- question {num} -->
+  <!-- Вопрос 11 -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Вопрос · Что это за компонент?</span>
-    <h1>"You are all caught up"</h1>
-    <div class="img-card" style="margin-top:18px">
-      <img src="11_ui/slide13_0.gif" alt="Квиз-мок {num}">
+    <span class="eyebrow">Вопрос 11 из 22 · Что это за компонент?</span>
+    <h1>Поле «Search tags»</h1>
+    <div class="img-card" style="margin-top:18px;display:flex;justify-content:center">
+      <img src="11_ui/slide8_0.gif" alt="Вопрос 11: Поле «Search tags»" style="width:auto;max-width:100%;max-height:56vh">
     </div>
   </div></section>
-  <!-- answer {num} -->
+  <!-- Ответ 11 -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Ответ</span>
-    <h1>Уведомление / Toast</h1>
+    <span class="eyebrow">Ответ 11</span>
+    <h1>Autocomplete</h1>
     <ul style="margin-top:18px" class="check">
-      <li>Этот паттерн вы встречали в темах 8–10</li>
-      <li>В курсовых такие компоненты строятся из Button + Card + форм</li>
+      <li>Подсказки при вводе, но можно оставить и произвольный текст</li>
+      <li>В Base UI: <code>Autocomplete</code></li>
     </ul>
   </div></section>
-  <!-- question {num} -->
+  <!-- Вопрос 12 -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Вопрос · Что это за компонент?</span>
-    <h1>Дропдаун с навигацией по клавиатуре (Song)</h1>
-    <div class="img-card" style="margin-top:18px">
-      <img src="11_ui/slide17_0.gif" alt="Квиз-мок {num}">
+    <span class="eyebrow">Вопрос 12 из 22 · Что это за компонент?</span>
+    <h1>Поле Amount с кнопками − и +</h1>
+    <div class="img-card" style="margin-top:18px;display:flex;justify-content:center">
+      <img src="11_ui/slide9_0.gif" alt="Вопрос 12: Поле Amount с кнопками − и +" style="width:auto;max-width:100%;max-height:56vh">
     </div>
   </div></section>
-  <!-- answer {num} -->
+  <!-- Ответ 12 -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Ответ</span>
-    <h1>Dropdown + keyboard navigation</h1>
+    <span class="eyebrow">Ответ 12</span>
+    <h1>Number field</h1>
     <ul style="margin-top:18px" class="check">
-      <li>Этот паттерн вы встречали в темах 8–10</li>
-      <li>В курсовых такие компоненты строятся из Button + Card + форм</li>
+      <li>Ввод числа с шагом, границами min/max и форматированием</li>
+      <li>В Base UI: <code>NumberField</code></li>
     </ul>
   </div></section>
-  <!-- question {num} -->
+  <!-- Вопрос 13 -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Вопрос · Что это за компонент?</span>
-    <h1>Панель выравнивания текста</h1>
-    <div class="img-card" style="margin-top:18px">
-      <img src="11_ui/slide20_0.png" alt="Квиз-мок {num}">
+    <span class="eyebrow">Вопрос 13 из 22 · Что это за компонент?</span>
+    <h1>FAQ: раскрывающиеся вопросы</h1>
+    <div class="img-card" style="margin-top:18px;display:flex;justify-content:center">
+      <img src="11_ui/slide11_0.gif" alt="Вопрос 13: FAQ: раскрывающиеся вопросы" style="width:auto;max-width:100%;max-height:56vh">
     </div>
   </div></section>
-  <!-- answer {num} -->
+  <!-- Ответ 13 -->
   <section class="slide"><div class="frame">
-    <span class="eyebrow">Ответ</span>
-    <h1>Toolbar / Popover (кнопки форматирования)</h1>
+    <span class="eyebrow">Ответ 13</span>
+    <h1>Accordion</h1>
     <ul style="margin-top:18px" class="check">
-      <li>Этот паттерн вы встречали в темах 8–10</li>
-      <li>В курсовых такие компоненты строятся из Button + Card + форм</li>
+      <li>Набор раскрывающихся секций; обычно открыта одна</li>
+      <li>В Base UI: <code>Accordion</code></li>
     </ul>
   </div></section>
-  <!-- итог -->
+  <!-- Вопрос 14 -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Вопрос 14 из 22 · Что это за компонент?</span>
+    <h1>Колокольчик и окошко «Notifications»</h1>
+    <div class="img-card" style="margin-top:18px;display:flex;justify-content:center">
+      <img src="11_ui/slide13_0.gif" alt="Вопрос 14: Колокольчик и окошко «Notifications»" style="width:auto;max-width:100%;max-height:56vh">
+    </div>
+  </div></section>
+  <!-- Ответ 14 -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Ответ 14</span>
+    <h1>Popover</h1>
+    <ul style="margin-top:18px" class="check">
+      <li>Всплывающая панель привязана к кнопке и не блокирует страницу</li>
+      <li>В Base UI: <code>Popover</code></li>
+    </ul>
+  </div></section>
+  <!-- Вопрос 15 -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Вопрос 15 из 22 · Что это за компонент?</span>
+    <h1>Кнопка «View notifications», окно поверх страницы</h1>
+    <div class="img-card" style="margin-top:18px;display:flex;justify-content:center">
+      <img src="11_ui/slide15_2.gif" alt="Вопрос 15: Кнопка «View notifications», окно поверх страницы" style="width:auto;max-width:100%;max-height:56vh">
+    </div>
+  </div></section>
+  <!-- Ответ 15 -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Ответ 15</span>
+    <h1>Dialog</h1>
+    <ul style="margin-top:18px" class="check">
+      <li>Модальное окно поверх всей страницы: фокус заперт внутри, закрывается по Esc</li>
+      <li>В Base UI: <code>Dialog</code></li>
+    </ul>
+  </div></section>
+  <!-- Вопрос 16 -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Вопрос 16 из 22 · Что это за компонент?</span>
+    <h1>Сообщение в правом нижнем углу после нажатия кнопки</h1>
+    <div class="img-card" style="margin-top:18px;display:flex;justify-content:center">
+      <img src="11_ui/slide14_0.gif" alt="Вопрос 16: Сообщение в правом нижнем углу после нажатия кнопки" style="width:auto;max-width:100%;max-height:56vh">
+    </div>
+  </div></section>
+  <!-- Ответ 16 -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Ответ 16</span>
+    <h1>Toast</h1>
+    <ul style="margin-top:18px" class="check">
+      <li>Короткое уведомление, которое исчезает само и не мешает работать</li>
+      <li>В Base UI: <code>Toast</code></li>
+    </ul>
+  </div></section>
+  <!-- Вопрос 17 -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Вопрос 17 из 22 · Что это за компонент?</span>
+    <h1>Кнопка «Song» с выпадающим списком действий</h1>
+    <div class="img-card" style="margin-top:18px;display:flex;justify-content:center">
+      <img src="11_ui/slide17_0.gif" alt="Вопрос 17: Кнопка «Song» с выпадающим списком действий" style="width:auto;max-width:100%;max-height:56vh">
+    </div>
+  </div></section>
+  <!-- Ответ 17 -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Ответ 17</span>
+    <h1>Menu</h1>
+    <ul style="margin-top:18px" class="check">
+      <li>Список <strong>команд</strong>, а не значений — в этом отличие от Select</li>
+      <li>В Base UI: <code>Menu</code></li>
+    </ul>
+  </div></section>
+  <!-- Вопрос 18 -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Вопрос 18 из 22 · Что это за компонент?</span>
+    <h1>Меню по правому клику</h1>
+    <div class="img-card" style="margin-top:18px;display:flex;justify-content:center">
+      <img src="11_ui/slide16_0.gif" alt="Вопрос 18: Меню по правому клику" style="width:auto;max-width:100%;max-height:56vh">
+    </div>
+  </div></section>
+  <!-- Ответ 18 -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Ответ 18</span>
+    <h1>Context menu</h1>
+    <ul style="margin-top:18px" class="check">
+      <li>Menu, которое открывается по правому клику или долгому нажатию</li>
+      <li>В Base UI: <code>ContextMenu</code></li>
+    </ul>
+  </div></section>
+  <!-- Вопрос 19 -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Вопрос 19 из 22 · Что это за компонент?</span>
+    <h1>Строка File / Edit / View / Help</h1>
+    <div class="img-card" style="margin-top:18px;display:flex;justify-content:center">
+      <img src="11_ui/slide18_0.gif" alt="Вопрос 19: Строка File / Edit / View / Help" style="width:auto;max-width:100%;max-height:56vh">
+    </div>
+  </div></section>
+  <!-- Ответ 19 -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Ответ 19</span>
+    <h1>Menubar</h1>
+    <ul style="margin-top:18px" class="check">
+      <li>Горизонтальная строка меню, как в настольных приложениях</li>
+      <li>В Base UI: <code>Menubar</code></li>
+    </ul>
+  </div></section>
+  <!-- Вопрос 20 -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Вопрос 20 из 22 · Что это за компонент?</span>
+    <h1>Панель: выравнивание, $, %, шрифт</h1>
+    <div class="img-card" style="margin-top:18px;display:flex;justify-content:center">
+      <img src="11_ui/slide20_0.png" alt="Вопрос 20: Панель: выравнивание, $, %, шрифт" style="width:auto;max-width:100%;max-height:56vh">
+    </div>
+  </div></section>
+  <!-- Ответ 20 -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Ответ 20</span>
+    <h1>Toolbar</h1>
+    <ul style="margin-top:18px" class="check">
+      <li>Контейнер для кнопок, Toggle group и Select; между ними переходят стрелками</li>
+      <li>В Base UI: <code>Toolbar</code></li>
+    </ul>
+  </div></section>
+  <!-- Вопрос 21 -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Вопрос 21 из 22 · Что это за компонент?</span>
+    <h1>Фото и кружок с буквами «LT»</h1>
+    <div class="img-card" style="margin-top:18px;display:flex;justify-content:center">
+      <img src="11_ui/slide21_0.png" alt="Вопрос 21: Фото и кружок с буквами «LT»" style="width:auto;max-width:100%;max-height:56vh">
+    </div>
+  </div></section>
+  <!-- Ответ 21 -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Ответ 21</span>
+    <h1>Avatar</h1>
+    <ul style="margin-top:18px" class="check">
+      <li>Картинка с запасным вариантом: если фото не загрузилось, показываются инициалы</li>
+      <li>В Base UI: <code>Avatar</code></li>
+    </ul>
+  </div></section>
+  <!-- Вопрос 22 -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Вопрос 22 из 22 · Что это за компонент?</span>
+    <h1>Форма создания сервера</h1>
+    <div class="img-card" style="margin-top:18px;display:flex;justify-content:center">
+      <img src="11_ui/slide10_0.png" alt="Вопрос 22: Форма создания сервера" style="width:auto;max-width:100%;max-height:56vh">
+    </div>
+  </div></section>
+  <!-- Ответ 22 -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Ответ 22</span>
+    <h1>Form — композиция компонентов</h1>
+    <ul style="margin-top:18px" class="check">
+      <li>Field + Select + Number field + <strong>Slider</strong> (диапазон) + Radio group + <strong>Switch</strong> (переключатель) + Checkbox group + Button</li>
+      <li>В Base UI: <code>Form</code></li>
+    </ul>
+  </div></section>
+  <!-- Шпаргалка -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Не путать</span>
+    <h1>Select · Combobox · Autocomplete · Menu</h1>
+    <table style="margin-top:14px">
+      <tr><th>Компонент</th><th>Ввод текста</th><th>Результат</th></tr>
+      <tr><td><code>Select</code></td><td>нет</td><td>значение из списка</td></tr>
+      <tr><td><code>Combobox</code></td><td>да, фильтрует список</td><td>значение из списка</td></tr>
+      <tr><td><code>Autocomplete</code></td><td>да, с подсказками</td><td>любой текст</td></tr>
+      <tr><td><code>Menu</code></td><td>нет</td><td>выполняется команда</td></tr>
+    </table>
+    <p class="lead" style="margin-top:16px">Так же: <strong>Popover</strong> привязан к кнопке, <strong>Dialog</strong> модальный и поверх страницы, <strong>Toast</strong> появляется сам и исчезает сам.</p>
+  </div></section>
+  <!-- Итоги -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">Итоги квиза</span>
     <h1>Base UI — headless-библиотека</h1>
     <ul style="margin-top:14px">
       <li>Все показанные виджеты — из библиотеки <strong>Base UI</strong></li>
-      <li>base-ui.com/react/overview/quick-start</li>
-      <li><strong>Headless</strong> = стили берёте на себя, поведение — готовое</li>
-      <li>Это точка входа в курсовые: компоненты вы уже умеете распознавать</li>
+      <li><a href="https://base-ui.com/react/overview/quick-start" target="_blank" rel="noopener">base-ui.com/react/overview/quick-start</a></li>
+      <li>Установка: <code>npm i @base-ui/react</code>. На анимациях виден старый пакет <code>@base-ui-components/react</code>, с версии 1.0 он переименован</li>
+      <li><strong>Headless</strong>: поведение и доступность готовые, стили пишете сами</li>
+      <li>Названия компонентов — общий словарь для lab4 и курсовой: так проще описать макет и найти готовое решение</li>
     </ul>
   </div></section>
-
 </div>
 
 <div class="counter" id="counter"></div>
