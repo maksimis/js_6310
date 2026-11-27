@@ -187,7 +187,7 @@
   <section class="slide"><div class="frame title-frame">
     <h1 id="t-title">Тема 3 · Объектная Модель Документа (DOM)</h1>
     <div class="badge-row"><span class="badge">Курс «JavaScript»</span><span class="badge">Группа 6310</span><span class="badge">2026</span></div>
-    <div class="teacher">Исанькин М.А.</div>  </div></section>
+    <div class="teacher">{FIO_prepod}</div>  </div></section>
   <!-- 1 · Что такое DOM -->
   <section class="slide"><div class="frame">
     <div class="two-col" style="align-items:start">
@@ -197,7 +197,7 @@
           <li>Дерево объектов, построенное из <strong>HTML-тегов</strong> страницы</li>
           <li>JS читает и меняет <strong>структуру, содержимое и стили</strong></li>
           <li>Браузер строит DOM из HTML и отдаёт его скриптам</li>
-          <li>Изменения в DOM — мгновенно на экране (ре-рендер)</li>
+          <li>Изменения в DOM браузер перерисовывает после выполнения скрипта (группирует их)</li>
         </ul>
       </div>
       <div class="img-card">
@@ -209,7 +209,7 @@
   <section class="slide"><div class="frame">
     <span class="eyebrow">Основы HTML</span>
     <h1>Структура документа</h1>
-    <p class="code-title">2.html</p>
+    <p class="code-title">03_dom/2.html</p>
     <pre>
 &lt;h1&gt;Заголовок&lt;/h1&gt;
 &lt;p&gt;Обычный &lt;span&gt;текст&lt;/span&gt;&lt;/p&gt;
@@ -284,7 +284,7 @@ style="color:red" -> (1,0,0,0)</pre>
   <section class="slide"><div class="frame">
     <span class="eyebrow">Специфичность CSS</span>
     <h1>Пример на практике</h1>
-    <p class="code-title">03_dom/specificity.html</p>
+    <p class="code-title">03_dom/03_dom/specificity.html</p>
     <pre>&lt;p id="title" class="text"&gt;Какой цвет текста применится?&lt;/p&gt;
 
 p { color: gray; }           /* (0,0,0,1) */
@@ -314,7 +314,7 @@ p.text { color: green; }     /* (0,0,1,1) */
   <section class="slide"><div class="frame">
     <span class="eyebrow">Поиск элементов</span>
     <h1>getElementById · querySelector*</h1>
-    <p class="code-title">5.html</p>
+    <p class="code-title">03_dom/5.html</p>
     <pre>
 &lt;div id="page_wrapper"&gt;
     &lt;p class="text"&gt;Первый абзац&lt;/p&gt;
@@ -340,7 +340,7 @@ p.text { color: green; }     /* (0,0,1,1) */
   <section class="slide"><div class="frame">
     <span class="eyebrow">Навигация</span>
     <h1>Ходим по дереву</h1>
-    <p class="code-title">6.html</p>
+    <p class="code-title">03_dom/6.html</p>
     <pre>
 &lt;ul&gt;
     &lt;li class="lfr-nav-item"&gt;Первый элемент&lt;/li&gt;
@@ -365,7 +365,7 @@ p.text { color: green; }     /* (0,0,1,1) */
   <section class="slide"><div class="frame">
     <span class="eyebrow">Содержимое и атрибуты</span>
     <h1>textContent · innerHTML · classList</h1>
-    <p class="code-title">8.js</p>
+    <p class="code-title">03_dom/8.js</p>
     <pre>
 const element = document.querySelector('#yui_patched');
 
@@ -386,7 +386,7 @@ element.classList.toggle('active'); // добавит или удалит
   <section class="slide"><div class="frame">
     <span class="eyebrow">Стили</span>
     <h1>style.* или классы?</h1>
-    <p class="code-title">7.js</p>
+    <p class="code-title">03_dom/7.js</p>
     <pre>
 const pageWrapper = document.querySelector('#page_wrapper');
 
@@ -408,7 +408,7 @@ pageWrapper.classList.add('highlighted');
   <section class="slide"><div class="frame">
     <span class="eyebrow">Создание и вставка</span>
     <h1>createElement · insertBefore · cloneNode</h1>
-    <p class="code-title">9.js</p>
+    <p class="code-title">03_dom/9.js</p>
     <pre>
 // Создаем новый элемент
 const newDiv = document.createElement('div');
@@ -418,9 +418,12 @@ newDiv.classList.add('box');
 // Добавляем в конец body
 document.body.appendChild(newDiv);
 
-// Вставляем перед существующим элементом
+// Узел живёт в DOM в одном месте: insertBefore(newDiv, …) ПЕРЕМЕСТИЛ бы его.
+// Поэтому вставляем отдельный элемент
 const existingElement = document.querySelector('#existing');
-document.body.insertBefore(newDiv, existingElement);
+const label = document.createElement('p');
+label.textContent = 'Вставлен перед #existing';
+document.body.insertBefore(label, existingElement); // или existingElement.before(label)
 
 // Клонируем элемент (deep копия)
 const clonedDiv = newDiv.cloneNode(true);
@@ -430,28 +433,31 @@ document.body.appendChild(clonedDiv);
   <!-- 10 · Удаление -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">Удаление</span>
-    <h1>remove() vs removeChild()</h1>
-    <p class="code-title">10.js</p>
-    <pre>
-const elementToRemove = document.querySelector('#toRemove');
-
-// Современный способ (ES6)
-elementToRemove.remove();
+    <h1>remove() и removeChild()</h1>
+<p class="code-title">03_dom/10.js</p>
+<pre>
+// Современный способ: элемент удаляет сам себя
+const first = document.querySelector('#toRemove');
+first?.remove();
 
 // Старый способ: через родителя
-const parent = elementToRemove.parentElement;
-parent.removeChild(elementToRemove);
+const second = document.querySelector('#toRemoveOld');
+second?.parentElement.removeChild(second);
+
+// После удаления ссылка на узел остаётся — его можно вставить заново
+if (first) document.body.append(first);
 </pre>
     <ul style="margin-top:14px">
-      <li><code>element.remove()</code> — просто и современно</li>
-      <li><code>removeChild()</code> — если элемент нужно <strong>перевесить</strong>, а не потерять</li>
+      <li><code>element.remove()</code> — короче, используем его</li>
+      <li>Оба способа убирают узел только из DOM: пока есть ссылка, его можно вставить обратно</li>
+      <li>Добавление: <code>append</code>, <code>prepend</code>, <code>before</code>, <code>after</code> — современные аналоги <code>appendChild</code>/<code>insertBefore</code></li>
     </ul>
   </div></section>
   <!-- 11 · События -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">События</span>
     <h1>addEventListener</h1>
-    <p class="code-title">11.js</p>
+    <p class="code-title">03_dom/11.js</p>
     <pre>
 const button = document.querySelector('#myButton');
 
@@ -477,14 +483,15 @@ button.removeEventListener('click', handleClick);
   <section class="slide"><div class="frame">
     <span class="eyebrow">Объект события</span>
     <h1>preventDefault · target · всплытие</h1>
-    <p class="code-title">13.js</p>
+    <p class="code-title">03_dom/13.js</p>
     <pre>
 const link = document.querySelector('a');
 link.addEventListener('click', function(event) {
     event.preventDefault();                 // не переходим по ссылке
 
     console.log(`Тип: ${event.type}`);
-    console.log(`Целевой элемент: ${event.target}`);
+    console.log(`Где кликнули: ${event.target.tagName}`);
+    console.log(`Где слушаем: ${event.currentTarget.tagName}`);
     console.log(`Координаты: ${event.clientX}, ${event.clientY}`);
 });
 
@@ -498,7 +505,7 @@ document.body.addEventListener('click', () =&gt; {
   <section class="slide"><div class="frame">
     <span class="eyebrow">Готовность DOM</span>
     <h1>DOMContentLoaded · keydown</h1>
-    <p class="code-title">12.js</p>
+    <p class="code-title">03_dom/12.js</p>
     <pre>
 // Скрипт ждёт, пока DOM построился
 document.addEventListener('DOMContentLoaded', function() {
@@ -520,11 +527,36 @@ document.addEventListener('keydown', function(event) {
 });
 </pre>
   </div></section>
+  <!-- 13a · Делегирование -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">События</span>
+    <h1>Делегирование событий</h1>
+<p class="code-title">03_dom/15.html</p>
+<pre>
+const list = document.getElementById('todo');
+
+// Один обработчик на весь список вместо обработчика на каждой кнопке.
+// Работает и для элементов, добавленных позже.
+list.addEventListener('click', (event) =&gt; {
+    const button = event.target.closest('button[data-action]');
+    if (!button) return;                         // кликнули не по кнопке
+
+    const item = button.closest('li');
+    if (button.dataset.action === 'done') item.classList.toggle('done');
+    if (button.dataset.action === 'delete') item.remove();
+});
+</pre>
+    <ul style="margin-top:14px">
+      <li>Работает благодаря всплытию: клик по кнопке доходит до <code>&lt;ul&gt;</code></li>
+      <li><code>event.target</code> — где кликнули, <code>event.currentTarget</code> — где висит обработчик</li>
+      <li><code>closest(selector)</code> — ближайший подходящий предок (или сам элемент)</li>
+    </ul>
+  </div></section>
   <!-- 14 · Расширение: manifest -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">Приложение — расширение Chrome</span>
     <h1>manifest.json (MV3)</h1>
-    <p class="code-title">14/manifest.json</p>
+    <p class="code-title">03_dom/14/manifest.json</p>
     <pre>
 {
   "manifest_version": 3,
@@ -547,7 +579,7 @@ document.addEventListener('keydown', function(event) {
   <section class="slide"><div class="frame">
     <span class="eyebrow">Приложение — расширение Chrome</span>
     <h1>content.js: логика</h1>
-    <p class="code-title">14/content.js (упрощённо)</p>
+    <p class="code-title">03_dom/14/content.js (упрощённо)</p>
     <pre>
 function toggleDarkMode() {
     const pageWrapper = document.getElementById('page_wrapper');
@@ -577,7 +609,7 @@ if (document.readyState === 'loading') {
 </pre>
     <ul style="margin-top:14px">
       <li>Скрипт добавляется в страницу kai.ru и живёт в её DOM</li>
-      <li>Демо: смотрите настоящий <code>14/content.js</code> — эталон для лабы</li>
+      <li>Демо: смотрите настоящий <code>03_dom/14/content.js</code> — основа для лабы. В своём решении меняйте стили через классы (<code>classList</code>), а не <code>style.*</code></li>
     </ul>
   </div></section>
   <!-- 16 · Лабораторная -->

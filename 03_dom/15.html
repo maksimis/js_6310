@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Делегирование событий</title>
+    <style>
+        .done { text-decoration: line-through; color: gray; }
+    </style>
+</head>
+<body>
+    <ul id="todo">
+        <li>Прочитать про DOM <button data-action="done">Готово</button> <button data-action="delete">×</button></li>
+        <li>Сделать лабу <button data-action="done">Готово</button> <button data-action="delete">×</button></li>
+    </ul>
+    <button id="add">Добавить задачу</button>
+
+    <script>
+        const list = document.getElementById('todo');
+
+        // Один обработчик на весь список вместо обработчика на каждой кнопке.
+        // Работает и для элементов, добавленных позже.
+        list.addEventListener('click', (event) => {
+            const button = event.target.closest('button[data-action]');
+            if (!button) return;                       // кликнули не по кнопке
+
+            const item = button.closest('li');
+            if (button.dataset.action === 'done') item.classList.toggle('done');
+            if (button.dataset.action === 'delete') item.remove();
+        });
+
+        document.getElementById('add').addEventListener('click', () => {
+            const item = document.createElement('li');
+            item.textContent = `Новая задача ${list.children.length + 1} `;
+            item.insertAdjacentHTML('beforeend',
+                '<button data-action="done">Готово</button> <button data-action="delete">×</button>');
+            list.append(item);
+        });
+    </script>
+</body>
+</html>

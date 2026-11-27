@@ -36,10 +36,23 @@ class Car implements Vehicle {
 // Наследование
 class ElectricCar extends Car {
     private batteryLevel: number = 100;
-    
+
     charge(): void {
+        // protected-поле родителя доступно в наследнике
+        if (this.engineStatus) {
+            console.log("Сначала остановите машину");
+            return;
+        }
         this.batteryLevel = 100;
         console.log("Battery fully charged");
     }
+
+    getBatteryLevel(): number {
+        return this.batteryLevel;
+    }
 }
+
+const tesla = new ElectricCar("Tesla", "5YJ3E1EA7KF000001");
+tesla.charge();
+// tesla.engineStatus = true; // Ошибка: protected-свойство недоступно снаружи
 

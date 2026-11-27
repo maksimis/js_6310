@@ -16,5 +16,9 @@ fetch('https://api.hh.ru/cors', {
     },
     body: JSON.stringify({ name: 'John', age: 30 })
 })
-.then(response => response.json())
-.then(data => console.log(data));
+.then(response => {
+    if (!response.ok) throw new Error('Ошибка HTTP: ' + response.status);
+    return response.json();
+})
+.then(data => console.log(data))
+.catch(error => console.error('Ошибка:', error));

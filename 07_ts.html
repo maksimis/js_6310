@@ -208,22 +208,24 @@
   <section class="slide"><div class="frame">
     <span class="eyebrow">Установка и настройка</span>
     <h1>tsc</h1>
-    <p class="code-title"></p>
-    <pre>
-# глобально или как зависимость проекта
-npm i -g typescript
-npm i -D typescript
+<p class="code-title">терминал</p>
+<pre>
+npm i -D typescript   # зависимость проекта (глобальная установка не нужна)
 
-tsc --version     # проверка
-tsc app.ts        # компиляция одного файла -&gt; app.js
-tsc --init        # сгенерировать tsconfig.json
+npx tsc --version     # проверка
+npx tsc --init        # сгенерировать tsconfig.json
+npx tsc               # проверить типы и скомпилировать проект
+npx tsc --noEmit      # только проверка типов (так делают в CI)
+
+node app.ts           # Node 22.18+ / 24 запускает .ts сам: типы просто стираются
 </pre>
+    <p class="foot-note">Node и Vite типы не проверяют — только удаляют. Ошибки типов ловит <code>tsc --noEmit</code> (в Vite-шаблоне он стоит в <code>npm run build</code>).</p>
   </div></section>
   <!-- 3 · Базовые типы -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">Базовые типы</span>
     <h1>Примитивы · массивы · кортежи</h1>
-    <p class="code-title">1_types.ts</p>
+    <p class="code-title">07_ts/1_types.ts</p>
     <pre>
 let username: string = "John";
 let age: number = 25;
@@ -243,7 +245,7 @@ let nothing: void = undefined;
   <section class="slide"><div class="frame">
     <span class="eyebrow">Функции</span>
     <h1>Аннотации · необязательные параметры</h1>
-    <p class="code-title">2_functions.ts</p>
+    <p class="code-title">07_ts/2_functions.ts</p>
     <pre>
 function greet(name: string): string {
     return `Hello, ${name}!`;
@@ -254,7 +256,8 @@ function createUser(
     age?: number,              // необязательный параметр
     isActive: boolean = true   // значение по умолчанию
 ): { name: string; age?: number; isActive: boolean } {
-    return { name, age, isActive };
+    // с exactOptionalPropertyTypes нельзя записать age: undefined
+    return age === undefined ? { name, isActive } : { name, age, isActive };
 }
 
 const multiply = (a: number, b: number): number =&gt; a * b;
@@ -264,7 +267,7 @@ const multiply = (a: number, b: number): number =&gt; a * b;
   <section class="slide"><div class="frame">
     <span class="eyebrow">Функции</span>
     <h1>Перегрузка функций</h1>
-    <p class="code-title">2_functions.ts</p>
+    <p class="code-title">07_ts/2_functions.ts</p>
     <pre>
 function processInput(input: string): string;
 function processInput(input: number): number;
@@ -281,7 +284,7 @@ function processInput(input: string | number): string | number {
   <section class="slide"><div class="frame">
     <span class="eyebrow">Интерфейсы</span>
     <h1>Описание формы объектов</h1>
-    <p class="code-title">3_interfaces.ts</p>
+    <p class="code-title">07_ts/3_interfaces.ts</p>
     <pre>
 interface User {
     readonly id: number;   // не изменить после создания
@@ -302,7 +305,7 @@ const user: User = {
   <section class="slide"><div class="frame">
     <span class="eyebrow">Интерфейсы</span>
     <h1>extends · интерфейс-функция</h1>
-    <p class="code-title">3_interfaces.ts</p>
+    <p class="code-title">07_ts/3_interfaces.ts</p>
     <pre>
 interface Employee extends User {
     position: string;
@@ -322,7 +325,7 @@ const mySearch: SearchFunc = function(src, sub) {
   <section class="slide"><div class="frame">
     <span class="eyebrow">Классы</span>
     <h1>implements · модификаторы доступа</h1>
-    <p class="code-title">4_classes.ts</p>
+    <p class="code-title">07_ts/4_classes.ts</p>
     <pre>
 interface Vehicle {
     start(): void;
@@ -350,16 +353,23 @@ class Car implements Vehicle {
   <section class="slide"><div class="frame">
     <span class="eyebrow">Классы</span>
     <h1>extends: ElectricCar</h1>
-    <p class="code-title">4_classes.ts</p>
+    <p class="code-title">07_ts/4_classes.ts</p>
     <pre>
 class ElectricCar extends Car {
     private batteryLevel: number = 100;
 
     charge(): void {
+        if (this.engineStatus) {          // protected-поле родителя доступно
+            console.log("Сначала остановите машину");
+            return;
+        }
         this.batteryLevel = 100;
-        console.log("Battery fully charged");
     }
 }
+
+const tesla = new ElectricCar("Tesla", "5YJ3E1EA7KF000001");
+// tesla.engineStatus = true;  // Ошибка: protected недоступно снаружи
+// tesla.batteryLevel = 0;     // Ошибка: private доступно только внутри класса
 </pre>
     <ul style="margin-top:14px">
       <li><code>extends</code> — наследование полей и методов</li>
@@ -370,13 +380,13 @@ class ElectricCar extends Car {
   <section class="slide"><div class="frame">
     <span class="eyebrow">Дженерики</span>
     <h1>identity&lt;T&gt; · ApiResponse&lt;T&gt;</h1>
-    <p class="code-title">5_generics.ts</p>
+    <p class="code-title">07_ts/5_generics.ts</p>
     <pre>
 function identity&lt;T&gt;(arg: T): T {
     return arg;
 }
 let output1 = identity&lt;string&gt;("hello");
-let output2 = identity&lt;number&gt;(42); // можно: вывод типа
+let output2 = identity(42);           // &lt;number&gt; можно не писать: TS выведет тип
 
 interface ApiResponse&lt;T&gt; {
     data: T;
@@ -396,28 +406,31 @@ const userResponse: ApiResponse&lt;User&gt; = {
   <section class="slide"><div class="frame">
     <span class="eyebrow">Дженерики</span>
     <h1>Repository&lt;T&gt;</h1>
-    <p class="code-title">5_generics.ts</p>
+    <p class="code-title">07_ts/5_generics.ts</p>
     <pre>
-class Repository&lt;T&gt; {
+// ограничение: T обязан иметь поле id
+class Repository&lt;T extends { id: number }&gt; {
     private items: T[] = [];
 
     add(item: T): void {
         this.items.push(item);
     }
     getById(id: number): T | undefined {
-        return this.items.find(item =&gt; (item as any).id === id);
+        return this.items.find(item =&gt; item.id === id); // без any
     }
 }
 
 const userRepo = new Repository&lt;User&gt;();
-userRepo.add({ id: 1, name: "Alice" });
+userRepo.add({ id: 1, name: "Alice", email: "alice@example.com" });
+const alice = userRepo.getById(1);    // User | undefined
+// new Repository&lt;string&gt;();         // Ошибка: у string нет id
 </pre>
   </div></section>
   <!-- 12 · Union/Intersection -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">Union / Intersection</span>
     <h1>string | number · Identity &amp; BusinessPartner</h1>
-    <p class="code-title">6_union.ts</p>
+    <p class="code-title">07_ts/6_union.ts</p>
     <pre>
 type StringOrNumber = string | number;
 
@@ -428,7 +441,10 @@ function processValue(value: StringOrNumber): string {
     return value.toFixed(2);        // TS знает: number
 }
 
-type Employee = Identity &amp; BusinessPartner;
+interface Identity { id: number; name: string; }
+interface BusinessPartner { name: string; credit: number; }
+
+type Employee = Identity &amp; BusinessPartner;  // все поля обоих типов
 const employee: Employee = {
     id: 1, name: "John", credit: 1000
 };
@@ -439,8 +455,12 @@ const employee: Employee = {
   <section class="slide"><div class="frame">
     <span class="eyebrow">Сужение типов</span>
     <h1>Type guard: isFish</h1>
-    <p class="code-title">6_union.ts</p>
+    <p class="code-title">07_ts/6_union.ts</p>
     <pre>
+interface Fish { swim(): void; }
+interface Bird { fly(): void; }
+
+// возвращаемый тип pet is Fish — это и есть type guard
 function isFish(pet: Fish | Bird): pet is Fish {
     return (pet as Fish).swim !== undefined;
 }
@@ -475,7 +495,7 @@ function move(pet: Fish | Bird) {
   <section class="slide"><div class="frame">
     <span class="eyebrow">Type vs Interface</span>
     <h1>Код</h1>
-    <p class="code-title">7_types_aliases.ts</p>
+    <p class="code-title">07_ts/7_types_aliases.ts</p>
     <pre>
 type Point = { x: number; y: number };
 type ID = number | string;
@@ -484,7 +504,7 @@ interface PointInterface { x: number; y: number; }
 
 // Расширение
 type Point3D = Point &amp; { z: number };
-interface Point3D extends PointInterface { z: number; }
+interface Point3DInterface extends PointInterface { z: number; }  // имя должно отличаться
 
 // Declaration merging
 interface Animal { name: string; }
@@ -495,11 +515,71 @@ type Person = { name: string; };
 // type Person = { age: number };  // Ошибка!
 </pre>
   </div></section>
+  <!-- 15a · Utility types -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Utility types</span>
+    <h1>Partial · Omit · Pick · Record</h1>
+<p class="code-title">07_ts/8_utility_types.ts</p>
+<pre>
+interface User {
+    id: number;
+    name: string;
+    email: string;
+    password: string;
+}
+
+type UserUpdate  = Partial&lt;User&gt;;                // все поля необязательные
+type PublicUser  = Omit&lt;User, "password"&gt;;       // без пароля
+type UserPreview = Pick&lt;User, "id" | "name"&gt;;    // только id и name
+type UsersById   = Record&lt;number, PublicUser&gt;;   // словарь id -&gt; пользователь
+
+// keyof User = "id" | "name" | "email" | "password"
+type FormErrors = Partial&lt;Record&lt;keyof User, string&gt;&gt;;  // так типизирован useForm (тема 10)
+
+function getField&lt;T, K extends keyof T&gt;(obj: T, key: K): T[K] {
+    return obj[key];
+}
+// getField(user, "emial");  // Ошибка: такого поля нет
+</pre>
+    <p class="foot-note">Utility types строят новые типы из существующих — не нужно дублировать интерфейсы.</p>
+  </div></section>
+  <!-- 15b · as const -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Литеральные типы</span>
+    <h1>as const · satisfies · never</h1>
+<p class="code-title">07_ts/8_utility_types.ts</p>
+<pre>
+const ROLES = ["admin", "user", "moderator"] as const;
+type Role = (typeof ROLES)[number];            // "admin" | "user" | "moderator"
+
+const theme = {
+    primary: "#058DC7",
+    danger: "#c0392b",
+} satisfies Record&lt;string, string&gt;;            // проверка формы без потери точного типа
+
+type Status = "loading" | "success" | "error";
+function statusText(status: Status): string {
+    switch (status) {
+        case "loading": return "Загрузка...";
+        case "success": return "Готово";
+        case "error":   return "Ошибка";
+        default: {
+            const unreachable: never = status; // забыли case — ошибка компиляции
+            return unreachable;
+        }
+    }
+}
+</pre>
+    <ul style="margin-top:10px">
+      <li><strong>enum</strong> в новых проектах не используем: шаблон Vite включает <code>erasableSyntaxOnly</code>, а он запрещает enum, namespace и parameter properties</li>
+      <li>Вместо enum — union литералов или объект <code>as const</code></li>
+    </ul>
+  </div></section>
   <!-- 16 · Миграция -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">Миграция JS → TS</span>
     <h1>Постепенный переход</h1>
-    <p class="code-title">tsconfig.json</p>
+    <p class="code-title">07_ts/tsconfig.json</p>
     <pre>
 {
   "compilerOptions": {
@@ -523,7 +603,7 @@ type Person = { name: string; };
       <li><code>interface</code> для <strong>props/state</strong> компонентов</li>
       <li>Union-типы: <code>'primary' | 'secondary'</code> — варианты компонентов</li>
       <li><code>unknown</code> + сужение вместо <code>any</code></li>
-      <li><code>ts-node</code>/<code>tsx</code> — запуск TS-кода в Node</li>
+      <li>Запуск TS в Node: <code>node file.ts</code> (Node 22.18+/24) или пакет <code>tsx</code></li>
     </ul>
   </div></section>
 

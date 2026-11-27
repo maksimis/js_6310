@@ -195,7 +195,7 @@
       <div>
 <h1>Что такое JavaScript</h1>
         <ul style="margin-top:14px">
-          <li>Высокоуровневый <strong>интерпретируемый</strong> язык</li>
+          <li>Высокоуровневый язык с <strong>динамической типизацией</strong>; движки (V8 и др.) компилируют код «на лету» (JIT)</li>
           <li>Не имеет отношения к Java — <strong>это не Java!</strong></li>
           <li>Даёт страницам <strong>интерактивность</strong>: формы, анимация, запросы</li>
           <li>Третий «столп» веб-разработки: <strong>HTML + CSS + JS</strong></li>
@@ -265,7 +265,7 @@
   <section class="slide"><div class="frame">
     <span class="eyebrow">Первая программа</span>
     <h1>Первая программа</h1>
-    <p class="code-title">1.html</p>
+    <p class="code-title">01_js/1.html</p>
     <pre>&lt;script&gt;
     // это комментарий — следующая строка выводит сообщение
     console.log("Hello, World!");
@@ -296,7 +296,7 @@
   <section class="slide"><div class="frame">
     <span class="eyebrow">Переменные</span>
     <h1>let и const</h1>
-    <p class="code-title">2.js</p>
+    <p class="code-title">01_js/2.js</p>
     <pre>let userName = "Анна";  // объявили переменную
 userName = "Борис";        // изменили значение (OK)
 
@@ -308,20 +308,20 @@ const birthYear = 2002;
   <section class="slide"><div class="frame">
     <span class="eyebrow">Типы данных</span>
     <h1>Основные типы</h1>
-    <p class="code-title">3.js</p>
+    <p class="code-title">01_js/3.js</p>
     <pre>let age = 20;            // number
 let name = "Иван";       // string
 let isStudent = true;    // boolean
 let empty;               // undefined — значение не присвоено
 let nothing = null;      // null — «ничего»</pre>
-    <p class="foot-note">Symbol, BigInt и объекты — рассмотрим позже.</p>  </div></section>
+    <p class="foot-note">Узнать тип: <code>typeof age</code> → "number". Ещё есть bigint, symbol и объекты; объекты и массивы — в теме 2.</p>  </div></section>
 
   <!-- 9 · Операторы -->
   <section class="slide"><div class="frame">
     <div class="two-col" style="align-items:start">
       <div>
 <h1>Операторы</h1>
-    <p class="code-title">4.js</p>
+    <p class="code-title">01_js/4.js</p>
     <pre>let a = 10 + 5;  // 15
 let b = 10 % 3;  // 1 — остаток
 
@@ -338,13 +338,38 @@ let b = 10 % 3;  // 1 — остаток
       </div>
     </div>
   </div></section>
+  <!-- 9a · Сравнение и логика -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Операторы</span>
+    <h1>===, truthy/falsy, ?? и ?.</h1>
+<p class="code-title">01_js/9.js</p>
+<pre>
+5 == "5"        // true  — == приводит типы: отсюда сюрпризы (0 == "" тоже true)
+5 === "5"       // false — в курсе сравниваем только через === и !==
+
+typeof null     // "object" — историческая ошибка языка
+
+// falsy: false, 0, "", null, undefined, NaN — всё остальное truthy
+const name = "";
+name || "Гость"         // "Гость" — || заменяет ЛЮБОЕ ложное значение
+
+const count = 0;
+count || 10             // 10 — ноль потерялся!
+count ?? 10             // 0  — ?? заменяет только null и undefined
+
+const user = { profile: null };
+user.profile?.city      // undefined вместо TypeError
+user.profile?.city ?? "Город не указан"
+</pre>
+    <p class="foot-note"><code>??</code> и <code>?.</code> встретятся в каждом React-проекте курса.</p>
+  </div></section>
 
   <!-- 10 · 0.1 + 0.2 -->
   <section class="slide"><div class="frame">
     <div class="two-col" style="align-items:start">
       <div>
 <h1>Числа с плавающей точкой</h1>
-    <p class="code-title">5.js</p>
+    <p class="code-title">01_js/5.js</p>
     <pre>console.log(0.3);        // 0.3
 console.log(0.1 + 0.2);  // 0.30000000000000004 !</pre>
 
@@ -360,8 +385,9 @@ console.log(0.1 + 0.2);  // 0.30000000000000004 !</pre>
     <div class="two-col" style="align-items:start">
       <div>
 <h1>Максимум числа</h1>
-    <p class="code-title"></p>
-    <pre>// MAX_SAFE_INTEGER = 9007199254740991
+    <p class="code-title">консоль</p>
+    <pre>// Number.MAX_SAFE_INTEGER = 9007199254740991
+// дальше целые числа хранятся неточно; для них есть BigInt: 9007199254740993n
 9007199254740992 === 9007199254740993  // true?!</pre>
 
       </div>
@@ -375,7 +401,7 @@ console.log(0.1 + 0.2);  // 0.30000000000000004 !</pre>
   <section class="slide"><div class="frame">
     <span class="eyebrow">Синтаксис</span>
     <h1>Комментарии</h1>
-    <p class="code-title">6.js</p>
+    <p class="code-title">01_js/6.js</p>
     <pre>// однострочный комментарий — интерпретатор игнорирует
 
 let x = 5; // комментарий можно поставить и в конце строки
@@ -390,7 +416,7 @@ let x = 5; // комментарий можно поставить и в кон�
   <section class="slide"><div class="frame">
     <span class="eyebrow">Управление</span>
     <h1>Условные операторы</h1>
-    <p class="code-title">7.js</p>
+    <p class="code-title">01_js/7.js</p>
     <pre>let age = 20;
 
 if (age &gt;= 18) {
@@ -414,7 +440,7 @@ else                  console.log("Добрый вечер!");</pre>
   <section class="slide"><div class="frame">
     <span class="eyebrow">Синтаксис</span>
     <h1>Шаблонные строки</h1>
-    <p class="code-title">8.js</p>
+    <p class="code-title">01_js/8.js</p>
     <pre>const name = "Анна";
 const age = 25;
 
@@ -436,7 +462,7 @@ let calc = `Через 5 лет тебе будет ${age + 5} лет.`;</pre>
         <ul style="margin-top:14px">
           <li><strong>ES (ECMAScript)</strong> — стандарт языка</li>
           <li><strong>ES6 (2015)</strong> — let/const, стрелочные функции, классы, модули</li>
-          <li>Стандарт обновляется ежегодно — следите за новинками (tc39)</li>
+          <li>Стандарт обновляется ежегодно (ES2025 — актуальная редакция), предложения — на github.com/tc39</li>
           <li>В курсе используем <strong>только современный синтаксис</strong></li>
         </ul>
       </div>

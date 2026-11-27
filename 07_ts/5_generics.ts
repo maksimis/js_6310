@@ -1,6 +1,14 @@
-interface User {}
+interface User {
+    id: number;
+    name: string;
+    email: string;
+}
 
-interface Product {}
+interface Product {
+    id: number;
+    name: string;
+    price: number;
+}
 
 // Дженерик функция
 function identity<T>(arg: T): T {
@@ -9,7 +17,7 @@ function identity<T>(arg: T): T {
 
 // Использование
 let output1 = identity<string>("hello");
-let output2 = identity<number>(42); // TypeScript может вывести тип
+let output2 = identity(42); // <number> можно не писать: TS выведет тип сам
 
 // Дженерик интерфейс
 interface ApiResponse<T> {
@@ -31,8 +39,8 @@ const productResponse: ApiResponse<Product> = {
     message: "Success"
 };
 
-// Дженерик класс
-class Repository<T> {
+// Дженерик класс с ограничением: T обязан иметь id
+class Repository<T extends { id: number }> {
     private items: T[] = [];
     
     add(item: T): void {
@@ -40,10 +48,15 @@ class Repository<T> {
     }
     
     getById(id: number): T | undefined {
-        return this.items.find(item => (item as any).id === id);
+        return this.items.find(item => item.id === id); // без any: id есть у любого T
     }
 }
 
 // Использование
 const userRepo = new Repository<User>();
-userRepo.add({ id: 1, name: "Alice" });
+userRepo.add({ id: 1, name: "Alice", email: "alice@example.com" });
+const alice = userRepo.getById(1); // тип: User | undefined
+
+const productRepo = new Repository<Product>();
+productRepo.add({ id: 1, name: "Laptop", price: 999 });
+// new Repository<string>(); // Ошибка: у string нет поля id

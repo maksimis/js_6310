@@ -187,12 +187,12 @@
   <section class="slide"><div class="frame title-frame">
     <h1 id="t-title">Тема 4 · Асинхронность в JavaScript</h1>
     <div class="badge-row"><span class="badge">Курс «JavaScript»</span><span class="badge">Группа 6310</span><span class="badge">2026</span></div>
-    <div class="teacher">Исанькин М.А.</div>  </div></section>
+    <div class="teacher">{FIO_prepod}</div>  </div></section>
   <!-- 1 · Синхронный vs асинхронный -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">Синхронный vs асинхронный</span>
     <h1>Почему async нужен</h1>
-    <p class="code-title">1.js</p>
+    <p class="code-title">04_async/1.js</p>
     <pre>
 // Синхронно: построчно, предсказуемо
 console.log('Начало');
@@ -217,7 +217,7 @@ console.log('Конец');   // выполнится СРАЗУ, не через
         <ol class="steps" style="margin-top:14px">
           <li><b>Call Stack</b> — стек вызовов, один поток: одна операция за раз</li>
           <li><b>Web APIs</b> — браузер выполняет таймеры/запросы «в фоне»</li>
-          <li><b>Callback Queue</b> — очередь готовых колбэков</li>
+          <li><b>Очереди задач</b> — макрозадачи (таймеры, события) и микрозадачи (промисы)</li>
           <li><b>Event Loop</b> — пустой стек? → переносит колбэк в стек</li>
         </ol>
       </div>
@@ -230,7 +230,7 @@ console.log('Конец');   // выполнится СРАЗУ, не через
   <section class="slide"><div class="frame">
     <span class="eyebrow">Event Loop в действии</span>
     <h1>Почему setTimeout(…, 0) не мгновенный</h1>
-    <p class="code-title">2.js</p>
+    <p class="code-title">04_async/2.js</p>
     <pre>
 console.log('Начало');
 
@@ -240,15 +240,37 @@ console.log('Конец');
 </pre>
     <p style="margin-top:16px"><strong>Вывод:</strong> «Начало», «Конец», «Таймер».</p>
     <ul style="margin-top:14px">
-      <li>Колбэк попадает в Callback Queue и ждёт пустого стека</li>
+      <li>Колбэк попадает в очередь макрозадач и ждёт пустого стека</li>
       <li>Отложен на <em>минимум</em> 0 мс — но не раньше конца синхронного кода</li>
+    </ul>
+  </div></section>
+  <!-- 3a · Микрозадачи -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Event Loop</span>
+    <h1>Микрозадачи и макрозадачи</h1>
+<p class="code-title">04_async/8.js</p>
+<pre>
+console.log('1: синхронный код');
+
+setTimeout(() =&gt; console.log('4: макрозадача (setTimeout)'), 0);
+
+Promise.resolve().then(() =&gt; console.log('3: микрозадача (Promise.then)'));
+
+console.log('2: синхронный код');
+
+// Вывод: 1, 2, 3, 4
+</pre>
+    <ul style="margin-top:14px">
+      <li>После синхронного кода Event Loop выполняет <strong>все</strong> микрозадачи: <code>then</code>/<code>catch</code>, <code>await</code>, <code>queueMicrotask</code></li>
+      <li>Только потом — следующую макрозадачу: таймер, событие, ответ сети</li>
+      <li>Поэтому <code>then</code> всегда срабатывает раньше <code>setTimeout(…, 0)</code></li>
     </ul>
   </div></section>
   <!-- 4 · Таймеры -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">Таймеры</span>
     <h1>setTimeout · setInterval</h1>
-    <p class="code-title">3.js</p>
+    <p class="code-title">04_async/3.js</p>
     <pre>
 // Однократно через 2 секунды
 const timeoutId = setTimeout(() =&gt; {
@@ -270,7 +292,7 @@ const intervalId = setInterval(() =&gt; {
   <section class="slide"><div class="frame">
     <span class="eyebrow">Callbacks</span>
     <h1>Функция, которую вызовут позже</h1>
-    <p class="code-title">4.js</p>
+    <p class="code-title">04_async/4.js</p>
     <pre>
 // Синхронный callback
 function doHomework(subject, callback) {
@@ -294,7 +316,7 @@ document.getElementById('button').addEventListener('click', function() {
       <div>
 <span class="eyebrow">Callbacks</span>
 <h1>Callback Hell</h1>
-    <p class="code-title"></p>
+    <p class="code-title">псевдокод: вложенные колбэки</p>
     <pre>
 getUser(userId, (user) =&gt; {
     getPosts(user.id, (posts) =&gt; {
@@ -316,7 +338,7 @@ getUser(userId, (user) =&gt; {
   <section class="slide"><div class="frame">
     <span class="eyebrow">Промисы</span>
     <h1>Обещание результата</h1>
-    <p class="code-title">5.js</p>
+    <p class="code-title">04_async/5.js</p>
     <pre>
 const promise = new Promise((resolve, reject) =&gt; {
     // Асинхронная операция
@@ -325,10 +347,16 @@ const promise = new Promise((resolve, reject) =&gt; {
         if (success) {
             resolve('Данные успешно получены');
         } else {
-            reject('Ошибка загрузки данных');
+            reject(new Error('Ошибка загрузки данных')); // Error, а не строка
         }
     }, 1000);
 });
+</pre>
+    <p class="code-title">04_async/5.js — получение результата</p>
+    <pre>
+promise
+    .then(result =&gt; console.log('Успех:', result))
+    .catch(error =&gt; console.error('Ошибка:', error.message));
 </pre>
     <ul style="margin-top:14px">
       <li>Три состояния: <code>pending</code> → <code>fulfilled</code> / <code>rejected</code></li>
@@ -339,7 +367,7 @@ const promise = new Promise((resolve, reject) =&gt; {
   <section class="slide"><div class="frame">
     <span class="eyebrow">Промисы</span>
     <h1>Цепочки .then/.catch/.finally</h1>
-    <p class="code-title"></p>
+    <p class="code-title">псевдокод: та же логика на промисах</p>
     <pre>
 getUser(userId)                       // промис
     .then(user =&gt; getPosts(user.id))
@@ -357,20 +385,28 @@ getUser(userId)                       // промис
   <!-- 9 · Комбинаторы -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">Промисы</span>
-    <h1>Promise.all · race · allSettled</h1>
+    <h1>Promise.all · allSettled · race · any</h1>
     <table style="margin-top:14px">
       <tr><th>Метод</th><th>Поведение</th></tr>
       <tr><td><code>Promise.all</code></td><td>ждёт ВСЕ — результат массивом; упал один = ошибка</td></tr>
-      <tr><td><code>Promise.race</code></td><td>первый завершившийся (успех или ошибка)</td></tr>
       <tr><td><code>Promise.allSettled</code></td><td>все с исходом каждого, даже с ошибками</td></tr>
+      <tr><td><code>Promise.race</code></td><td>первый завершившийся (успех или ошибка) — например, тайм-аут</td></tr>
+      <tr><td><code>Promise.any</code></td><td>первый успешный, ошибки игнорирует</td></tr>
     </table>
+<p class="code-title">04_async/9.js</p>
+<pre>
+// параллельно: ~300 мс, а не 100 + 200 + 300
+const [user, posts, likes] = await Promise.all([
+    getUser(), getPosts(), getLikes(),
+]);
+</pre>
   </div></section>
   <!-- 10 · Fetch API -->
   <section class="slide"><div class="frame">
     <div class="two-col" style="align-items:start">
       <div>
 <h1>Fetch API</h1>
-    <p class="code-title">6.js</p>
+    <p class="code-title">04_async/6.js</p>
     <pre>
 // GET
 fetch('https://api.hh.ru/cors')
@@ -387,8 +423,12 @@ fetch('https://api.hh.ru/cors', {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name: 'John', age: 30 })
 })
-.then(response =&gt; response.json())
-.then(data =&gt; console.log(data));
+.then(response =&gt; {
+    if (!response.ok) throw new Error('Ошибка HTTP: ' + response.status);
+    return response.json();
+})
+.then(data =&gt; console.log(data))
+.catch(error =&gt; console.error('Ошибка:', error));
 </pre>
       </div>
       <div class="img-card">
@@ -401,7 +441,7 @@ fetch('https://api.hh.ru/cors', {
     <div class="two-col" style="align-items:start">
       <div>
 <h1>Async / Await</h1>
-    <p class="code-title">7.js</p>
+    <p class="code-title">04_async/7.js</p>
     <pre>
 // Тот же fetch, но читается как синхронный код
 async function loadData() {
@@ -435,6 +475,7 @@ loadData();
           <li>Промисы — <strong>основной стиль</strong> на курсе; <code>then</code> надо уметь читать</li>
           <li>Fetch — GET/POST, <code>response.ok</code>, <code>response.json()</code></li>
           <li><code>async/await</code> — рекомендованный способ работы с промисами</li>
+          <li>Микрозадачи (промисы) выполняются раньше макрозадач (таймеры, события)</li>
           <li>Перекликается с темой 6 (Node.js): там те же таймеры и событийный цикл</li>
         </ul>
       </div>

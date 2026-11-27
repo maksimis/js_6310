@@ -8,7 +8,9 @@ function createUser(
     age?: number, 
     isActive: boolean = true
 ): { name: string; age?: number; isActive: boolean } {
-    return { name, age, isActive };
+    // с exactOptionalPropertyTypes нельзя записать age: undefined —
+    // добавляем поле, только если значение передали
+    return age === undefined ? { name, isActive } : { name, age, isActive };
 }
 // Стрелочные функции
 const multiply = (a: number, b: number): number => a * b;

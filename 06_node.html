@@ -239,7 +239,7 @@
       <div>
 <h1>Основы npm</h1>
         <ul style="margin-top:14px">
-          <li><code>npm init -y</code> — новый проект; <code>npm init es6 -y</code> — с ES-модулями</li>
+          <li><code>npm init -y</code> — новый проект; <code>npm pkg set type=module</code> — включить ES-модули</li>
           <li><code>npm install</code> / <code>--save-dev</code> / <code>-g</code></li>
           <li><code>npm uninstall</code>, <code>npm update</code></li>
           <li><code>npx</code> — запуск пакета без установки: <code>npx cowsay "Hello, Node.js!"</code></li>
@@ -254,29 +254,33 @@
   <section class="slide"><div class="frame">
     <span class="eyebrow">package.json</span>
     <h1>Манифест проекта</h1>
-    <p class="code-title">4_package_json/package.json</p>
-    <pre>
+<p class="code-title">06_node/8_eslint/package.json (сокращено)</p>
+<pre>
 {
-  "name": "init_es6",
-  "version": "1.0.0",
-  "main": "index.js",
+  "name": "lecture6-8-eslint",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "test": "jest --passWithNoTests"
+    "start": "node ./src/index.js",
+    "dev": "node --watch ./src/index.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "lint": "eslint ."
   },
   "dependencies": {
-    "express": "^5.1.0"
+    "dotenv": "^17.2.3",
+    "node-telegram-bot-api": "^0.66.0"
   },
   "devDependencies": {
+    "eslint": "^9.36.0",
     "jest": "^30.2.0"
-  }
+  },
+  "jest": { "transform": {} }
 }
 </pre>
     <ul style="margin-top:14px">
       <li><code>scripts</code> — команды проекта: <code>npm run dev</code>, <code>npm test</code></li>
-      <li><code>dependencies</code> vs <code>devDependencies</code></li>
+      <li><code>dependencies</code> — нужны при работе, <code>devDependencies</code> — только при разработке</li>
+      <li><code>node --watch</code> перезапускает программу при изменении файлов — <code>nodemon</code> не нужен</li>
+      <li>Jest и ES-модули: флаг <code>--experimental-vm-modules</code> и <code>"transform": {}</code>, иначе тесты не запустятся</li>
     </ul>
   </div></section>
   <!-- 6 · Структура и модули -->
@@ -305,7 +309,7 @@ export function multiply(a, b) {
 </pre>
       </div>
     </div>
-    <p class="foot-note">ES6-модули включаются полем <code>"type": "module"</code> в package.json.</p>
+    <p class="foot-note">ES6-модули включаются полем <code>"type": "module"</code> в package.json. В импорте обязательно расширение: <code>import { sum } from './utils/math.js'</code> — без <code>.js</code> Node выдаст ERR_MODULE_NOT_FOUND.</p>
   </div></section>
   <!-- 7 · Тестирование -->
   <section class="slide"><div class="frame">
@@ -320,7 +324,7 @@ export function multiply(a, b) {
         </ul>
       </div>
       <div class="img-card">
-        <img src="06_node/slide8_0.png" alt="Иллюстрация структуры node_modules">
+        <img src="06_node/slide8_0.png" alt="Мем: огромная папка node_modules и крошечная ./src">
       </div>
     </div>
   </div></section>
@@ -328,9 +332,9 @@ export function multiply(a, b) {
   <section class="slide"><div class="frame">
     <span class="eyebrow">Jest</span>
     <h1>describe · test · expect</h1>
-    <p class="code-title">tests/math.test.js</p>
+    <p class="code-title">06_node/6_jest/tests/math.test.js</p>
     <pre>
-import * as math from '../src/utils';
+import * as math from '../src/utils/index.js';
 import { describe, test, expect } from '@jest/globals';
 
 describe('Math module', () =&gt; {
@@ -349,35 +353,39 @@ describe('Math module', () =&gt; {
   </div></section>
   <!-- 9 · Telegram-бот -->
   <section class="slide"><div class="frame">
-    <div class="two-col" style="align-items:start">
-      <div>
-<h1>Практика: Telegram-бот</h1>
-    <p class="code-title">src/index.js</p>
-    <pre>
-import TelegramBot from 'node-telegram-bot-api';
-import dotenv from 'dotenv';
+    <span class="eyebrow">Практика</span>
+    <h1>Telegram-бот</h1>
+<p class="code-title">06_node/8_eslint/src/bot.js</p>
+<pre>
+// src/bot.js — логика отдельно от запуска, чтобы её можно было протестировать
+import TelegramBot from 'node-telegram-bot-api'
 
-dotenv.config();
-const token = process.env.TELEGRAM_BOT_TOKEN;
+export function createBot(token) {
+    if (!token) throw new Error('Не задан TELEGRAM_BOT_TOKEN')
 
-const bot = new TelegramBot(token, { polling: true });
+    const bot = new TelegramBot(token, { polling: true })
 
-bot.onText(/\/start/, (msg) =&gt; {
-    bot.sendMessage(msg.chat.id, 'Привет! Я твой первый бот!');
-});
-
-bot.on('message', (msg) =&gt; {
-    if (msg.text !== '/start') {
-        bot.sendMessage(msg.chat.id, `Вы сказали: "${msg.text}"`);
-    }
-});
+    bot.onText(/\/start/, (msg) =&gt; {
+        bot.sendMessage(msg.chat.id, 'Привет! Я твой первый бот!')
+    })
+    bot.on('message', (msg) =&gt; {
+        if (msg.text !== '/start') {
+            bot.sendMessage(msg.chat.id, `Вы сказали: "${msg.text}"`)
+        }
+    })
+    return bot
+}
 </pre>
-      </div>
-      <div class="img-card">
-        <img src="06_node/slide13_0.png" alt="Скриншот кода Telegram-бота">
-      </div>
-    </div>
-    <p class="foot-note">Токен — через BotFather; хранить в .env, читать через dotenv.</p>
+<p class="code-title">06_node/8_eslint/src/index.js</p>
+<pre>
+// src/index.js — точка входа
+import dotenv from 'dotenv'
+import { createBot } from './bot.js'
+
+dotenv.config()                          // .env -&gt; process.env
+createBot(process.env.TELEGRAM_BOT_TOKEN)
+</pre>
+    <p class="foot-note">Токен — у @BotFather. В репозиторий кладём <code>.env.example</code> без значения, а сам <code>.env</code> — в <code>.gitignore</code>. Без dotenv: <code>node --env-file=.env src/index.js</code> (Node ≥ 20.6).</p>
   </div></section>
   <!-- 10 · Бот: как это работает -->
   <section class="slide"><div class="frame">
@@ -387,36 +395,42 @@ bot.on('message', (msg) =&gt; {
       <li><strong>BotFather</strong> — создание бота и получение токена в Телеграме</li>
       <li><strong>Polling</strong> — бот сам опрашивает сервер (просто, без сервера)</li>
       <li><strong>Webhook</strong> — Telegram сам шлёт события на URL (нужен сервер)</li>
-      <li><code>nodemon</code> — авто-перезапуск при изменении кода</li>
+      <li><code>node --watch</code> — авто-перезапуск при изменении кода</li>
       <li>Polling — наглядная демонстрация событийного цикла из темы 4</li>
     </ul>
   </div></section>
   <!-- 11 · Mocking -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">Mocking</span>
-    <h1>jest.fn() · jest.mock()</h1>
-    <p class="code-title"></p>
-    <pre>
-import TelegramBot from 'node-telegram-bot-api';
+    <h1>Мок модуля в ES-модулях</h1>
+<p class="code-title">06_node/8_eslint/tests/bot.test.js (сокращено)</p>
+<pre>
+import { jest, test, expect } from '@jest/globals'
 
-jest.mock('node-telegram-bot-api');   // заменяем библиотеку моком
-
-const mockSend = jest.fn();
-TelegramBot.mockImplementation(() =&gt; ({
-    onText: jest.fn(),
+const sendMessage = jest.fn()
+const handlers = { onText: [] }
+const TelegramBot = jest.fn().mockImplementation(() =&gt; ({
+    onText: (regexp, cb) =&gt; handlers.onText.push([regexp, cb]),
     on: jest.fn(),
-    sendMessage: mockSend
-}));
+    sendMessage,
+}))
 
-test('бот отвечает на /start', async () =&gt; {
-    require('../src/index');
-    expect(TelegramBot).toHaveBeenCalledWith(expect.anything(),
-        { polling: true });
-});
+// в ESM jest.mock() не поднимается над import — мокаем ДО импорта бота
+jest.unstable_mockModule('node-telegram-bot-api', () =&gt; ({ default: TelegramBot }))
+const { createBot } = await import('../src/bot.js')
+
+test('отвечает на /start', () =&gt; {
+    createBot('test-token')
+    const [, onStart] = handlers.onText[0]
+
+    onStart({ chat: { id: 42 }, text: '/start' })
+    expect(sendMessage).toHaveBeenCalledWith(42, 'Привет! Я твой первый бот!')
+})
 </pre>
     <ul style="margin-top:14px">
-      <li><code>mockResolvedValue</code> — замок ответа промиса для async/await</li>
-      <li>Интеграционный тест бота проверяет, что <code>onText</code> вызван</li>
+      <li><code>jest.fn()</code> — функция-шпион: запоминает вызовы и аргументы</li>
+      <li>Мок заменяет настоящую библиотеку: тест не ходит в Telegram и не нужен токен</li>
+      <li><code>mockResolvedValue</code> — мок ответа промиса для async/await</li>
     </ul>
   </div></section>
   <!-- 12 · ESLint -->
@@ -426,7 +440,7 @@ test('бот отвечает на /start', async () =&gt; {
 <h1>ESLint</h1>
         <ul style="margin-top:14px">
           <li>Статический анализ: единый стиль, ошибки до запуска</li>
-          <li><code>npm i -D eslint</code>, <code>npx eslint --init</code>, <code>--fix</code></li>
+          <li>Создать конфиг: <code>npm init @eslint/config@latest</code>; исправить автоматически: <code>eslint . --fix</code></li>
           <li>Актуальный формат — <strong>flat config</strong> <code>eslint.config.js</code></li>
           <li>VS Code: <code>settings.json</code> → <code>source.fixAll.eslint</code></li>
         </ul>
@@ -437,7 +451,7 @@ test('бот отвечает на /start', async () =&gt; {
   <section class="slide"><div class="frame">
     <span class="eyebrow">ESLint 2026</span>
     <h1>eslint.config.js (flat config)</h1>
-    <p class="code-title">8_eslint/eslint.config.js</p>
+    <p class="code-title">06_node/8_eslint/eslint.config.js</p>
     <pre>
 import js from "@eslint/js";
 import globals from "globals";
@@ -453,12 +467,12 @@ export default defineConfig([
 ]);
 </pre>
     <p style="margin-top:14px">Скрипты в package.json:</p>
-    <p class="code-title"></p>
+    <p class="code-title">package.json</p>
     <pre>
 "lint": "eslint .",
 "lint:fix": "eslint . --fix"
 </pre>
-    <p class="foot-note">Правила: indent, quotes, semi, no-unused-vars, no-console, prefer-const, eqeqeq.</p>
+    <p class="foot-note">Правила качества: no-unused-vars, prefer-const, eqeqeq, no-console. Форматирование (отступы, кавычки, точки с запятой) в ESLint 9 вынесено в <code>@stylistic/eslint-plugin</code> — или используйте Prettier.</p>
   </div></section>
   <!-- 14 · Рабочий процесс -->
   <section class="slide"><div class="frame">
@@ -471,6 +485,30 @@ export default defineConfig([
       <li><strong>CI</strong> — то же самое на сервере при каждом PR</li>
     </ul>
     <p class="lead" style="margin-top:14px">Этот же процесс ждёт вас в React-проектах тем 8–12.</p>
+  </div></section>
+  <!-- 14a · CI -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">CI</span>
+    <h1>GitHub Actions: проверка каждого PR</h1>
+<p class="code-title">.github/workflows/ci.yml</p>
+<pre>
+# .github/workflows/ci.yml
+name: CI
+on: [push, pull_request]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm install      # npm ci — если package-lock.json лежит в репозитории
+      - run: npm run lint
+      - run: npm test
+</pre>
+    <p class="foot-note">Если линтер или тесты упали — PR помечается красным, и ошибку видно до ревью.</p>
   </div></section>
   <!-- 15 · Итоги -->
   <section class="slide"><div class="frame">

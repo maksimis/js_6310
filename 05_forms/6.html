@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Constraint Validation API</title>
+    <style>
+        input:user-invalid { border-color: crimson; }
+        input:user-valid { border-color: seagreen; }
+    </style>
+</head>
+<body>
+    <form id="passwordForm">
+        <label for="password">Пароль:</label>
+        <input id="password" type="password" name="password" required minlength="6">
+
+        <label for="confirm">Повторите пароль:</label>
+        <input id="confirm" type="password" name="confirm" required>
+
+        <button type="submit">Сохранить</button>
+    </form>
+
+    <script>
+        const password = document.getElementById('password');
+        const confirm = document.getElementById('confirm');
+
+        // Своё правило проверки: сообщение показывает сам браузер
+        function checkMatch() {
+            confirm.setCustomValidity(
+                confirm.value === password.value ? '' : 'Пароли не совпадают'
+            );
+        }
+        password.addEventListener('input', checkMatch);
+        confirm.addEventListener('input', checkMatch);
+
+        document.getElementById('passwordForm').addEventListener('submit', (event) => {
+            event.preventDefault();
+            console.log('valid:', event.target.checkValidity());
+            console.log('validity поля confirm:', confirm.validity.customError ? 'customError' : 'ok');
+        });
+    </script>
+</body>
+</html>

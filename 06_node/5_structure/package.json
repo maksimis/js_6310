@@ -1,14 +1,13 @@
 {
-  "name": "init_es6",
+  "name": "lecture6-5-structure",
   "version": "1.0.0",
   "description": "Мой первый Node.js проект",
   "main": "./src/index.js",
   "type": "module",
-  "license": "AGPL-version-3.0",
+  "license": "AGPL-3.0-only",
   "private": false,
   "engines": {
-    "node": ">= 14.0.0",
-    "npm": ">= 6.0.0"
+    "node": ">=20.6"
   },
   "homepage": "",
   "repository": {
@@ -20,7 +19,7 @@
   "contributors": [],
   "scripts": {
     "start": "node ./src/index.js",
-    "dev": "nodemon ./src/index.js",
+    "dev": "node --watch ./src/index.js",
     "test": "jest --passWithNoTests"
   },
   "dependencies": {

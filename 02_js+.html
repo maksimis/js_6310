@@ -193,7 +193,7 @@
   <section class="slide"><div class="frame">
     <span class="eyebrow">Функции</span>
     <h1>Function Declaration</h1>
-    <p class="code-title">1.js</p>
+    <p class="code-title">02_js+/1.js</p>
     <pre>// объявление функции: function + имя + параметры + тело
 function greetUser(name, timeOfDay) {
     console.log(`Добрый ${timeOfDay}, ${name}!`);
@@ -208,7 +208,7 @@ greetUser("Борис", "день");   // Добрый день, Борис!</pr
   <section class="slide"><div class="frame">
     <span class="eyebrow">Функции</span>
     <h1>return</h1>
-    <p class="code-title">2.js</p>
+    <p class="code-title">02_js+/2.js</p>
     <pre>function sum(a, b) {
     const result = a + b;
     return result;                 // возвращаем результат
@@ -225,7 +225,7 @@ console.log(total);    // 8
   <section class="slide"><div class="frame">
     <span class="eyebrow">Функции</span>
     <h1>Function Expression и стрелочные</h1>
-    <p class="code-title">3.js</p>
+    <p class="code-title">02_js+/3.js</p>
     <pre>// Function Expression — функция присваивается переменной
 const sayHello = function(name) {
     return `Hello, ${name}`;
@@ -238,14 +238,14 @@ const sayHelloAgain = (name) =&gt; {
 
 // стрелочная функция (сокращённый вариант)
 const double = n =&gt; n * 2; // return подразумевается</pre>
-    <p class="foot-note">Стрелочные функции — основной стиль курса.</p>  </div></section>
+    <p class="foot-note">Стрелочные функции — основной стиль курса. Function Declaration можно вызвать до объявления (hoisting), Function Expression и стрелку — только после.</p>  </div></section>
 
   <!-- 4 · Области видимости -->
   <section class="slide"><div class="frame">
     <div class="two-col" style="align-items:start">
       <div>
 <h1>Области видимости</h1>
-    <p class="code-title">4.js</p>
+    <p class="code-title">02_js+/4.js</p>
     <pre>let globalVar = "Я глобальная";
 
 function myFunction() {
@@ -268,7 +268,7 @@ console.log(globalVar);   // OK
   <section class="slide"><div class="frame">
     <span class="eyebrow">Функции</span>
     <h1>Замыкания</h1>
-    <p class="code-title">5.js</p>
+    <p class="code-title">02_js+/5.js</p>
     <pre>function createCounter() {
     let count = 0; // эта переменная — «приватная»
     return function() {
@@ -286,7 +286,7 @@ counter(); // 2 — прямой доступ к count извне недосту
   <section class="slide"><div class="frame">
     <span class="eyebrow">Функции</span>
     <h1>Каррирование</h1>
-    <p class="code-title">6.js</p>
+    <p class="code-title">02_js+/6.js</p>
     <pre>function curriedMultiply(a) {
     return function(b) {
         return function(c) {
@@ -306,12 +306,12 @@ multiplyByTwo(3)(4); // 24</pre>
   <section class="slide"><div class="frame">
     <span class="eyebrow">Объекты</span>
     <h1>Объект-литерал</h1>
-    <p class="code-title">7.js</p>
+    <p class="code-title">02_js+/7.js</p>
     <pre>const user = {
     name: "Иван",   // свойство
     age: 25,
     isStudent: true,
-    sayHi: function() {  // метод (свойство-функция)
+    sayHi() {            // метод: короткая запись вместо sayHi: function()
         console.log(`Привет, меня зовут ${this.name}`);
     }
 };
@@ -323,7 +323,7 @@ user.sayHi(); // Привет, меня зовут Иван</pre>
   <section class="slide"><div class="frame">
     <span class="eyebrow">Объекты</span>
     <h1>Работа со свойствами</h1>
-    <p class="code-title">8.js</p>
+    <p class="code-title">02_js+/8.js</p>
     <pre>const book = {
     title: "JavaScript для чайников",
     author: "Джон Доу"
@@ -343,7 +343,7 @@ delete book.author;                    // удалить</pre>
   <section class="slide"><div class="frame">
     <span class="eyebrow">ООП</span>
     <h1>Классы — «чертёж» объектов</h1>
-    <p class="code-title">9.js</p>
+    <p class="code-title">02_js+/9.js</p>
     <pre>class User {
     constructor(name, age, isAdmin = false) {
         this.name = name;
@@ -365,7 +365,7 @@ console.log(user3 instanceof User);        // true</pre>
   <section class="slide"><div class="frame">
     <span class="eyebrow">ООП</span>
     <h1>Геттеры, сеттеры, статика</h1>
-    <p class="code-title">10.js</p>
+    <p class="code-title">02_js+/10.js</p>
     <pre>class User {
     constructor(firstName, lastName) {
         this.firstName = firstName;
@@ -382,6 +382,7 @@ console.log(user3 instanceof User);        // true</pre>
     }
 }
 
+const user = new User("Иван", "Петров");
 user.fullName        // "Иван Петров"  (геттер, без скобок!)
 user.fullName = "Алексей Сидоров"; // сеттер
 User.createGuest();                // статический метод</pre>
@@ -391,7 +392,7 @@ User.createGuest();                // статический метод</pre>
   <section class="slide"><div class="frame">
     <span class="eyebrow">ООП</span>
     <h1>Наследование</h1>
-    <p class="code-title">11.js</p>
+    <p class="code-title">02_js+/11.js</p>
     <pre>class Animal {
     constructor(name) {
         this.name = name;
@@ -424,7 +425,7 @@ myCat.run(5);   // Барсик бежит со скоростью 10. И дел
   <section class="slide"><div class="frame">
     <span class="eyebrow">Массивы</span>
     <h1>Массивы — основа</h1>
-    <p class="code-title">12.js</p>
+    <p class="code-title">02_js+/12.js</p>
     <pre>const fruits = ['Яблоко', 'Апельсин', 'Слива']; // создание
 fruits[0]      // 'Яблоко'  (индекс с 0)
 fruits.length  // 3
@@ -440,7 +441,7 @@ const mixed = [1, 'Hello', true, {name: 'Bob'}, null];</pre>
   <section class="slide"><div class="frame">
     <span class="eyebrow">Массивы</span>
     <h1>push / pop / shift / unshift</h1>
-    <p class="code-title">13.js</p>
+    <p class="code-title">02_js+/13.js</p>
     <pre>const companies = ['Apple', 'Google'];
 
 companies.push('Amazon', 'Microsoft');
@@ -457,7 +458,7 @@ companies.unshift('Tesla');
   <section class="slide"><div class="frame">
     <span class="eyebrow">Массивы</span>
     <h1>for и for…of</h1>
-    <p class="code-title">14.js</p>
+    <p class="code-title">02_js+/14.js</p>
     <pre>const fruits = ['apple', 'banana', 'orange'];
 
 // классический for — когда нужен индекс
@@ -475,8 +476,12 @@ for (let fruit of fruits) {
   <section class="slide"><div class="frame">
     <span class="eyebrow">Методы массивов</span>
     <h1>forEach и map</h1>
-    <p class="code-title">15-16.js</p>
-    <pre>// forEach — итерация, ничего не возвращает
+    <p class="code-title">02_js+/15.js, 16.js</p>
+    <pre>const fruits = ['apple', 'banana', 'orange'];
+const numbers = [1, 2, 3, 4, 5];
+const users = ['Alice', 'Bob', 'Charlie'];
+
+// forEach — итерация, ничего не возвращает
 fruits.forEach((fruit, index) =&gt; {
     console.log(`${index + 1}. ${fruit}`);
 });
@@ -494,7 +499,7 @@ const userObjects = users.map((name, index) =&gt; ({ id: index + 1, name }));
   <section class="slide"><div class="frame">
     <span class="eyebrow">Методы массивов</span>
     <h1>filter</h1>
-    <p class="code-title">17.js</p>
+    <p class="code-title">02_js+/17.js</p>
     <pre>// фильтрация чётных чисел
 const evenNumbers = numbers.filter(n =&gt; n % 2 === 0);
 // [2, 4, 6, 8, 10]
@@ -509,7 +514,7 @@ const longWords = words.filter(word =&gt; word.length &gt; 4);
   <section class="slide"><div class="frame">
     <span class="eyebrow">Методы массивов</span>
     <h1>reduce — аккумуляция</h1>
-    <p class="code-title">18.js</p>
+    <p class="code-title">02_js+/18.js</p>
     <pre>// сумма
 const sum = numbers.reduce((acc, n) =&gt; acc + n, 0); // 15
 
@@ -528,7 +533,7 @@ const max = numbers.reduce((acc, n) =&gt; Math.max(acc, n), -Infinity); // 5</pr
   <section class="slide"><div class="frame">
     <span class="eyebrow">Методы массивов</span>
     <h1>Цепочки методов</h1>
-    <p class="code-title">19.js</p>
+    <p class="code-title">02_js+/19.js</p>
     <pre>const expensive = products
     .filter(p =&gt; p.category === 'electronics')
     .filter(p =&gt; p.price &gt; 600)
@@ -543,19 +548,48 @@ const max = numbers.reduce((acc, n) =&gt; Math.max(acc, n), -Infinity); // 5</pr
     <div class="two-col" style="align-items:start">
       <div>
 <h1>find / some / every / sort</h1>
-    <p class="code-title">20.js</p>
+    <p class="code-title">02_js+/20.js</p>
     <pre>numbers.find(n =&gt; n % 2 === 0);   // 2 — первый чётный
 numbers.some(n =&gt; n &lt; 0);         // false — есть ли хоть один
 numbers.every(n =&gt; n &gt; 0);        // true — все положительные
 
 const sorted = [...unsorted].sort((a, b) =&gt; a - b);
-// sort МУТИРУЕТ исходный массив → копируем через [...arr]</pre>
+// sort МУТИРУЕТ исходный массив → копируем через [...arr]
+const sorted2 = unsorted.toSorted((a, b) =&gt; a - b); // ES2023: копия сразу</pre>
 
       </div>
       <div class="img-card">
         <img src="02_js+/slide27_0.png" alt="Мем: скопировал код из урока — и он не работает">
       </div>
     </div>
+  </div></section>
+  <!-- 20 · Деструктуризация -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Современный синтаксис</span>
+    <h1>Деструктуризация · spread · rest</h1>
+<p class="code-title">02_js+/21.js</p>
+<pre>
+const user = { name: "Анна", age: 25, address: { city: "Казань" } };
+const { name, age, role = "student" } = user;   // так в React получают props
+const [first, second, ...rest] = [10, 20, 30, 40]; // так устроен useState
+
+const updated = { ...user, age: 26 };            // копия с изменением, user не меняется
+const withFour = [...numbers, 4];                // новый массив
+
+function sum(...values) {                        // rest: любое число аргументов
+    return values.reduce((acc, n) =&gt; acc + n, 0);
+}
+
+const counter = {
+    count: 0,
+    increment() { this.count++; },               // метод: this === counter
+    broken: () =&gt; this === counter,              // false: у стрелки нет своего this
+};
+</pre>
+    <ul style="margin-top:14px">
+      <li>Без мутаций: <code>{...obj}</code>, <code>[...arr]</code>, <code>toSorted</code> — основа работы со state в React</li>
+      <li>Методы объекта — обычной функцией, колбэки — стрелкой</li>
+    </ul>
   </div></section>
 
 </div>
