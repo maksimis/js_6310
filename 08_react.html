@@ -195,8 +195,8 @@
         <ul style="margin-top:14px">
           <li>JS-библиотека для построения <strong>UI</strong> (Meta, 2013)</li>
           <li>Компонентный подход — интерфейс из переиспользуемых частей</li>
-          <li>Виртуальный DOM — быстрые обновления</li>
-          <li>Однонаправленный поток данных: компоненты → props → state</li>
+          <li>Декларативность: описываем, <em>как должен выглядеть</em> UI, React сам обновляет DOM</li>
+          <li>Однонаправленный поток данных: вниз — через props, наверх — через колбэки (<code>onChange</code>, <code>onSubmit</code>)</li>
         </ul>
       </div>
       <div class="img-card">
@@ -210,8 +210,8 @@
       <div>
 <h1>Real vs Virtual DOM</h1>
         <ul style="margin-top:14px">
-          <li><strong>Браузерный DOM</strong> — медленный, императивный (<code>innerHTML</code>)</li>
-          <li><strong>Virtual DOM</strong> — быстрый, декларативный: лёгкие JS-объекты</li>
+          <li><strong>Браузерный DOM</strong> — императивно: сами ищем элементы и меняем их (<code>innerHTML</code>, <code>appendChild</code>)</li>
+          <li><strong>Virtual DOM</strong> — лёгкие JS-объекты: React сравнивает старое и новое дерево и меняет в DOM только разницу. Он не «быстрее DOM», он избавляет от ручных обновлений</li>
           <li>React сам решает, что обновить: Update → Reconciliation → New Virtual DOM → Browser DOM</li>
         </ul>
       </div>
@@ -224,20 +224,22 @@
   <section class="slide"><div class="frame">
     <span class="eyebrow">Создание проекта</span>
     <h1>Vite — рекомендуемый способ</h1>
-    <p class="code-title"></p>
-    <pre>
-# Create React App — устарел
-npx create-react-app my-app
-
-# Vite — рекомендуемо (2026)
-npm create vite@latest
-# выбор: React / React + TypeScript
+<p class="code-title">терминал</p>
+<pre>
+# Vite + React + TypeScript одной командой
+npm create vite@latest my-app -- --template react-ts
+cd my-app
+npm install
 
 npm run dev    # запуск в режиме разработки
-npm run build  # production-сборка
+npm run build  # production-сборка в dist/
+
+# Create React App (npx create-react-app) с 2025 года официально устарел —
+# пример оставлен для истории в 08_react/1_cra
 </pre>
     <ul style="margin-top:14px">
-      <li>Vite: мгновенный dev, минимум конфигурации, ES-модули</li>
+      <li>Шаблоны: <code>react</code> (JavaScript) и <code>react-ts</code> (TypeScript)</li>
+      <li>Vite: мгновенный dev-сервер, минимум конфигурации, ES-модули</li>
       <li>Webpack: стабильный, много плагинов, но медленный dev</li>
     </ul>
   </div></section>
@@ -245,9 +247,8 @@ npm run build  # production-сборка
   <section class="slide"><div class="frame">
     <span class="eyebrow">Компоненты</span>
     <h1>JSX — выглядит как HTML</h1>
-    <p class="code-title">src/components/Welcome.jsx</p>
+    <p class="code-title">08_react/3_jsx/src/components/Welcome.jsx</p>
     <pre>
-import React from 'react';
 
 function Welcome() {
     const name = "Студент";
@@ -268,13 +269,14 @@ export default Welcome;
       <li><code>{...}</code> — вставка JS-выражения</li>
       <li>События — camelCase: <code>onClick</code>, <code>onChange</code></li>
       <li><code>className</code> вместо class</li>
+      <li><code>import React</code> не нужен: Vite использует новый JSX-трансформ</li>
     </ul>
   </div></section>
   <!-- 5 · Props -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">Props</span>
     <h1>Данные в компонент</h1>
-    <p class="code-title">src/components/UserCard.jsx</p>
+    <p class="code-title">08_react/4_props/src/components/UserCard.jsx</p>
     <pre>
 function UserCard({ name, age, email, isOnline = false }) {
     return (
@@ -293,11 +295,44 @@ export default UserCard;
       <li>Деструктуризация + значения по умолчанию</li>
     </ul>
   </div></section>
+  <!-- 5a · Списки -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Списки</span>
+    <h1>map и key</h1>
+<p class="code-title">08_react/4_props/src/App.jsx</p>
+<pre>
+const users = [
+    { id: 1, name: "Анна Петрова", age: 22, email: "anna@example.com", isOnline: true },
+    { id: 2, name: "Борис Иванов", age: 25, email: "boris@example.com" },
+];
+
+function App() {
+    return (
+        &lt;div&gt;
+            {users.map(user =&gt; (
+                &lt;UserCard
+                    key={user.id}          // стабильный уникальный id
+                    name={user.name}
+                    age={user.age}
+                    email={user.email}
+                    isOnline={user.isOnline}
+                /&gt;
+            ))}
+        &lt;/div&gt;
+    );
+}
+</pre>
+    <ul style="margin-top:14px">
+      <li><code>key</code> помогает React понять, какой элемент добавили, удалили или переставили</li>
+      <li>Ключ — id из данных. Индекс массива (<code>key={i}</code>) ломается при удалении и сортировке: состояние «переезжает» к соседнему элементу</li>
+      <li>Без <code>key</code> React выводит предупреждение в консоль</li>
+    </ul>
+  </div></section>
   <!-- 6 · State -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">State</span>
     <h1>useState</h1>
-    <p class="code-title">src/components/Counter.jsx</p>
+    <p class="code-title">08_react/5_useState/src/components/Counter.jsx</p>
     <pre>
 import { useState } from 'react';
 
@@ -305,8 +340,10 @@ function Counter() {
     const [count, setCount] = useState(0);
     const [name, setName] = useState('');
 
-    const increment = () =&gt; setCount(count + 1);
-    const decrement = () =&gt; setCount(count - 1);
+    // новое значение считаем из предыдущего: так безопасно
+    // при нескольких обновлениях подряд
+    const increment = () =&gt; setCount(prev =&gt; prev + 1);
+    const decrement = () =&gt; setCount(prev =&gt; prev - 1);
     const reset = () =&gt; setCount(0);
 
     return (
@@ -323,13 +360,13 @@ function Counter() {
     );
 }
 </pre>
-    <p class="foot-note">Изменяем состояние ТОЛЬКО через set-функцию — это запускает ре-рендер.</p>
+    <p class="foot-note">Изменяем состояние ТОЛЬКО через set-функцию — это запускает ре-рендер. <code>setCount(count + 1)</code> дважды подряд прибавит 1, а не 2: оба вызова видят старый <code>count</code>.</p>
   </div></section>
   <!-- 7 · Управляемые формы -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">События и формы</span>
     <h1>Управляемые компоненты</h1>
-    <p class="code-title">src/components/LoginForm.jsx</p>
+    <p class="code-title">08_react/6_forms/src/components/LoginForm.jsx</p>
     <pre>
 function LoginForm() {
     const [formData, setFormData] = useState({
@@ -351,9 +388,11 @@ function LoginForm() {
 
     return (
         &lt;form onSubmit={handleSubmit}&gt;
-            &lt;input type="email" name="email"
+            &lt;label htmlFor="email"&gt;Email:&lt;/label&gt;
+            &lt;input id="email" type="email" name="email"
                    value={formData.email} onChange={handleChange} required /&gt;
-            &lt;input type="password" name="password"
+            &lt;label htmlFor="password"&gt;Пароль:&lt;/label&gt;
+            &lt;input id="password" type="password" name="password"
                    value={formData.password} onChange={handleChange} required /&gt;
             &lt;label&gt;
                 &lt;input type="checkbox" name="rememberMe"
@@ -368,49 +407,82 @@ function LoginForm() {
     <ul style="margin-top:14px">
       <li><code>value + onChange</code>, а не <code>defaultValue</code> — React «владеет» состоянием</li>
       <li>Один <code>handleChange</code> на все поля через <code>name</code></li>
+      <li><code>&lt;label htmlFor&gt;</code> + <code>id</code> — подпись связана с полем: клик по ней ставит фокус, скринридер её читает</li>
     </ul>
   </div></section>
   <!-- 8 · useEffect -->
   <section class="slide"><div class="frame">
     <span class="eyebrow">useEffect</span>
-    <h1>Побочные эффекты и загрузка данных</h1>
-    <p class="code-title">src/components/UserProfile.jsx</p>
-    <pre>
+    <h1>Загрузка данных</h1>
+<p class="code-title">08_react/7_useEffect/src/components/UserProfile.jsx (сокращено)</p>
+<pre>
 function UserProfile({ userId }) {
     const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
     useEffect(() =&gt; {
         if (!userId) return;
+        let ignore = false;               // ответ для устаревшего userId не записываем
+
         const fetchUser = async () =&gt; {
+            setLoading(true);
+            setError(null);
             try {
-                setLoading(true);
-                const response = await fetch(`/api/users/${userId}`);
+                const response = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);  // fetch не бросает на 404
                 const userData = await response.json();
-                setUser(userData);
+                if (!ignore) setUser(userData);
             } catch (err) {
-                setError('Ошибка загрузки пользователя');
+                if (!ignore) setError(err.message);
             } finally {
-                setLoading(false);
+                if (!ignore) setLoading(false);
             }
         };
         fetchUser();
-    }, [userId]); // зависимость: эффект при изменении userId
 
-    useEffect(() =&gt; {
-        document.title = user ? `Профиль: ${user.name}` : 'Мое приложение';
-        return () =&gt; { document.title = 'Мое приложение'; }; // очистка
-    }, [user]);
+        return () =&gt; { ignore = true; };  // очистка: при смене userId или размонтировании
+    }, [userId]);                         // зависимость: эффект при изменении userId
 
+    if (!userId) return &lt;div&gt;Пользователь не выбран&lt;/div&gt;;
     if (loading) return &lt;div&gt;Загрузка...&lt;/div&gt;;
     if (error) return &lt;div&gt;Ошибка: {error}&lt;/div&gt;;
-    if (!user) return &lt;div&gt;Пользователь не найден&lt;/div&gt;;
-
-    return &lt;h1&gt;{user.name}&lt;/h1&gt;;
+    return user &amp;&amp; &lt;h1&gt;{user.name}&lt;/h1&gt;;
 }
 </pre>
-    <p class="foot-note">Зависимости <code>[···]</code>: пусто — на монтировании, с данными — на их изменении.</p>
+    <p class="foot-note">Зависимости <code>[···]</code>: пусто — только при монтировании, с данными — при их изменении. Подробнее про режимы и StrictMode — в теме 12.</p>
+  </div></section>
+  <!-- 8a · Подъём состояния -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Архитектура компонентов</span>
+    <h1>Подъём состояния и children</h1>
+<p class="code-title">пример</p>
+<pre>
+// Состояние нужно двум компонентам — храним его в общем родителе
+function TemperatureApp() {
+    const [celsius, setCelsius] = useState(20);
+
+    return (
+        &lt;Panel title="Температура"&gt;
+            &lt;CelsiusInput value={celsius} onChange={setCelsius} /&gt;   {/* данные вниз, событие вверх */}
+            &lt;p&gt;По Фаренгейту: {celsius * 9 / 5 + 32}&lt;/p&gt;
+        &lt;/Panel&gt;
+    );
+}
+
+function CelsiusInput({ value, onChange }) {
+    return &lt;input type="number" value={value} onChange={e =&gt; onChange(Number(e.target.value))} /&gt;;
+}
+
+// Композиция: Panel не знает, что внутри, — отображает children
+function Panel({ title, children }) {
+    return &lt;section className="panel"&gt;&lt;h2&gt;{title}&lt;/h2&gt;{children}&lt;/section&gt;;
+}
+</pre>
+    <ul style="margin-top:14px">
+      <li>Состояние живёт в ближайшем общем родителе — «подъём состояния»</li>
+      <li><code>children</code> — универсальные обёртки (Card, Layout, Modal) без копирования кода</li>
+    </ul>
   </div></section>
   <!-- 9 · Итоги -->
   <section class="slide"><div class="frame">
@@ -418,8 +490,10 @@ function UserProfile({ userId }) {
     <h1>React база</h1>
     <ul style="margin-top:14px">
       <li><strong>Компоненты + JSX</strong> — декларативный UI</li>
-      <li><strong>Props</strong> — данные внутрь, <strong>state</strong> — состояние внутри</li>
-      <li><strong>useEffect</strong> — побочные эффекты и запросы</li>
+      <li><strong>Props</strong> — данные внутрь, <strong>state</strong> — состояние внутри, <code>setX(prev =&gt; …)</code></li>
+      <li><strong>Списки</strong> — <code>map</code> + стабильный <code>key</code></li>
+      <li><strong>Подъём состояния</strong> и композиция через <code>children</code></li>
+      <li><strong>useEffect</strong> — запросы с проверкой <code>response.ok</code> и очисткой</li>
       <li>Стек: <strong>Vite + React</strong> (дальше — TypeScript)</li>
       <li>Дальше тема 9: <strong>React + TypeScript</strong> в деталях</li>
     </ul>

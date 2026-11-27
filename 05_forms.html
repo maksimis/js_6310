@@ -186,7 +186,7 @@
     <section class="slide"><div class="frame title-frame">
     <h1 id="t-title">Тема 5 · HTML Forms — работа с формами</h1>
     <div class="badge-row"><span class="badge">Курс «JavaScript»</span><span class="badge">Группа 6310</span><span class="badge">2026</span></div>
-    <div class="teacher">Исанькин М.А.</div>  </div></section>
+    <div class="teacher">{FIO_prepod}</div>  </div></section>
   <!-- 1 · Что такое формы -->
   <section class="slide"><div class="frame">
     <div class="two-col" style="align-items:start">
@@ -208,7 +208,7 @@
   <section class="slide"><div class="frame">
     <span class="eyebrow">Базовая форма</span>
     <h1>Минимальная форма</h1>
-    <p class="code-title">1.html</p>
+    <p class="code-title">05_forms/1.html</p>
     <pre>
 &lt;form action="/submit" method="POST"&gt;
     &lt;!-- Поля формы здесь --&gt;
@@ -225,7 +225,7 @@
   <section class="slide"><div class="frame">
     <span class="eyebrow">Базовые input</span>
     <h1>text · password · email</h1>
-    <p class="code-title">2.html</p>
+    <p class="code-title">05_forms/2.html</p>
     <pre>
 &lt;div&gt;
     &lt;label for="username"&gt;Имя пользователя:&lt;/label&gt;
@@ -250,20 +250,19 @@
   <section class="slide"><div class="frame">
     <span class="eyebrow">Разнообразие типов</span>
     <h1>number · range · date · file</h1>
-    <p class="code-title">2.html</p>
+    <p class="code-title">05_forms/2.html</p>
     <pre>
-&lt;div&gt;
-    &lt;input type="number" name="age" min="18" max="100"&gt;
-&lt;/div&gt;
-&lt;div&gt;
-    &lt;input type="range" name="volume" min="0" max="100"&gt;
-&lt;/div&gt;
-&lt;div&gt;
-    &lt;input type="date" name="birthday"&gt;
-&lt;/div&gt;
-&lt;div&gt;
-    &lt;input type="file" name="document" accept=".pdf,.doc"&gt;
-&lt;/div&gt;
+&lt;label for="age"&gt;Возраст:&lt;/label&gt;
+&lt;input id="age" type="number" name="age" min="18" max="100"&gt;
+
+&lt;label for="volume"&gt;Громкость:&lt;/label&gt;
+&lt;input id="volume" type="range" name="volume" min="0" max="100"&gt;
+
+&lt;label for="birthday"&gt;Дата рождения:&lt;/label&gt;
+&lt;input id="birthday" type="date" name="birthday"&gt;
+
+&lt;label for="document"&gt;Документ:&lt;/label&gt;
+&lt;input id="document" type="file" name="document" accept=".pdf,.doc"&gt;
 </pre>
     <ul style="margin-top:14px">
       <li><code>accept</code> ограничивает типы файлов при выборе</li>
@@ -274,7 +273,7 @@
   <section class="slide"><div class="frame">
     <span class="eyebrow">Radio / Checkbox</span>
     <h1>Один выбор vs множественный</h1>
-    <p class="code-title">3.html</p>
+    <p class="code-title">05_forms/3.html</p>
     <pre>
 &lt;fieldset&gt;
     &lt;!-- Radio: одинаковый name =&gt; один выбор --&gt;
@@ -302,7 +301,7 @@
   <section class="slide"><div class="frame">
     <span class="eyebrow">Select</span>
     <h1>select + option</h1>
-    <p class="code-title">3.html</p>
+    <p class="code-title">05_forms/3.html</p>
     <pre>
 &lt;label for="country"&gt;Страна:&lt;/label&gt;
 &lt;select id="country" name="country"&gt;
@@ -326,7 +325,7 @@
   <section class="slide"><div class="frame">
     <span class="eyebrow">Textarea и кнопки</span>
     <h1>Многострочный текст · fieldset/legend</h1>
-    <p class="code-title">3.html</p>
+    <p class="code-title">05_forms/3.html</p>
     <pre>
 &lt;fieldset&gt;
     &lt;legend&gt;Контактная информация&lt;/legend&gt;
@@ -349,29 +348,59 @@
   <section class="slide"><div class="frame">
     <span class="eyebrow">Атрибуты валидации</span>
     <h1>required · minlength · pattern</h1>
-    <p class="code-title">4.html</p>
+    <p class="code-title">05_forms/4.html</p>
     <pre>
 &lt;div&gt;
     &lt;label for="username"&gt;Валидация длины&lt;/label&gt;
-    &lt;input type="text" name="username" required minlength="3" maxlength="20"&gt;
+    &lt;input type="text" id="username" name="username" required minlength="3" maxlength="20"&gt;
 &lt;/div&gt;
 &lt;div&gt;
     &lt;label for="age"&gt;Валидация числа&lt;/label&gt;
-    &lt;input type="number" name="age" min="18" max="99"&gt;
+    &lt;input type="number" id="age" name="age" min="18" max="99"&gt;
 &lt;/div&gt;
 &lt;div&gt;
     &lt;label for="zipcode"&gt;Валидация по pattern&lt;/label&gt;
-    &lt;input type="text" name="zipcode" pattern="[0-9]{5}"
+    &lt;input type="text" id="zipcode" name="zipcode" pattern="[0-9]{5}"
            title="Почтовый индекс (5 цифр)"&gt;
 &lt;/div&gt;
 &lt;div&gt;
     &lt;label for="email"&gt;Валидация email&lt;/label&gt;
-    &lt;input type="email" name="email" required&gt;
+    &lt;input type="email" id="email" name="email" required&gt;
 &lt;/div&gt;
 </pre>
     <ul style="margin-top:14px">
       <li><code>pattern</code> + <code>title</code> — подсказка при ошибке</li>
       <li>Email проверяется браузером автоматически</li>
+      <li><code>label for</code> работает, только если у поля есть такой же <code>id</code></li>
+    </ul>
+  </div></section>
+  <!-- 8a · Constraint Validation -->
+  <section class="slide"><div class="frame">
+    <span class="eyebrow">Валидация из JS</span>
+    <h1>Constraint Validation API</h1>
+<p class="code-title">05_forms/6.html</p>
+<pre>
+const password = document.getElementById('password');
+const confirm = document.getElementById('confirm');
+
+// своё правило: сообщение покажет сам браузер
+function checkMatch() {
+    confirm.setCustomValidity(
+        confirm.value === password.value ? '' : 'Пароли не совпадают'
+    );
+}
+password.addEventListener('input', checkMatch);
+confirm.addEventListener('input', checkMatch);
+
+form.checkValidity();   // true/false — проверка всех полей
+form.reportValidity();  // то же + показать сообщения у полей
+
+/* CSS: подсветка только после того, как пользователь тронул поле */
+input:user-invalid { border-color: crimson; }
+</pre>
+    <ul style="margin-top:14px">
+      <li><code>input.validity</code> — причина ошибки: valueMissing, tooShort, patternMismatch, customError…</li>
+      <li>Атрибут <code>novalidate</code> у формы отключает встроенные подсказки — тогда проверяем сами</li>
     </ul>
   </div></section>
   <!-- 9 · Отправка -->
@@ -393,20 +422,21 @@
   <section class="slide"><div class="frame">
     <span class="eyebrow">Обработка на JS</span>
     <h1>submit + preventDefault + FormData</h1>
-    <p class="code-title">5.html</p>
+    <p class="code-title">05_forms/5.html</p>
     <pre>
 const form = document.getElementById('registrationForm');
 
 form.addEventListener('submit', function (event) {
     event.preventDefault();                     // отменяем стандартную отправку
     const formData = new FormData(this);         // собираем данные формы
-    const data = Object.fromEntries(formData.entries());
+    const data = Object.fromEntries(formData);    // одно значение на каждое name
+    data.interests = formData.getAll('interests'); // чекбоксы с одним name — все значения
     console.log('Данные для отправки:', data);
 });
 </pre>
     <ul style="margin-top:14px">
       <li><code>preventDefault()</code> — JS сам решает, что делать</li>
-      <li><code>FormData</code> + <code>entries()</code> — данные как объект</li>
+      <li><code>Object.fromEntries(formData)</code> — данные как объект, но для повторяющихся name оставляет последнее значение — используйте <code>getAll</code></li>
       <li>Дальше — валидация и отправка через <code>fetch</code></li>
     </ul>
   </div></section>
@@ -414,27 +444,34 @@ form.addEventListener('submit', function (event) {
   <section class="slide"><div class="frame">
     <span class="eyebrow">Связка тем 3 и 4</span>
     <h1>Форма → fetch → рендер результата</h1>
-    <p class="code-title"></p>
-    <pre>
-const form = document.getElementById('registrationForm');
-
+<p class="code-title">05_forms/5.html (сокращено)</p>
+<pre>
 form.addEventListener('submit', async (event) =&gt; {
     event.preventDefault();
-    const data = Object.fromEntries(new FormData(form).entries());
+    if (!form.checkValidity()) { form.reportValidity(); return; }   // валидация
 
-    if (!data.username || !data.email.includes('@')) return; // валидация
+    const data = Object.fromEntries(new FormData(form));
+    button.disabled = true;                      // защита от двойной отправки
+    result.textContent = 'Отправка...';
 
-    const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    });
-    const result = await response.json();
-
-    document.getElementById('result').textContent = result.message; // в DOM!
+    try {
+        const response = await fetch('https://jsonplaceholder.typicode.com/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`); // fetch не бросает на 404
+        const created = await response.json();
+        result.textContent = `Пользователь создан, id = ${created.id}`; // в DOM!
+        form.reset();
+    } catch (error) {
+        result.textContent = `Не удалось отправить: ${error.message}`;
+    } finally {
+        button.disabled = false;
+    }
 });
 </pre>
-    <p class="foot-note">DOM (тема 3) + асинхронность (тема 4) + формы = любая реальная лаба.</p>
+    <p class="foot-note">DOM (тема 3) + асинхронность (тема 4) + формы = любая реальная лаба. Ответ выводим через <code>textContent</code>, не <code>innerHTML</code> — защита от XSS.</p>
   </div></section>
   <!-- 12 · Итоги -->
   <section class="slide"><div class="frame">
@@ -442,7 +479,7 @@ form.addEventListener('submit', async (event) =&gt; {
     <h1>Формы</h1>
     <ul style="margin-top:14px">
       <li>Разметка: <strong>form + label + input + select + textarea</strong></li>
-      <li>Валидация: <strong>required, min/max, pattern</strong> — браузером</li>
+      <li>Валидация: <strong>required, min/max, pattern</strong> — браузером; своё правило — <code>setCustomValidity</code></li>
       <li>Обработка: <strong>onSubmit → preventDefault → FormData</strong></li>
       <li>Отправка: <strong>fetch(POST) → рендер ответа в DOM</strong></li>
       <li>Управляемые формы в React — та же идея (тема 8)</li>
