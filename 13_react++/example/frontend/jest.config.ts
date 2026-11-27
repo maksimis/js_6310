@@ -6,6 +6,8 @@ const config = {
     '^.+\\.(js|jsx|ts|tsx)$': ['ts-jest', {tsconfig: 'tsconfig.app.json'}],
   },
   moduleNameMapper: {
+    // в тестах берём исходники библиотеки, а не собранный dist (ESM)
+    '^@my-app/ui-library$': '<rootDir>/../ui-library/src/index.ts',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
   },
   // Specify file extensions Jest should look for

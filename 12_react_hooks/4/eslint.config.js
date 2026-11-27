@@ -1,5 +1,4 @@
 import js from '@eslint/js'
-import typescriptEslint from '@typescript-eslint/eslint-plugin'
 import { defineConfig, globalIgnores } from 'eslint/config'
 import importPlugin from 'eslint-plugin-import'
 import react from 'eslint-plugin-react'
@@ -9,7 +8,7 @@ import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(['dist', 'coverage']),
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
     extends: [
@@ -23,11 +22,11 @@ export default defineConfig([
       globals: globals.browser,
     },
     plugins: {
-      '@typescript-eslint': typescriptEslint,
       'react': react,
       'import': importPlugin
     },
   }, {
+    files: ['**/*.{js,jsx,ts,tsx}'],
     rules: {
       "indent": ["error", 2],
       'semi': ['error', 'never'],// Правильный порядок импортов

@@ -1,6 +1,5 @@
 import { useState } from 'react'
 
-import './App.css'
 import '@my-app/ui-library/style.css'
 import { Button, Card } from '@my-app/ui-library'
 import './App.css'

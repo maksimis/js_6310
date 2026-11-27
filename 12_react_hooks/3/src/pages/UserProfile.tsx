@@ -1,100 +1,77 @@
 import { useEffect, useState } from 'react'
 
-import { useParams, useNavigate, useLocation } from 'react-router'
+import { useLocation, useNavigate, useParams } from 'react-router'
 
 import { Button } from '../components/Button/Button'
 import { Card } from '../components/Card/Card'
 
 import type { User } from '../contexts/AuthContext/AuthContext'
 
-interface UserProfileParams {
-  userId: string
-  [key: string]: string | undefined
-}
-
-function fetchUser(userId: string | undefined): Promise<User> {
-  const promise = new Promise<User>((resolve) => {
+function fetchUser(userId: string): Promise<User> {
+  return new Promise<User>((resolve) => {
     setTimeout(() => {
-      resolve({ name: `My name ${userId}`, email: "email", id: userId ?? "" })
+      resolve({ name: `My name ${userId}`, email: 'email', id: userId })
     }, 500)
   })
-
-  return promise
 }
 
 const UserProfile: React.FC = () => {
-  const { userId } = useParams<UserProfileParams>()
+  const { userId = '' } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
 
-  const [userIdState, setUserIdState] = useState<string>("")
-
-  const handleGoBack = () => {
-    navigate(-1) // Назад по истории
-  }
-
-  const handleEdit = () => {
-    // navigate(`/user/${userId}/edit`, {
-    //   state: { from: location.pathname }
-    // })
-    setUser(prev => {
-      if (prev) {
-        return {...prev, name: "New name" + prev.id}
-      } else return null
-    })
-  }
-
-  const handleNext = () => {
-    if (userIdState) {
-      setUserIdState(userIdState+1)
-    }
-  }
-
   const [user, setUser] = useState<User | null>(null)
+  const [seconds, setSeconds] = useState(0)
 
-  // Запускается при каждом рендере
+  // 1. Без массива зависимостей — после КАЖДОГО рендера
   useEffect(() => {
-    console.log("Hi hi! Every time")
     document.title = user ? `Profile ${user.name}` : 'My App'
   })
 
-  // Запускается только при изменении userId
+  // 2. [userId] — при монтировании и при каждом изменении userId
   useEffect(() => {
-    console.log("Hi hi! User Id Changed")
-    fetchUser(userIdState).then(setUser)
-  }, [userIdState])
+    let ignore = false
 
-  // Запускается только при монтировании
-  useEffect(() => {
-    console.log("Hi hi! Only one time")
-    const timer = setInterval(() => { }, 1000)
+    setUser(null)
+    fetchUser(userId).then(u => {
+      if (!ignore) setUser(u)
+    })
 
-    if (userId) {
-      setUserIdState(userId)
+    return () => {
+      ignore = true // ответ для старого userId отбрасываем
     }
+  }, [userId])
 
-    // Очистка при размонтировании
+  // 3. [] — только при монтировании, очистка при размонтировании
+  useEffect(() => {
+    const timer = setInterval(() => setSeconds(s => s + 1), 1000)
+
     return () => clearInterval(timer)
   }, [])
+
+  const handleEdit = () => {
+    navigate(`/user/${userId}/edit`, { state: { from: location.pathname } })
+  }
+
+  // меняем состояние — эффект №1 обновит заголовок вкладки
+  const handleRename = () => {
+    setUser(prev => (prev ? { ...prev, name: `Новое имя ${prev.id}` } : prev))
+  }
+
+  // меняем URL — эффект №2 загрузит другого пользователя
+  const nextId = Number(userId) + 1
+  const handleNext = () => navigate(`/user/${nextId}`)
 
   return (
     <div>
       <h1>Профиль пользователя {userId}</h1>
-      {user && <Card>
-        <div>
-          <div>
-            {user.name}
-          </div>
-        </div>
-      </Card>
-      }
-      {
-        !user && "Loading"
-      }
+      {user ? <Card>{user.name}</Card> : <p>Загрузка...</p>}
       <p>Текущий путь: {location.pathname}</p>
-      <Button onClick={handleGoBack}>Назад</Button>
+      <p>На странице: {seconds} с</p>
+      <Button onClick={() => navigate(-1)}>Назад</Button>
       <Button onClick={handleEdit}>Редактировать</Button>
-      <Button onClick={handleNext}>Next</Button>
+      <Button onClick={handleRename} disabled={!user}>Переименовать</Button>
+      <Button onClick={handleNext} disabled={!Number.isFinite(nextId)}>Следующий</Button>
     </div>
   )
 }

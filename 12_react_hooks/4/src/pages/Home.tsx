@@ -31,19 +31,17 @@ const ChildWithMemo = memo(({ counter }: ChildProps) => <Child counter={counter}
 function Child({ counter }: ChildProps) {
   console.log('Child rendered!') // Вызывается каждый раз
 
-  const factorial = (num: number): number => {
+  const fibonacci = (num: number): number => {
     if (num <= 1) {
-      return 1
-    } else if (num == 2) {
-      return 2
+      return num
     } else {
-      return factorial(num - 1) * factorial(num - 2)
+      return fibonacci(num - 1) + fibonacci(num - 2)
     }
   }  
 
-  const fact =  factorial(counter)
+  const fib =  fibonacci(counter)
 
-  return <div>Factorial {fact}</div>
+  return <div>Fibonacci {fib}</div>
 }
 
 export default Home

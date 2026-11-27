@@ -1,6 +1,8 @@
 // components/LoginForm.tsx
 import { useState } from 'react'
 
+import { type Location, useLocation, useNavigate } from 'react-router'
+
 import { useAuth } from '../../contexts/AuthContext/AuthContext'
 
 const LoginForm: React.FC = () => {
@@ -13,6 +15,10 @@ const LoginForm: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   
   const { login } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
+  // куда вернуться после входа: ProtectedRoute кладёт сюда исходную страницу
+  const from = (location.state as { from?: Location } | null)?.from?.pathname ?? '/'
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target
@@ -57,8 +63,9 @@ const LoginForm: React.FC = () => {
 
     try {
       await login(formData.email, formData.password)
+      navigate(from, { replace: true })
     } catch (error) {
-      console.error('Login failed:', error)
+      setErrors({ password: error instanceof Error ? error.message : 'Не удалось войти' })
     } finally {
       setIsSubmitting(false)
     }

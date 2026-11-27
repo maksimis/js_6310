@@ -9,6 +9,8 @@ export default defineConfig({
     react(),
     dts({
       include: ['src'],
+      // тесты и настройка jest не нужны пользователям библиотеки
+      exclude: ['src/**/*.test.tsx', 'src/setupTests.ts'],
       outDir: 'dist',
       insertTypesEntry: true,
     }),
@@ -16,18 +18,13 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
-      name: 'UiLibrary',
       fileName: 'index',
       formats: ['es'],
     },
     rollupOptions: {
-      external: ['react', 'react-dom'],
-      output: {
-        globals: {
-          react: 'React',
-          'react-dom': 'ReactDOM',
-        },
-      },
+      // react, react-dom и их подпути (react/jsx-runtime) — зависимости приложения,
+      // в бандл библиотеки они попадать не должны
+      external: [/^react(-dom)?(\/.*)?$/],
     },
   },
 })

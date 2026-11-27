@@ -23,3 +23,31 @@ body {
     background-color: #ffffff;
   }
 }
+
+/* Навигация: ссылки оформлены как кнопки, активная подсвечивается (NavLink) */
+.app-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.app-nav a {
+  padding: 6px 14px;
+  border: 1px solid #318edf;
+  border-radius: 6px;
+  color: #318edf;
+  text-decoration: none;
+}
+
+.app-nav a.active {
+  background: #318edf;
+  color: #fff;
+}
+
+.header-controls,
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

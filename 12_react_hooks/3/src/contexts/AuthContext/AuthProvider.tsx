@@ -1,35 +1,34 @@
-import { type ReactNode, useState } from "react"
+import { type ReactNode, useState } from 'react'
 
-import { AuthContext, type AuthContextType, type User } from "./AuthContext"
+import { AuthContext, type AuthContextType, type User } from './AuthContext'
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null)
-  
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   const login = async (email: string, password: string): Promise<void> => {
-    // Имитация API запроса
+    // Имитация API-запроса
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    const mockUser: User = {
-      id: '1',
-      name: 'Анна Петрова',
-      email: email
+
+    if (password.length < 6) {
+      throw new Error('Неверный email или пароль')
     }
-    
-    setUser(mockUser)
+
+    setUser({ id: '1', name: 'Анна Петрова', email })
   }
-  
+
   const logout = () => {
     setUser(null)
   }
-  
+
+  // value и функции создаются заново на каждом рендере — как это исправить
+  // через useMemo/useCallback, разбираем в теме 12
   const value: AuthContextType = {
     user,
     login,
     logout,
-    isAuthenticated: !!user
+    isAuthenticated: !!user,
   }
-  
+
   return (
     <AuthContext.Provider value={value}>
       {children}

@@ -1,6 +1,6 @@
 const config = {
   // Use jsdom to simulate a browser environment for React components
-  testEnvironment: 'jsdom',
+  testEnvironment: './jest.environment.cjs',
   // Configure ts-jest to transpile TypeScript files
   transform: {
     '^.+\\.(js|jsx|ts|tsx)$': ['ts-jest', {tsconfig: 'tsconfig.app.json'}],

@@ -1,94 +1,78 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// hooks/useForm.ts
-import { useState, useCallback } from 'react'
+import { type FormEvent, useState } from 'react'
 
-interface ValidationRules {
-  required?: boolean;
-  minLength?: number;
-  maxLength?: number;
-  pattern?: RegExp;
-  custom?: (value: any) => string | undefined;
+export interface ValidationRule<T> {
+  required?: boolean
+  minLength?: number
+  maxLength?: number
+  pattern?: RegExp
+  // values — все значения формы: можно сравнить поле с другим полем
+  custom?: (value: string, values: T) => string | undefined
 }
 
-export interface FormFieldConfig {
-  value: any;
-  validation?: ValidationRules;
+export type ValidationRules<T> = Partial<Record<keyof T, ValidationRule<T>>>
+export type FormErrors<T> = Partial<Record<keyof T, string>>
+
+interface UseFormOptions<T> {
+  initialValues: T
+  validationRules?: ValidationRules<T>
+  onSubmit: (values: T) => void | Promise<void>
 }
 
-interface UseFormProps {
-  initialValues: Record<string, any>;
-  validationRules?: Record<string, ValidationRules>;
-  onSubmit: (values: Record<string, any>) => void | Promise<void>;
+export function validateField<T>(value: string, values: T, rule?: ValidationRule<T>): string | undefined {
+  if (!rule) return undefined
+  if (rule.required && !value) return 'Это поле обязательно'
+  if (rule.minLength && value.length < rule.minLength) return `Минимальная длина: ${rule.minLength}`
+  if (rule.maxLength && value.length > rule.maxLength) return `Максимальная длина: ${rule.maxLength}`
+  if (rule.pattern && !rule.pattern.test(value)) return 'Некорректный формат'
+
+  return rule.custom?.(value, values)
 }
 
-export const useForm = ({ initialValues, validationRules = {}, onSubmit }: UseFormProps) => {
-  const [values, setValues] = useState(initialValues)
-  const [errors, setErrors] = useState<Record<string, string>>({})
+// T — тип значений формы: handleChange('emial', …) с опечаткой не скомпилируется
+export function useForm<T extends Record<string, string>>({
+  initialValues,
+  validationRules = {},
+  onSubmit,
+}: UseFormOptions<T>) {
+  const [values, setValues] = useState<T>(initialValues)
+  const [errors, setErrors] = useState<FormErrors<T>>({})
+  const [touched, setTouched] = useState<Partial<Record<keyof T, boolean>>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
-  
-  const validateField = useCallback((name: string, value: any): string | undefined => {
-    const rules = validationRules[name]
 
-    if (!rules) return undefined
-    
-    if (rules.required && !value) {
-      return 'Это поле обязательно'
-    }
-    
-    if (rules.minLength && value.length < rules.minLength) {
-      return `Минимальная длина: ${rules.minLength}`
-    }
-    
-    if (rules.maxLength && value.length > rules.maxLength) {
-      return `Максимальная длина: ${rules.maxLength}`
-    }
-    
-    if (rules.pattern && !rules.pattern.test(value)) {
-      return 'Некорректный формат'
-    }
-    
-    if (rules.custom) {
-      return rules.custom(value)
-    }
-    
-    return undefined
-  }, [validationRules])
-  
-  const handleChange = useCallback((name: string, value: any) => {
-    setValues(prev => ({ ...prev, [name]: value }))
-    
-    // Валидация при изменении
-    const error = validateField(name, value)
+  const validate = (formValues: T, fields: (keyof T)[]): FormErrors<T> => {
+    const result: FormErrors<T> = {}
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    setErrors(prev => ({
-      ...prev,
-      [name]: error
-    }))
-  }, [validateField])
-  
-  const validateForm = useCallback((): boolean => {
-    const newErrors: Record<string, string> = {}
-    
-    Object.keys(validationRules).forEach(name => {
-      const error = validateField(name, values[name])
+    for (const name of fields) {
+      const error = validateField(formValues[name], formValues, validationRules[name])
 
-      if (error) {
-        newErrors[name] = error
-      }
-    })
-    
-    setErrors(newErrors)
+      if (error) result[name] = error
+    }
 
-    return Object.keys(newErrors).length === 0
-  }, [values, validationRules, validateField])
-  
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
+    return result
+  }
+
+  const handleChange = (name: keyof T, value: string) => {
+    const nextValues = { ...values, [name]: value } as T
+    const nextTouched = { ...touched, [name]: true }
+
+    setValues(nextValues)
+    setTouched(nextTouched)
+    // перепроверяем все поля, которые уже трогали: после смены password
+    // сразу обновится ошибка confirmPassword
+    setErrors(validate(nextValues, Object.keys(nextTouched) as (keyof T)[]))
+  }
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    
-    if (!validateForm()) return
-    
+
+    const fields = Object.keys(values) as (keyof T)[]
+    const allErrors = validate(values, fields)
+
+    setErrors(allErrors)
+    setTouched(Object.fromEntries(fields.map(name => [name, true])) as Partial<Record<keyof T, boolean>>)
+
+    if (Object.keys(allErrors).length > 0) return
+
     setIsSubmitting(true)
 
     try {
@@ -96,14 +80,7 @@ export const useForm = ({ initialValues, validationRules = {}, onSubmit }: UseFo
     } finally {
       setIsSubmitting(false)
     }
-  }, [values, validateForm, onSubmit])
-  
-  return {
-    values,
-    errors,
-    isSubmitting,
-    handleChange,
-    handleSubmit,
-    setValues
   }
+
+  return { values, errors, isSubmitting, handleChange, handleSubmit, setValues }
 }
