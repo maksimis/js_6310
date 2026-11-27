@@ -1,34 +1,73 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="ru">
 <head>
-    <title>Заголовок страницы</title>
     <meta charset="UTF-8">
+    <title>Регистрация: форма → fetch → DOM</title>
+    <style>
+        /* :user-invalid — подсветка только после того, как пользователь тронул поле */
+        input:user-invalid { border-color: crimson; }
+        .error { color: crimson; }
+    </style>
 </head>
-
 <body>
-    <form id="registrationForm">
-        <input type="text" name="username">
-        <input type="text" name="email">
+    <form id="registrationForm" novalidate>
+        <label for="username">Имя пользователя:</label>
+        <input id="username" name="username" required minlength="3">
+
+        <label for="email">Email:</label>
+        <input id="email" type="email" name="email" required>
+
+        <fieldset>
+            <legend>Интересы</legend>
+            <label><input type="checkbox" name="interests" value="sports"> Спорт</label>
+            <label><input type="checkbox" name="interests" value="music"> Музыка</label>
+        </fieldset>
+
         <button type="submit">Зарегистрироваться</button>
     </form>
+    <p id="result" aria-live="polite"></p>
+
     <script>
-        document.getElementById('registrationForm').addEventListener('submit', function (event) {
-            event.preventDefault(); // Отменяем стандартную отправку
-            const formData = new FormData(this); // Собираем данные формы
-            const data = Object.fromEntries(formData.entries());
-            if (!validateForm(data)) {// Валидация
-                alert('Пожалуйста, заполните все поля корректно');
+        const form = document.getElementById('registrationForm');
+        const result = document.getElementById('result');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();                    // отменяем стандартную отправку
+
+            // Встроенная проверка браузера: required, minlength, type="email"
+            if (!form.checkValidity()) {
+                form.reportValidity();                 // показать сообщения у полей
                 return;
             }
-            console.log('Данные для отправки:', data);// Отправка данных (например, fetch API)
-            // fetch('/api/register', { method: 'POST', body: JSON.stringify(data) })
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData); // одно значение на каждое name
+            data.interests = formData.getAll('interests'); // для чекбоксов — все значения
+
+            const button = form.querySelector('button[type="submit"]');
+            button.disabled = true;                    // защита от двойной отправки
+            result.className = '';
+            result.textContent = 'Отправка...';
+
+            try {
+                // тестовый API: принимает POST и возвращает объект с id
+                const response = await fetch('https://jsonplaceholder.typicode.com/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const created = await response.json();
+                result.textContent = `Готово! Пользователь ${created.username} создан, id = ${created.id}`;
+                form.reset();
+            } catch (error) {
+                result.className = 'error';
+                result.textContent = `Не удалось отправить: ${error.message}`;
+            } finally {
+                button.disabled = false;
+            }
         });
-        function validateForm(data) {
-            return data.username && data.email.includes('@');
-        }
     </script>
-
 </body>
-
 </html>

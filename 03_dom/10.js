@@ -1,8 +1,10 @@
-const elementToRemove = document.querySelector('#toRemove');
+// Способ 1 (современный): элемент удаляет сам себя
+const first = document.querySelector('#toRemove');
+first?.remove();
 
-// Современный способ (ES6)
-elementToRemove.remove();
+// Способ 2 (старый): удаление через родителя
+const second = document.querySelector('#toRemoveOld');
+second?.parentElement.removeChild(second);
 
-// Старый способ
-const parent = elementToRemove.parentElement;
-parent.removeChild(elementToRemove);
+// После удаления ссылка на узел остаётся — его можно вставить заново
+if (first) document.body.append(first);

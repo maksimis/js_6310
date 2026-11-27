@@ -6,9 +6,17 @@ newDiv.classList.add('box');
 // Добавляем в конец body
 document.body.appendChild(newDiv);
 
-// Вставляем перед существующим элементом
+// Вставляем перед существующим элементом.
+// Узел может быть в DOM только в одном месте: insertBefore ПЕРЕМЕСТИТ newDiv,
+// поэтому для вставки создаём отдельный элемент
 const existingElement = document.querySelector('#existing');
-document.body.insertBefore(newDiv, existingElement);
+const label = document.createElement('p');
+label.textContent = 'Вставлен перед #existing';
+document.body.insertBefore(label, existingElement);
+// то же короче: existingElement.before(label)
+
+// Современные методы: append / prepend / before / after
+document.body.prepend(document.createElement('hr'));
 
 // Клонируем элемент
 const clonedDiv = newDiv.cloneNode(true);

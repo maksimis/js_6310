@@ -4,7 +4,8 @@ link.addEventListener('click', function(event) {
     event.preventDefault();
     
     console.log(`Тип события: ${event.type}`);
-    console.log(`Целевой элемент: ${event.target}`);
+    console.log(`Целевой элемент: ${event.target.tagName}`);      // где кликнули
+    console.log(`Обработчик висит на: ${event.currentTarget.tagName}`); // где слушаем
     console.log(`Координаты: ${event.clientX}, ${event.clientY}`);
 });
 // Всплытие события
